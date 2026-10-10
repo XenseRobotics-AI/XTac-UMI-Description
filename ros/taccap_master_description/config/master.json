@@ -1,0 +1,188 @@
+{
+  "source_repository": "Xense Robotics TacCap viewer project (not public)",
+  "source_revision": "759ccead69d050ce56c2b827acf13c999c53fb9c",
+  "source_directory": "public/urdf/taccap-grippers",
+  "status": "visualization_and_kinematics_only",
+  "root_link": "<side>_base_link",
+  "tcp_link": "<side>_eef_link",
+  "joint1_range_rad": [
+    0,
+    0.5047492196767601
+  ],
+  "mimic": "<side>_left_joint = -<side>_right_joint",
+  "missing_physics": [
+    "mass",
+    "inertia",
+    "collision_geometry"
+  ],
+  "modifications": [
+    "URDF mesh filenames relocated; mechanical and visual content preserved",
+    "2026-10-08: URDF-only virtual flange and semantic names, original body-relative EEF pose retained; legacy MJCF/USD unchanged.",
+    "2026-10-09: MJCF/USD regenerated from the current URDF (flange root, +Z tool axis, semantic names); the original link1-link4 names survive only in provenance/urdf.",
+    "2026-10-09: <side>_body_link merged into <side>_base_link (shell meshes placed by visual origins); <side>_body_to_{pico,eef}_joint renamed <side>_{pico,eef}_joint."
+  ],
+  "source_sha256": {
+    "left/gripper.urdf": "e9624fc4f72bc185af301f7efa60dc51122664ec35d015ee6b8000514a3e6ec6",
+    "right/gripper.urdf": "7f27b628f81f915f95924978d918190face5a7c773c511731d7d67ed0f8cc87d",
+    "left/meshes/base_link.STL": "58ec639a82f8e89f17e2bfbd46df91b21bb000bdef1ec4fd31ee3e925b59c976",
+    "left/meshes/link1.STL": "30f0d691832d6c283f426a618649e78fe164e29fc41bf6686f05746306031cc8",
+    "left/meshes/link2.STL": "b7fa1f01a5ffa7e4a8e0bd02abe93d889d74d73007ed42ae8b52d040c96fb319",
+    "left/meshes/link3.STL": "4820b5d3b78910439325e88df1d4887d24f6e66725f26ebb251f4903587c7dec",
+    "left/meshes/link4.STL": "5fc7c2bc8f02f15bf3ad06c674307c3e4d8c0b6534fc2734cca7345e193d7b3f",
+    "right/meshes/base_link.STL": "4715977b8b6cd058a06efc89d898ede4baf1336126ceb4786af8a1dd7a78415f",
+    "right/meshes/link1.STL": "a5bdf35aed0a365f84f2b01a074965eb0bd4f89ff3f0f5837771894a1e11a30f",
+    "right/meshes/link2.STL": "b13bbcd1bd7c23d96d830884793a26e75a55354be3456a03d59a49c838838fdc",
+    "right/meshes/link3.STL": "4e4e61b04633263f546af7452bc358ca894e0f7716a9496b1898a89974e805b0",
+    "right/meshes/link4.STL": "8bff5c1a62bb4f513ec2b1b0e1ad57a6ca9c64559cc4e5949a487215c937f983"
+  },
+  "units": {
+    "length": "m",
+    "angle": "rad",
+    "mass": "kg"
+  },
+  "usd": {
+    "generator": "scripts/generate_master_models.py",
+    "entry_points": [
+      "usd/left.usda",
+      "usd/right.usda"
+    ],
+    "animation_entry_points": [
+      "usd/left_open_close.usda",
+      "usd/right_open_close.usda"
+    ],
+    "default_prim": "/Master",
+    "up_axis": "Z",
+    "linear_unit": "m",
+    "angular_unit": "degree",
+    "physics_schemas": [],
+    "animation": {
+      "frames_per_second": 60,
+      "start_time_code": 0,
+      "end_time_code": 120,
+      "keyframes": [
+        0,
+        60,
+        120
+      ],
+      "cycle": "closed -> open -> closed",
+      "mechanism": "xformOp:rotateX on the right/left finger links (URDF hinge axis); no articulation or mimic constraint is authored"
+    },
+    "mesh_conversion": "Binary .usdc converted from each side's source STL without changing vertices; both entry points share one mesh layer set",
+    "shipped_layers_sha256": {
+      "usd/left.usda": "69c99775cd70a4f5535078022d43d88ca124cc3a8d8b7e98f537f18bbf4967bb",
+      "usd/left_open_close.usda": "210dd25382792505ec8c1f6a3cf418379d70a6a6024fff6c3d053e4f3c762781",
+      "usd/meshes/left/base_link.usdc": "8a134b3a5905e2cf04fc6f22a83fe9162cbb49808fc4f521555bab5cb8f961a2",
+      "usd/meshes/left/link1.usdc": "789e9b4cd2b53d6d8fb925d1e489e1d23b0398bfe8cf00816924170ed059c3eb",
+      "usd/meshes/left/link2.usdc": "5d233a6137ded513ee49ebadabd9f6a7e2cf88f5ea43d46fbef9c8fe947cffa1",
+      "usd/meshes/left/link3.usdc": "aeedbece0677575cda487904401e4762e6b752a5c052eb5e1f29b122a4270a0c",
+      "usd/meshes/left/link4.usdc": "b7d23a126b6f87131ca05d7094792647359ac9b8d6e87472e3d7335f7f92f78d",
+      "usd/meshes/right/base_link.usdc": "e981513e406f950b00f1ee1b93ada33fe2a2785fe0fce0ac64a1f8f650465d97",
+      "usd/meshes/right/link1.usdc": "ab14f35136b1f51e738fe58f55c97b7dae443a3b77e61c5fb2662a5706e5ece1",
+      "usd/meshes/right/link2.usdc": "951f7646be872762a2ef036e4b87c63041414c5491c4fc25547ca6fcd7526151",
+      "usd/meshes/right/link3.usdc": "46cddba308df7daaaafff2ef7c585d164a2bbafef879b3afcb6695b30cc4a3ff",
+      "usd/meshes/right/link4.usdc": "dd38453a2368f73a4851d248ab688b077530f5d0ade50e933b4f39d24dcb26ca",
+      "usd/right.usda": "7b4c900d2d29d2d5dd7929f31ba5bd1e334727687ff181ccbccb0aa02a6636b5",
+      "usd/right_open_close.usda": "25f667c0b523b212cde08dc71799b28445d9eddbf348e7dc6870ce26401fa6f9"
+    }
+  },
+  "urdf_frames": {
+    "left": {
+      "root": "left_base_link",
+      "eef": "left_eef_link",
+      "active_joint": "left_right_joint",
+      "follower_joint": "left_left_joint",
+      "flange_to_eef_xyz_m": [
+        0.036575,
+        0.0,
+        0.1894217
+      ],
+      "flange_to_eef_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "shell_visual_xyz_m": [
+        0.02065,
+        0,
+        0.024785
+      ],
+      "shell_visual_rpy_rad": [
+        0.0,
+        -1.5707963267948966,
+        0.0
+      ],
+      "note": "Root on the shell rear outer surface (centre on the tool axis); carries the shell meshes",
+      "follower": "left_follower_link",
+      "base_to_follower_xyz_m": [
+        0.0,
+        0.0,
+        -0.0115
+      ]
+    },
+    "right": {
+      "root": "right_base_link",
+      "eef": "right_eef_link",
+      "active_joint": "right_right_joint",
+      "follower_joint": "right_left_joint",
+      "flange_to_eef_xyz_m": [
+        0.036575,
+        0.0,
+        0.1894217
+      ],
+      "flange_to_eef_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "shell_visual_xyz_m": [
+        0.02065,
+        0,
+        0.024779
+      ],
+      "shell_visual_rpy_rad": [
+        0.0,
+        -1.5707963267948966,
+        0.0
+      ],
+      "note": "Root on the shell rear outer surface (centre on the tool axis); carries the shell meshes",
+      "follower": "right_follower_link",
+      "base_to_follower_xyz_m": [
+        0.0,
+        0.0,
+        -0.0115
+      ]
+    },
+    "flange_axes": "+Z along the tool axis (native body +X), +Y toward the left finger (native +Y), +X native -Z; same convention as the slave flange (2026-10-09)",
+    "eef_pose_policy": "Centre of the closed fingertips' most distal face (mesh-derived, shared with the slave); the original link4 origins (left/right 0.15 mm apart) differ by < 0.08 mm and remain in provenance/urdf",
+    "camera": {
+      "links": [
+        "camera_link",
+        "camera_optical_link"
+      ],
+      "source": "Window axis from the shell mesh; depth from the slave CAD-marked camera point (19.95 mm behind the window ring), applied by correspondence. Not calibrated",
+      "camera_link_origin": "On the window axis, 19.95 mm behind the flat ring (matches the slave CAD point within 0.1 mm in the shared mount frame)",
+      "axes": "camera_link shares the base/flange and EEF axes (+Z optical axis = tool axis, +Y left finger, +X toward the off-axis fingers); optical link rpy [0, 0, -pi/2] (REP-103: +Z optical axis, +X image right, +Y image down toward the fingers)",
+      "unverified": "Sensor roll about the optical axis, optical-centre depth, and any intrinsic/extrinsic calibration; per-device fisheye intrinsics live in the gripper firmware (TacCap-Gripper SDK), not here",
+      "review": "pending_human",
+      "flange_to_camera_xyz_m": {
+        "left": [
+          -0.02285,
+          0.0,
+          0.04975
+        ],
+        "right": [
+          -0.02285,
+          0.0,
+          0.04975
+        ]
+      },
+      "flange_to_camera_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "note_y": "Mesh window centre y is within 0.005 mm of 0; nominal 0 is used like the flange"
+    },
+    "root_definition": "Shell rear outer surface centre (2026-10-09), 23.5 mm ahead of the former virtual flange. The massless <side>_follower_link at [0, 0, -0.0115] matches the slave taccap_base_link (slave mounting face); the arm flange is that frame (standalone slave) or a further [0, 0, -0.012] (slave with Asm_link)"
+  }
+}

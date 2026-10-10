@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Mechanical description of the imported simulation baseline, not calibrated hardware limits. -->
+  <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_description/meshes'">
+    <material name="${prefix}taccap_base_mat"><color rgba="0.75294 0.75294 0.75294 1"/></material>
+    <material name="${prefix}taccap_left_mat"><color rgba="1 1 1 1"/></material>
+    <material name="${prefix}taccap_right_mat"><color rgba="0.60392 0.60392 0.60392 1"/></material>
+    <material name="${prefix}taccap_cover_mat"><color rgba="0.89804 0.91765 0.92941 1"/></material>
+    <xacro:if value="${with_mount}">
+      <link name="${prefix}Asm_link">
+        <visual name="${prefix}asm_visual">
+          <geometry><mesh filename="${mesh_root}/Asm_link.STL"/></geometry>
+          <material name="${prefix}taccap_cover_mat"/>
+        </visual>
+        <collision name="${prefix}asm_collision"><geometry><mesh filename="${mesh_root}/Asm_link.STL"/></geometry></collision>
+      </link>
+      <joint name="${prefix}adapter_to_base" type="fixed">
+        <parent link="${prefix}Asm_link"/><child link="${prefix}taccap_g1_slave"/>
+        <origin xyz="0.046023 -0.0060769 -0.01975" rpy="0 0 0"/>
+      </joint>
+    </xacro:if>
+    <link name="${prefix}taccap_g1_slave">
+      <!-- Simulation-tuned approximation replaces a known CAD mass/inertia unit mismatch. -->
+      <inertial>
+        <origin xyz="0.002077 0.005327 0.009595" rpy="0 0 0"/>
+        <mass value="0.415"/>
+        <inertia ixx="0.000680" iyy="0.000748" izz="0.000573" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="${prefix}base_visual">
+        <geometry><mesh filename="${mesh_root}/base_link.STL"/></geometry><material name="${prefix}taccap_base_mat"/>
+      </visual>
+      <collision name="${prefix}base_collision"><geometry><mesh filename="${mesh_root}/base_link.STL"/></geometry></collision>
+    </link>
+    <link name="${prefix}grip_left">
+      <inertial>
+        <origin xyz="0.074921 -0.00669 -0.020693" rpy="0 0 0"/>
+        <mass value="0.36678"/>
+        <inertia ixx="3.3606e-05" iyy="0.00015466" izz="0.00015235" ixy="-6.6715e-06" ixz="2.4362e-06" iyz="-2.9254e-07"/>
+      </inertial>
+      <visual name="${prefix}left_finger_visual">
+        <geometry><mesh filename="${mesh_root}/grip_left.STL"/></geometry><material name="${prefix}taccap_left_mat"/>
+      </visual>
+      <collision name="${prefix}left_finger_collision"><geometry><mesh filename="${mesh_root}/grip_left.STL"/></geometry></collision>
+    </link>
+    <joint name="${prefix}grip_left_joint" type="revolute">
+      <parent link="${prefix}taccap_g1_slave"/><child link="${prefix}grip_left"/>
+      <origin xyz="0.0144769712 0.0260269106 0.0077163282" rpy="0 0 0"/>
+      <axis xyz="0 0 -1"/>
+      <!-- Effort and velocity are simulation settings; see config/model.json. -->
+      <limit lower="-0.5047492196767601" upper="0" effort="4" velocity="1"/>
+      <dynamics damping="0.08" friction="0.01"/>
+    <mimic joint="${prefix}grip_right_joint" multiplier="-1" offset="0"/>
+    </joint>
+    <link name="${prefix}grip_right">
+      <inertial>
+        <origin xyz="0.07491 0.0066814 -0.020629" rpy="0 0 0"/>
+        <mass value="0.36678"/>
+        <inertia ixx="3.3592e-05" iyy="0.0001547" izz="0.00015238" ixy="6.6629e-06" ixz="2.4418e-06" iyz="2.9549e-07"/>
+      </inertial>
+      <visual name="${prefix}right_finger_visual">
+        <geometry><mesh filename="${mesh_root}/grip_right.STL"/></geometry><material name="${prefix}taccap_right_mat"/>
+      </visual>
+      <collision name="${prefix}right_finger_collision"><geometry><mesh filename="${mesh_root}/grip_right.STL"/></geometry></collision>
+    </link>
+    <joint name="${prefix}grip_right_joint" type="revolute">
+      <parent link="${prefix}taccap_g1_slave"/><child link="${prefix}grip_right"/>
+      <origin xyz="0.0144769712 -0.0138730894 0.0077163282" rpy="0 0 0"/>
+      <axis xyz="0 0 -1"/>
+      <limit lower="0" upper="0.5047492196767601" effort="4" velocity="1"/>
+      <dynamics damping="0.08" friction="0.01"/>
+    </joint>
+    <link name="${prefix}visual_link">
+      <inertial>
+        <origin xyz="-0.17821 -0.00049167 0.022257" rpy="0 0 0"/>
+        <mass value="0.068231"/>
+        <inertia ixx="4.1918e-05" iyy="3.8396e-05" izz="6.5602e-05" ixy="-3.304e-07" ixz="7.6626e-06" iyz="-6.1656e-08"/>
+      </inertial>
+      <visual name="${prefix}cover_visual">
+        <geometry><mesh filename="${mesh_root}/viusal_link.STL"/></geometry><material name="${prefix}taccap_cover_mat"/>
+      </visual>
+    </link>
+    <joint name="${prefix}base_to_cover" type="fixed">
+      <parent link="${prefix}taccap_g1_slave"/><child link="${prefix}visual_link"/>
+      <origin xyz="0.1667969712 0.0060769106 -0.0140336718" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}eef"/>
+    <joint name="${prefix}base_to_eef" type="fixed">
+      <parent link="${prefix}taccap_g1_slave"/><child link="${prefix}eef"/>
+      <origin xyz="0.145 0.0060769106 -0.017" rpy="0 ${pi/2} 0"/>
+    </joint>
+  </xacro:macro>
+</robot>

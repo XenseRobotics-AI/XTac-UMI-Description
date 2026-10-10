@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="taccap_g1_slave">
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="with_mount" default="false"/>
+  <xacro:arg name="mesh_root" default="package://taccap_description/meshes"/>
+  <xacro:include filename="taccap_g1_slave_macro.xacro"/>
+  <xacro:taccap_g1_slave prefix="$(arg prefix)" with_mount="$(arg with_mount)" mesh_root="$(arg mesh_root)"/>
+</robot>

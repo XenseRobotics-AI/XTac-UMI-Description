@@ -1,0 +1,61 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -e '.[dev]'
+      - run: python scripts/generate_models.py --check
+      - run: python scripts/generate_usd.py --check
+      - run: python scripts/generate_master_models.py --check
+      - run: python -m pytest -q
+      - run: python -m build
+      - name: Wheel resolves installed resources without the checkout
+        run: |
+          python -m venv /tmp/wheel && /tmp/wheel/bin/pip install -q dist/*.whl
+          cd /tmp && /tmp/wheel/bin/python - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          import glob
+          from taccap_description import get_urdf_path, get_mjcf_path, get_usd_path
+          from taccap_master_description import get_master_urdf_path, get_master_mjcf_path, get_master_usd_path
+          paths = [get_urdf_path(), get_urdf_path(with_mount=True), get_mjcf_path(), get_usd_path(with_mount=True)]
+          paths += [f(side=s) for f in (get_master_urdf_path, get_master_mjcf_path, get_master_usd_path) for s in ("left", "right")]
+          for p in paths:
+              assert p.is_file() and "site-packages" in str(p), p
+          import xml.etree.ElementTree as ET
+          for p in paths[:2] + paths[4:6]:
+              for mesh in ET.parse(p).getroot().iter("mesh"):
+                  assert (p.parent / mesh.get("filename")).resolve().is_file(), mesh.get("filename")
+          names = ZipFile(glob.glob("/home/runner/work/XTac-UMI-Description/XTac-UMI-Description/dist/*.whl")[0]).namelist()
+          assert not any(n.endswith(("/package.xml", "/CMakeLists.txt")) or "/launch/" in n or "/rviz/" in n for n in names)
+          print("wheel ok", len(paths))
+          PY
+  ros2:
+    runs-on: ubuntu-22.04
+    container: ros:humble-ros-base
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src/XTac-UMI-Description
+      - name: colcon build
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          apt-get update -qq && apt-get install -y -qq ros-humble-xacro > /dev/null
+          colcon build --base-paths src
+          source install/setup.bash
+          for pkg in taccap_description taccap_master_description; do
+            test -f "$(ros2 pkg prefix $pkg)/share/$pkg/package.xml"
+          done
+          xacro "$(ros2 pkg prefix taccap_description)/share/taccap_description/urdf/taccap_g1_slave.urdf.xacro" with_mount:=true > /tmp/slave.urdf
+          xacro "$(ros2 pkg prefix taccap_master_description)/share/taccap_master_description/urdf/display_left.urdf.xacro" > /tmp/master.urdf
+          grep -q taccap_mount_link /tmp/slave.urdf && grep -q left_follower_link /tmp/master.urdf

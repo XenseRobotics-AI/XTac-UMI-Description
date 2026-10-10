@@ -1,0 +1,38 @@
+#usda 1.0
+(
+    defaultPrim = "Master"
+    doc = "Generated TacCap master visual asset; no rigid-body physics."
+    endTimeCode = 120
+    framesPerSecond = 60
+    metersPerUnit = 1
+    startTimeCode = 0
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "Master" (
+    prepend references = @./left.usda@
+)
+{
+    over "left_base_link"
+    {
+        over "left_right_link"
+        {
+            float xformOp:rotateX:opening.timeSamples = {
+                0: 0,
+                60: 28.92,
+                120: 0,
+            }
+        }
+
+        over "left_left_link"
+        {
+            float xformOp:rotateX:opening.timeSamples = {
+                0: 0,
+                60: -28.92,
+                120: 0,
+            }
+        }
+    }
+}
+

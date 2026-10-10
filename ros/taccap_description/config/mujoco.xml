@@ -1,0 +1,41 @@
+<mujoco>
+  <!-- MuJoCo-only settings applied to the generated kinematic tree. -->
+  <compiler angle="radian" autolimits="true"/>
+  <actuator>
+    <position name="gripper" joint="taccap_right_finger_joint" ctrllimited="true" ctrlrange="0 0.5047492196767601"
+              forcelimited="true" forcerange="-4 4" kp="40" kv="2"/>
+  </actuator>
+  <worldbody>
+    <body name="taccap_mount_link">
+      <geom name="asm_collision" rgba="0.89804 0.91765 0.92941 0"/>
+    </body>
+    <body name="taccap_base_link">
+      <geom name="base_collision" rgba="0.75294 0.75294 0.75294 0"/>
+    </body>
+    <body name="taccap_left_finger_link">
+      <joint name="taccap_left_finger_joint" armature="0.002"/>
+      <geom name="left_finger_collision" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
+    </body>
+    <body name="taccap_right_finger_link">
+      <joint name="taccap_right_finger_joint" armature="0.002"/>
+      <geom name="right_finger_collision" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
+    </body>
+    <body name="taccap_eef_link">
+      <site name="grip_site" size="0.01" rgba="1 0 0 0.5" type="sphere" group="1"/>
+      <site name="ee" size="0.005" rgba="1 1 1 0" type="sphere" group="1"/>
+      <site name="ee_x" pos="0.1 0 0" size="0.005 0.1" quat="0.7071068 0 0.7071068 0" rgba="1 0 0 0" type="cylinder" group="1"/>
+      <site name="ee_y" pos="0 0.1 0" size="0.005 0.1" quat="0.7071068 0.7071068 0 0" rgba="0 1 0 0" type="cylinder" group="1"/>
+      <site name="ee_z" pos="0 0 0.1" size="0.005 0.1" rgba="0 0 1 0" type="cylinder" group="1"/>
+      <site name="grip_site_cylinder" size="0.005 0.1" rgba="0 1 0 0.3" type="cylinder" group="1"/>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="taccap_base_link" body2="taccap_left_finger_link"/>
+    <exclude body1="taccap_base_link" body2="taccap_right_finger_link"/>
+    <exclude body1="taccap_left_finger_link" body2="taccap_right_finger_link"/>
+  </contact>
+  <sensor>
+    <force name="force_ee" site="ft_frame"/>
+    <torque name="torque_ee" site="ft_frame"/>
+  </sensor>
+</mujoco>

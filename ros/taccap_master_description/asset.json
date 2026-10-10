@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "id": "xense.taccap_master",
+  "category": "grippers",
+  "display_name": "TacCap master",
+  "entrypoints": {
+    "left": "urdf/taccap_g1_master_left.urdf",
+    "right": "urdf/taccap_g1_master_right.urdf"
+  },
+  "units": {
+    "length": "m",
+    "angle": "rad",
+    "mass": "kg"
+  },
+  "authoring": {
+    "mode": "urdf_derived",
+    "authority": "urdf",
+    "generator": "scripts/generate_master_models.py --urdf-only"
+  },
+  "source": {
+    "repository": "XenseRobotics-AI/XTac-UMI-Description",
+    "license_status": "released",
+    "notes": [
+      "Original source files are kept in provenance/urdf; see NOTICE.md for sources and changes."
+    ]
+  },
+  "review": {
+    "visual": "pending_human",
+    "joint_parameters": "unreviewed_source",
+    "inertial_parameters": "unreviewed_source",
+    "contacts": "not_validated",
+    "camera_frames": "pending_human"
+  },
+  "files": {
+    "LICENSES/apache-2.0.txt": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "role": "license"
+    },
+    "config/master.json": {
+      "sha256": "4520257bc0f2d33c0fb2e363637d59cf6437b5071ba6a024338a6fd2d22501c6",
+      "role": "existing_resource"
+    },
+    "meshes/left/base_link.STL": {
+      "sha256": "58ec639a82f8e89f17e2bfbd46df91b21bb000bdef1ec4fd31ee3e925b59c976",
+      "role": "existing_resource"
+    },
+    "meshes/left/link1.STL": {
+      "sha256": "30f0d691832d6c283f426a618649e78fe164e29fc41bf6686f05746306031cc8",
+      "role": "existing_resource"
+    },
+    "meshes/left/link2.STL": {
+      "sha256": "b7fa1f01a5ffa7e4a8e0bd02abe93d889d74d73007ed42ae8b52d040c96fb319",
+      "role": "existing_resource"
+    },
+    "meshes/left/link3.STL": {
+      "sha256": "4820b5d3b78910439325e88df1d4887d24f6e66725f26ebb251f4903587c7dec",
+      "role": "existing_resource"
+    },
+    "meshes/left/link4.STL": {
+      "sha256": "5fc7c2bc8f02f15bf3ad06c674307c3e4d8c0b6534fc2734cca7345e193d7b3f",
+      "role": "existing_resource"
+    },
+    "meshes/right/base_link.STL": {
+      "sha256": "4715977b8b6cd058a06efc89d898ede4baf1336126ceb4786af8a1dd7a78415f",
+      "role": "existing_resource"
+    },
+    "meshes/right/link1.STL": {
+      "sha256": "a5bdf35aed0a365f84f2b01a074965eb0bd4f89ff3f0f5837771894a1e11a30f",
+      "role": "existing_resource"
+    },
+    "meshes/right/link2.STL": {
+      "sha256": "b13bbcd1bd7c23d96d830884793a26e75a55354be3456a03d59a49c838838fdc",
+      "role": "existing_resource"
+    },
+    "meshes/right/link3.STL": {
+      "sha256": "4e4e61b04633263f546af7452bc358ca894e0f7716a9496b1898a89974e805b0",
+      "role": "existing_resource"
+    },
+    "meshes/right/link4.STL": {
+      "sha256": "8bff5c1a62bb4f513ec2b1b0e1ad57a6ca9c64559cc4e5949a487215c937f983",
+      "role": "existing_resource"
+    },
+    "provenance/urdf/left.urdf": {
+      "sha256": "426a74bca2194d66c8901ad0b0c108b2b990cd304863ae790751ffbb8e0c30e4",
+      "role": "source_urdf"
+    },
+    "provenance/urdf/right.urdf": {
+      "sha256": "736c8eda064ded07bdd446ee8e7f5aebf1ff3dd57ceb9eaf4da898f8a1c6e76f",
+      "role": "source_urdf"
+    },
+    "urdf/display_left.urdf.xacro": {
+      "sha256": "ae34817eb8135dfd0ef561e6aa744f571fc411c22f11bada2a52525b2c3a108d",
+      "role": "existing_resource"
+    },
+    "urdf/display_right.urdf.xacro": {
+      "sha256": "7983c355c252fe190cb99eafd6b3805e2312dfef78d00a3a401141c2d7233366",
+      "role": "existing_resource"
+    },
+    "urdf/taccap_g1_master_left.urdf": {
+      "sha256": "5581f5d8ac3789c8a39bf24f7a49065aae532a0d72bc6b866b7fd1b81c75d805",
+      "role": "derived_urdf"
+    },
+    "urdf/taccap_g1_master_left.urdf.xacro": {
+      "sha256": "c6960e3024e7262f441cd22304ece9f1576800c9f318a8f2ad95fbba5a5be2ee",
+      "role": "derived_urdf"
+    },
+    "urdf/taccap_g1_master_right.urdf": {
+      "sha256": "0471f2c72499203abfc7b3cf586142e2d35ae46bc512dc4135b292ee047622e8",
+      "role": "derived_urdf"
+    },
+    "urdf/taccap_g1_master_right.urdf.xacro": {
+      "sha256": "7d7cd8d2530c9b1ec2ff970565a47ba986f14f536da2900e6ace530d01d42c6b",
+      "role": "derived_urdf"
+    }
+  }
+}

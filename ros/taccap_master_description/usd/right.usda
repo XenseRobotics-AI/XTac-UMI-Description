@@ -1,0 +1,119 @@
+#usda 1.0
+(
+    defaultPrim = "Master"
+    doc = "Generated TacCap master visual asset; no rigid-body physics."
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Master"
+{
+    def Xform "right_base_link"
+    {
+        quatf xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+        def Mesh "right_body_visual" (
+            prepend references = @./meshes/right/base_link.usdc@</Master/Mesh>
+        )
+        {
+            color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+            quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+            double3 xformOp:translate = (0.02065, 0, 0.024779)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Mesh "right_body_aux_visual" (
+            prepend references = @./meshes/right/link4.usdc@</Master/Mesh>
+        )
+        {
+            color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+            quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+            double3 xformOp:translate = (0.03664997155194, 0, 0.189422038155223)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Xform "right_right_link"
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            float xformOp:rotateX:opening = 0
+            double3 xformOp:translate = (0.01465, -0.019955, 0.037)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:rotateX:opening"]
+
+            def Mesh "visual" (
+                prepend references = @./meshes/right/link1.usdc@</Master/Mesh>
+            )
+            {
+                color3f[] primvars:displayColor = [(0.96, 0.45, 0.71)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
+        def Xform "right_left_link"
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            float xformOp:rotateX:opening = 0
+            double3 xformOp:translate = (0.01465, 0.019945, 0.037)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:rotateX:opening"]
+
+            def Mesh "visual" (
+                prepend references = @./meshes/right/link2.usdc@</Master/Mesh>
+            )
+            {
+                color3f[] primvars:displayColor = [(0.96, 0.45, 0.71)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
+        def Xform "right_pico_link"
+        {
+            quatf xformOp:orient = (0.59203684, 0.3948686, -0.18285476, 0.67833275)
+            double3 xformOp:translate = (-0.032782, 0.024077, 0.013155)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Mesh "visual" (
+                prepend references = @./meshes/right/link3.usdc@</Master/Mesh>
+            )
+            {
+                color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+                quatf xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
+        def Xform "right_eef_link"
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0.036575, 0, 0.1894217)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+
+        def Xform "right_camera_link"
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (-0.02285, 0, 0.04975)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+            def Xform "right_camera_optical_link"
+            {
+                quatf xformOp:orient = (0.70710677, 0, 0, -0.70710677)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
+        def Xform "right_follower_link"
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0, 0, -0.0115)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+    }
+}
+

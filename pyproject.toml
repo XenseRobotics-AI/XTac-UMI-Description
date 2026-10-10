@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xtac-umi-description"
+version = "0.1.0"
+description = "XTac-UMI (TacCap) master/slave gripper URDF, Xacro, MJCF and USD descriptions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "ros/*/NOTICE.md", "ros/*/LICENSES/*.txt"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["xacro==2.1.1", "numpy", "scipy>=1.10", "mujoco>=3.3,<4", "usd-core==25.11", "pyyaml>=6", "pytest>=8", "build", "wheel"]
+
+[project.urls]
+Repository = "https://github.com/XenseRobotics-AI/XTac-UMI-Description"
+
+[tool.setuptools]
+packages = ["taccap_description", "taccap_description.share", "taccap_master_description", "taccap_master_description.share"]
+include-package-data = false
+
+[tool.setuptools.package-dir]
+taccap_description = "python/taccap_description"
+"taccap_description.share" = "ros/taccap_description"
+taccap_master_description = "python/taccap_master_description"
+"taccap_master_description.share" = "ros/taccap_master_description"
+
+[tool.setuptools.package-data]
+"taccap_description.share" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
+"taccap_master_description.share" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
+
+# ROS metadata, launch and RViz files belong to the ament share, not the wheel.
+[tool.setuptools.exclude-package-data]
+"*" = ["package.xml", "CMakeLists.txt", "launch/*", "rviz/*", "**/package.xml", "**/CMakeLists.txt", "**/launch/*", "**/rviz/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

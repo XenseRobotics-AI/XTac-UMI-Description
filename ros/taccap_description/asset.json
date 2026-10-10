@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "id": "xense.taccap_slave",
+  "category": "grippers",
+  "display_name": "TacCap slave",
+  "entrypoints": {
+    "default": "urdf/taccap_g1_slave.urdf",
+    "with_mount": "urdf/taccap_g1_slave_with_mount.urdf"
+  },
+  "units": {
+    "length": "m",
+    "angle": "rad",
+    "mass": "kg"
+  },
+  "authoring": {
+    "mode": "xacro_generated",
+    "authority": "urdf/taccap_g1_slave_macro.xacro"
+  },
+  "source": {
+    "repository": "XenseRobotics-AI/XTac-UMI-Description",
+    "license_status": "released",
+    "notes": [
+      "Original source files are kept in provenance/urdf; see NOTICE.md for sources and changes."
+    ]
+  },
+  "review": {
+    "visual": "pending_human",
+    "joint_parameters": "unreviewed_source",
+    "inertial_parameters": "unreviewed_source",
+    "contacts": "not_validated",
+    "camera_frames": "pending_human"
+  },
+  "files": {
+    "LICENSES/robosuite.txt": {
+      "sha256": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
+      "role": "license"
+    },
+    "config/model.json": {
+      "sha256": "978422854ad659c4d6a4b7fe7f9bcfce26cc891d937f7f0e7f2c70f4e5f3bb93",
+      "role": "existing_resource"
+    },
+    "config/mujoco.xml": {
+      "sha256": "51739e8ec743c58142c582f5f18e7c51a1a9f3bc3832d509a7639cbc86d1d36f",
+      "role": "existing_resource"
+    },
+    "meshes/Asm_link.STL": {
+      "sha256": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
+      "role": "existing_resource"
+    },
+    "meshes/base_link.STL": {
+      "sha256": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
+      "role": "existing_resource"
+    },
+    "meshes/base_link_with_mount.STL": {
+      "sha256": "a208a872b8f3c47420bb7466ecf7e43113da06aaade5253b3be63786de09b66f",
+      "role": "existing_resource"
+    },
+    "meshes/grip_left.STL": {
+      "sha256": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
+      "role": "existing_resource"
+    },
+    "meshes/grip_right.STL": {
+      "sha256": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+      "role": "existing_resource"
+    },
+    "meshes/viusal_link.STL": {
+      "sha256": "09596831011ef50fe35a2f33a5fd88c6e0d5b22036d9974b1e9456c4e260cb2b",
+      "role": "existing_resource"
+    },
+    "provenance/urdf/taccap_g1_slave.urdf": {
+      "sha256": "5075df57ecc53e3f672d24c1e055c024282bc1918edcd106a7dc8804a42c67a6",
+      "role": "source_urdf"
+    },
+    "provenance/urdf/taccap_g1_slave_macro.xacro": {
+      "sha256": "9e7ec4f3a7f8b3f45fffb307132ab53a37f9603cb7aa9d5f60b5b63125a3b95d",
+      "role": "source_urdf"
+    },
+    "provenance/urdf/taccap_g1_slave_with_mount.urdf": {
+      "sha256": "6ccf7272b8da4c45a828d5268cd3f638f732a1bc90946b81f7ea46dba3a2a50a",
+      "role": "source_urdf"
+    },
+    "urdf/taccap_g1_slave.urdf": {
+      "sha256": "cbdfc4e045d473c52238ecf13e48518fe7c4a31c008cd5be51b81b6bda64a8fd",
+      "role": "existing_resource"
+    },
+    "urdf/taccap_g1_slave.urdf.xacro": {
+      "sha256": "1eb906cd4686fa8c66c6ee0dbbf2dc0bdc2da9e54ad32a3f0ac9e1cde97a3e33",
+      "role": "existing_resource"
+    },
+    "urdf/taccap_g1_slave_macro.xacro": {
+      "sha256": "1b93596ec8ab65bb431b1a23ef8bc32b6dc5ab569c25ed1ab7721c19dceb7dbf",
+      "role": "existing_resource"
+    },
+    "urdf/taccap_g1_slave_with_mount.urdf": {
+      "sha256": "df2c7c5c0d6a0914fb09b25461ba5ec748706e123eb566cbbf2a3fab9de7ed5d",
+      "role": "existing_resource"
+    }
+  }
+}
