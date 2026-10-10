@@ -25,6 +25,3 @@ MIT license.
   `taccap_base_link`), `<side>_eef_link` (closed fingertip face centre) and
   wrist camera frames.
 - MJCF and USD are regenerated from the current URDFs.
-
-No mass, inertia or collision data is supplied. Frames are mesh/CAD-derived
-and not calibrated.

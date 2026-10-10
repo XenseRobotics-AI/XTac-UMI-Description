@@ -33,6 +33,3 @@ under this repository's MIT license.
 - Added massless `taccap_eef_link` (closed fingertip face centre) and wrist
   `taccap_camera_link` / `taccap_camera_optical_link` frames.
 - MJCF and USD are regenerated from the current URDF.
-
-Masses, inertias, damping, friction and actuator gains are simulation values,
-not hardware identification. Frames are mesh/CAD-derived and not calibrated.

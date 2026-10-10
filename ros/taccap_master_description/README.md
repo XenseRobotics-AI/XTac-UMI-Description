@@ -2,26 +2,21 @@
 
 ![Left master at full opening, native MuJoCo rendering](preview.png)
 
-`urdf/taccap_g1_master_left.urdf` and `urdf/taccap_g1_master_right.urdf` are visual/kinematic models from the
-viewer. Each references five original STLs under `meshes/{left,right}`.
+`urdf/taccap_g1_master_left.urdf` and `urdf/taccap_g1_master_right.urdf` are visual/kinematic models.
+Each references five STLs under `meshes/{left,right}`.
 ROS package: `taccap_master_description`.
 
 - URDF root: `{side}_base_link` (shell rear outer surface; carries the shell meshes); slave-base correspondence: `{side}_follower_link`; EEF: `{side}_eef_link`.
 - Both hinge axes are +X in the flange frame (the native -Z). `{side}_right_joint`
-  (originally `joint1`) spans 0 to
+  spans 0 to
   0.5047492196767601 rad (28.92 degrees); `{side}_left_joint = -{side}_right_joint`,
   with the corresponding negative range.
-- Side-specific meshes, origins and viewer colors are retained. The left
-  `link4` visual-only -90-degree Z correction does not rotate the link frame.
-  Tracker-to-TCP transforms belong to the application, not this description.
-- No mass, inertia or collision data is supplied. Effort/velocity fields are
-  source values, not independently verified hardware specifications. No master
-  dynamics or adapter is inferred from the slave.
+- Each side has its own meshes, origins and colors. Tracker-to-TCP transforms
+  belong to the application, not this description.
+- The models are visual/kinematic: they contain no mass, inertia or collision data.
 
 Python: `taccap_master_description.get_master_urdf_path(side="left")` or `"right"`.
-Source revision and hashes are in `config/master.json`. The preserved
-`provenance/urdf/{left,right}.urdf` snapshots reproduce the viewer source hashes
-when their original mesh filenames are restored. See [provenance](NOTICE.md).
+File hashes are in `config/master.json`. See [source and notices](NOTICE.md).
 
 ## Frame contract (URDF, MJCF and USD)
 
@@ -29,13 +24,13 @@ when their original mesh filenames are restored. See [provenance](NOTICE.md).
 axis (the rear plane contains this point; nothing of the shell lies behind it
 near the axis). It uses the same axes as the slave: +Z points along the tool
 axis toward the tips, +Y identifies the left finger, and +X points toward the
-fingers' offset side (the original -Z, i.e. down). Like the slave base, it
+fingers' offset side. Like the slave base, it
 carries the shell meshes directly (no separate body link): `base_link.STL` is
 placed at xyz `[0.02065, 0, 0.024785]` m (left) or `[0.02065, 0, 0.024779]` m
 (right), rpy `[0, -pi/2, 0]`, and `link4.STL` is a second shell visual. The
 higher fingertip holding plane is at x = 23.5 mm. Finger link frames share these
 axes; their meshes are placed with rpy `[0, -pi/2, 0]` and the hinges are +X.
-`{side}_right_joint` is the original positive driver; `{side}_left_joint`
+`{side}_right_joint` is the driver (positive opens); `{side}_left_joint`
 mimics it with multiplier -1.
 
 - `{side}_follower_link` (massless, not a physical part) is at `[0, 0, -0.0115]`
@@ -45,29 +40,24 @@ mimics it with multiplier -1.
   0.1 mm. For teleoperation, the arm flange is this frame for a standalone slave,
   or this frame shifted by `[0, 0, -0.012]` for a slave with the Asm_link adapter.
 - `{side}_eef_link` (massless, flange axes) is the centre of the closed
-  fingertips' most distal face, mesh-derived and shared with the slave:
-  `[0.036575, 0, 0.1894217]` m from `{side}_base_link`. The original link4
-  origins (left/right 0.15 mm apart) differ from it by < 0.08 mm and remain in
-  `provenance/urdf`. Not a calibrated TCP.
+  fingertips' most distal face, shared with the slave:
+  `[0.036575, 0, 0.1894217]` m from `{side}_base_link`.
 
-Wrist camera frames are **not calibrated**. The shell top face has a spherical
+The shell top face has a spherical
 dome window (R 13.907 mm cap, 3.0 mm high, over a flat ring of radius 8.5-9.2
 mm) whose axis is parallel to the tool axis. `{side}_camera_link` sits on that
-axis 19.95 mm behind the ring, matching the slave's CAD-marked camera point:
+axis 19.95 mm behind the ring, matching the slave camera point:
 `[-0.02285, 0, 0.04975]` m from `{side}_base_link` (both sides), with the base
 axes (+Z optical axis = tool axis, +Y left finger, +X toward the fingers).
 `{side}_camera_optical_link` shares the origin with rpy `[0, 0, -pi/2]` (REP-103:
-+Z optical axis, +X image right, +Y image down toward the fingers). Unverified:
-whether the CAD point is the optical centre (the dome sphere centre is 10.9 mm
-behind the ring, the apex
-3.0 mm ahead), the sensor roll about the axis, and all calibration. Per-device
-fisheye intrinsics are stored in the gripper firmware (TacCap-Gripper SDK).
++Z optical axis, +X image right, +Y image down toward the fingers). Per-device
+fisheye intrinsics are stored in the gripper firmware and are available through
+the TacCap-Gripper SDK.
 
-
-Since 2026-10-09 MJCF and USD are generated from these URDFs: they share the
-flange root, +Z tool axis, link/joint names and EEF. The original
-base_link/link1–link4 URDFs are byte-preserved in `provenance/urdf`.
-See [the full naming/EEF contract](../../docs/TACCAP_FLANGE_FRAMES.md).
+MJCF and USD are generated from these URDFs: they share the flange root, +Z
+tool axis, link/joint names and EEF.
+See [the full naming/EEF contract](../../docs/TACCAP_FLANGE_FRAMES.md)
+([中文](../../docs/TACCAP_FLANGE_FRAMES-zh.md)).
 
 ## Generated formats
 
@@ -75,11 +65,11 @@ See [the full naming/EEF contract](../../docs/TACCAP_FLANGE_FRAMES.md).
 | --- | --- | --- |
 | Xacro | `urdf/taccap_g1_master_{left,right}.urdf.xacro` | Prefixable macros, generated from canonical URDF |
 | Xacro (display) | `urdf/display_{left,right}.urdf.xacro` | Hand-written standalone wrappers for RViz; not generated |
-| MuJoCo | `mjcf/{left,right}.xml` | Five massless mocap bodies (one per URDF link); no joints, actuators or contacts |
+| MuJoCo | `mjcf/{left,right}.xml` | Massless mocap bodies (one per URDF link); no joints, actuators or contacts |
 | USD | `usd/{left,right}.usda` | Closed, visual-only models, no physics schemas |
 | USD animation | `usd/{left,right}_open_close.usda` | References the static model; closed → open → closed at frames 0/60/120 |
 
-Binary USD meshes are converted from each side's original STL without changing
+Binary USD meshes are converted from each side's STL without changing
 vertices. The two USD entries for each side share the same mesh layers. USD
 prims nest along the URDF tree, e.g. `/Master/left_base_link/left_right_link`;
 each visual is a child prim named after the URDF visual (`visual` when unnamed). USD
@@ -144,10 +134,10 @@ the `master_finger_axis` numeric,
 starting from their closed default orientation, and calls
 `mj_forward`; it does not modify `MjModel`. Different data instances can share
 the model. `nq = nv = nu = 0`: there are no joint-state or control arrays for
-this model. `mj_step` will not drive the opening. The five mocap poses are
+this model. `mj_step` will not drive the opening. The mocap poses are
 world-space poses in the flange (URDF root) frame; this helper controls
-opening only, not global tracker placement. Do not treat these visualization
-bodies as collision-capable hardware or use them for force/RL validation.
+opening only, not global tracker placement. These are visualization bodies
+without collision or dynamics.
 
 ## Xacro composition and regeneration
 
@@ -167,7 +157,6 @@ and can be overridden for non-ROS use. Plain URDFs retain portable relative path
 
 Run `python scripts/generate_master_models.py` after changing current URDFs
 (`--urdf-only` regenerates only the Xacro);
-`--check` compares generated files without rewriting them. No mass or other
-physical values are inferred by this converter. Conventions follow
+`--check` compares generated files without rewriting them. Conventions follow
 [OpenUSD transform units](https://openusd.org/dev/api/class_usd_geom_xformable.html)
 and the [MuJoCo state model](https://mujoco.readthedocs.io/en/3.3.1/programming/simulation.html).

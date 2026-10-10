@@ -31,12 +31,9 @@ frame through origins.
 Master links use `<side>_` (`left`/`right`): `<side>_base_link` on the shell
 rear surface, `<side>_follower_link` matching the slave `taccap_base_link`, and
 the same finger/EEF/camera frames. In the follower frame, master and slave EEF,
-fingertips, camera and hinge lines agree within 0.1 mm. Details, numbers and
-open points: [docs/TACCAP_FLANGE_FRAMES.md](docs/TACCAP_FLANGE_FRAMES.md).
-
-**Accuracy.** Kinematics and frames come from CAD meshes; masses/inertias are
-inherited simulation values. Camera roll, optical-centre depth, the EEF as a
-TCP and all dynamics/contacts are **not calibrated**.
+fingertips, camera and hinge lines agree within 0.1 mm. Details and numbers:
+[docs/TACCAP_FLANGE_FRAMES.md](docs/TACCAP_FLANGE_FRAMES.md)
+([中文](docs/TACCAP_FLANGE_FRAMES-zh.md)).
 
 ## Use
 
@@ -87,8 +84,6 @@ python -m pytest -q
 Edit `ros/taccap_description/urdf/taccap_g1_slave_macro.xacro` (slave) or
 `ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`
 (master); everything else is generated. `--check` verifies generated files.
-Original source URDFs are kept byte-for-byte under each package's
-`provenance/urdf`.
 
 ## License
 
