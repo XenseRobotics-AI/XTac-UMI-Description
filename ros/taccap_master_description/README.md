@@ -1,5 +1,7 @@
 # TacCap master grippers
 
+[中文](README-zh.md)
+
 ![Left master at full opening, native MuJoCo rendering](preview.png)
 
 `urdf/taccap_g1_master_left.urdf` and `urdf/taccap_g1_master_right.urdf` are visual/kinematic models.

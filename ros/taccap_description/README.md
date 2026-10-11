@@ -1,5 +1,7 @@
 # TacCap G1 slave
 
+[中文](README-zh.md)
+
 Standalone and Asm_link mounting-adapter variants. ROS package:
 `taccap_description`. Run commands from the repository root.
 

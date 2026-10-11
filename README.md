@@ -1,5 +1,7 @@
 # XTac-UMI-Description
 
+[中文](README-zh.md)
+
 URDF, Xacro, MJCF and USD descriptions of the XTac-UMI (TacCap G1) grippers:
 the left/right **master** (handheld leader) and the **slave** (arm-mounted
 follower), packaged for ROS 2 and as a framework-independent Python wheel.
@@ -26,7 +28,7 @@ frame through origins.
 | `taccap_base_link` | Gripper mounting face (root when bare), body mesh and inertial |
 | `taccap_left/right_finger_link` | Fingers; `taccap_right_finger_joint` drives, the left mimics with -1 |
 | `taccap_eef_link` | Centre of the closed fingertips' most distal face |
-| `taccap_camera_link`, `taccap_camera_optical_link` | Wrist camera (CAD-marked point) and REP-103 optical frame |
+| `taccap_camera_link`, `taccap_camera_optical_link` | Wrist camera and REP-103 optical frame |
 
 Master links use `<side>_` (`left`/`right`): `<side>_base_link` on the shell
 rear surface, `<side>_follower_link` matching the slave `taccap_base_link`, and

@@ -1,4 +1,4 @@
-include LICENSE README.md
+include LICENSE README.md README-zh.md
 recursive-include scripts *.py
 recursive-include tests *.py *.xml
 recursive-include docs *.md
