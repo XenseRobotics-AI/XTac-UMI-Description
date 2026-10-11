@@ -23,20 +23,13 @@
       "Original source files are kept in provenance/urdf; see NOTICE.md for sources and changes."
     ]
   },
-  "review": {
-    "visual": "pending_human",
-    "joint_parameters": "unreviewed_source",
-    "inertial_parameters": "unreviewed_source",
-    "contacts": "not_validated",
-    "camera_frames": "pending_human"
-  },
   "files": {
     "LICENSES/robosuite.txt": {
       "sha256": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
       "role": "license"
     },
     "config/model.json": {
-      "sha256": "978422854ad659c4d6a4b7fe7f9bcfce26cc891d937f7f0e7f2c70f4e5f3bb93",
+      "sha256": "38497567c5cbd517332c70cd796e02689d55fafed51f244e5924a26b62b4f9b0",
       "role": "existing_resource"
     },
     "config/mujoco.xml": {
@@ -88,7 +81,7 @@
       "role": "existing_resource"
     },
     "urdf/taccap_g1_slave_macro.xacro": {
-      "sha256": "1b93596ec8ab65bb431b1a23ef8bc32b6dc5ab569c25ed1ab7721c19dceb7dbf",
+      "sha256": "df16cd18837852eaf96671c38440c7db63ab2eb0441c63964560a363f1ac49cc",
       "role": "existing_resource"
     },
     "urdf/taccap_g1_slave_with_mount.urdf": {

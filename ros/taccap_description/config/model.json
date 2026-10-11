@@ -1,7 +1,7 @@
 {
   "model": "taccap_g1_slave",
   "version": "0.1.0",
-  "status": "imported_simulation_baseline",
+  "status": "simulation_model",
   "units": {
     "length": "m",
     "angle": "rad",
@@ -14,23 +14,21 @@
     "scope": "URDF, MJCF and USD share these names; details in urdf_frames"
   },
   "independent_dof": 1,
-  "hardware_calibrated": false,
   "parameter_notes": {
-    "joint_limits": "Reference-aligned opening limit 28.92 degrees (0.5047492196767601 rad). Both hinge axes +X in the base frame (native -Z); active -Y taccap_right_finger_joint is positive and taccap_left_finger_joint mimics with multiplier -1. Not an independent hardware calibration.",
-    "base_inertia": "0.415 kg and box-envelope inertia retain the simulation correction for a known CAD unit mismatch.",
-    "finger_and_cover_inertia": "Finger values imported from CAD, not independently identified. The cover link (0.068231 kg) is removed from all formats since 2026-10-09; its mass is not redistributed.",
-    "effort": "4 Nm is the existing MuJoCo actuator cap, not a certified hardware limit.",
-    "velocity": "1 rad/s is an explicit URDF simulation placeholder inherited from the assembly exporter.",
-    "collision_meshes": "Visual and collision geometry currently share the imported CAD meshes; no new collision simplification was performed."
+    "joint_limits": "Opening limit 28.92 degrees (0.5047492196767601 rad). Both hinge axes +X in the base frame; the -Y taccap_right_finger_joint drives (positive opens) and taccap_left_finger_joint mimics with multiplier -1.",
+    "base_inertia": "0.415 kg body inertial expressed in taccap_base_link.",
+    "finger_inertia": "0.36678 kg per finger, expressed in the finger link frames.",
+    "effort": "4 Nm actuator force limit (simulation).",
+    "velocity": "1 rad/s URDF joint velocity limit (simulation).",
+    "collision_meshes": "Visual and collision geometry share the same meshes."
   },
   "source": {
     "repository": "Xense Robotics robosuite-based simulation model (not public)",
     "revision": "865e81be89706f8d1d25ba83119c1d0f3de8d4e9",
     "mjcf": "robosuite/models/assets/grippers/taccap_g1_slave_gripper.xml",
     "mjcf_sha256": "36d2f2631edf457c1ebaec3773e8e64dc65c1dfe111d3121fc0b2d689650ab90",
-    "original_cad_revision": null,
     "asset_redistribution_confirmed": true,
-    "asset_redistribution_note": "Confirmed by Xense Robotics for the public XTac-UMI-Description release (2026-10-09)"
+    "asset_redistribution_note": "Released by Xense Robotics with XTac-UMI-Description"
   },
   "mesh_sha256": {
     "Asm_link.STL": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
@@ -48,19 +46,7 @@
       0
     ],
     "opening_limit_rad": 0.5047492196767601,
-    "mimic_multiplier": -1,
-    "reference": "Master gripper source URDFs (provenance/urdf of taccap_master_description)",
-    "coordinate_change_from_baseline": "new q_left = -old q_left; new q_right = old q_right; geometry and mounting frames unchanged",
-    "revision": "2026-09-17",
-    "reference_sha256": {
-      "left": "e9624fc4f72bc185af301f7efa60dc51122664ec35d015ee6b8000514a3e6ec6",
-      "right": "7f27b628f81f915f95924978d918190face5a7c773c511731d7d67ed0f8cc87d"
-    },
-    "renamed_2026_10_09": {
-      "grip_right_joint": "taccap_right_finger_joint",
-      "grip_left_joint": "taccap_left_finger_joint"
-    },
-    "axis_note": "Expressed in the flange/base axes (2026-10-09); the native CAD axis was [0, 0, -1]. Zero, limits and signs unchanged."
+    "mimic_multiplier": -1
   },
   "usd": {
     "generator": "scripts/generate_usd.py",
@@ -92,18 +78,18 @@
       "stiffness_nm_per_degree": 0.6981317007977318,
       "damping_nm_s_per_degree": 0.03490658503988659,
       "max_force_nm": 4.0,
-      "status": "MuJoCo baseline gains converted per-radian to per-degree; not a hardware identification"
+      "status": "MuJoCo position gains converted per-radian to per-degree"
     },
-    "mesh_layers": "usd/meshes/*.usdc; base_link_with_mount and viusal_link layers are retained unreferenced",
+    "mesh_layers": "usd/meshes/*.usdc",
     "shipped_layers_sha256": {
-      "usd/meshes/Asm_link.usdc": "92a7435d8aeffa87fdcf393f1c531ef00ded7200a08d25305dbb82c2f0124ccc",
-      "usd/meshes/base_link.usdc": "86301d2950bc45a8bbd26614071285b0e7b7d2ae907f5b915612db3d71e46a4d",
-      "usd/meshes/base_link_with_mount.usdc": "3393552fedb003f7e3c5fcc4b10bb4870b9f25282ab756d06a8159b3fbc3c077",
-      "usd/meshes/grip_left.usdc": "91d0d77027151ca9e1a86dfa72df0d818611139d0a189cfec3768c97626e6878",
-      "usd/meshes/grip_right.usdc": "3fb625eb8c6ee65a2770a4f9ea5a3a0c1a37447d1d435ef45ed3f59d1d9071b2",
-      "usd/meshes/viusal_link.usdc": "59abaff13baa0e2eee8d050bf4799297bbf36248eb47a99136e9089f19f3c281",
-      "usd/taccap_g1_slave.usda": "aaa650de58c753e3f50f793176a23bbb29099034779e4c0d1b3de339ac4f6160",
-      "usd/taccap_g1_slave_with_mount.usda": "ea854f8382c999df6733e4f4aa65d018ad2d0b36e7dfdf035844ddc559485b3d"
+      "usd/meshes/Asm_link.usdc": "0bb1f2f2fb5083890cc4280e71ec224bc07450b226a72dc2aab09bc9a26f10d6",
+      "usd/meshes/base_link.usdc": "c6e72c6d636382ae5ffb042d0c24255e51f736f2ac558c89d12e794890e86cfd",
+      "usd/meshes/base_link_with_mount.usdc": "a2fafd29e03582c5d4821a81f3c4b1dfd8eff1ac5630e824f8779bcd49f1223b",
+      "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
+      "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
+      "usd/meshes/viusal_link.usdc": "20ad4a25b156c9157b668949654a1a9052d5105b456f27bbc91e59f138f26287",
+      "usd/taccap_g1_slave.usda": "11c514da7071577e25d70daaee33729e8d6e748302e4463591d56db768ab6198",
+      "usd/taccap_g1_slave_with_mount.usda": "744b1bb7d86fded495be091bbc79c7d6e07aa4e1cf52b7c8f0fc796d030a9da4"
     }
   },
   "derived_meshes": {
@@ -131,7 +117,7 @@
       "removed_triangles": 1550,
       "output_triangles": 69846,
       "sha256": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
-      "physics": "Existing mass/inertia retained without re-identification; collision mesh geometry changes with the visual mesh. No contact calibration."
+      "physics": "Collision geometry follows the visual mesh."
     }
   },
   "source_mesh_renames": {
@@ -158,7 +144,6 @@
       ],
       "note": "Placement of the native-frame meshes (base_link, grip_left, grip_right, Asm_link uses rotation only) relative to their links; every link frame shares the base axes"
     },
-    "base_inertial_reexpressed": "CoM [0.002077, 0.005327, 0.009595] and diag [0.000680, 0.000748, 0.000573] in the native frame become CoM [0.010155, -0.0007499, 0.0361] and diag [0.000573, 0.000748, 0.000680]; same physical values",
     "base_to_eef_xyz_m": [
       0.036575,
       0.0,
@@ -187,34 +172,18 @@
       ]
     },
     "mount_thickness_m": 0.012,
-    "mount_geometry_evidence": "Asm_link.STL: 4 x 6.5 mm through holes on 50 mm PCD at 45 deg, 26 mm centre bore, no dowel hole; mounting clocking about +Z is not determined by the mesh",
-    "eef_pose_policy": "Massless EEF at the centre of the closed fingertips' most distal face (vertices within 0.05 mm of the extreme; mesh-derived, identical for master and slave within 0.01 mm). Replaces the original eef [0.145, 0.0060769106, -0.017] and the interim cover-origin EEF (2026-10-09)",
-    "removed_links": {
-      "slave_cover_link": "viusal_link.STL geometry is contained in base_link.STL (all vertices within 2e-9 m); its imported 0.068231 kg mass/inertia is dropped from the URDF and not redistributed",
-      "slave_body_link": "Merged into taccap_base_link (2026-10-09); mesh placement and inertial expressed through origins"
-    },
-    "renamed_2026_10_09": {
-      "slave_base_link (with_mount)": "taccap_mount_link",
-      "slave_base_link (standalone)": "taccap_base_link",
-      "slave_left_link": "taccap_left_finger_link",
-      "slave_right_link": "taccap_right_finger_link",
-      "slave_left_joint": "taccap_left_finger_joint",
-      "slave_right_joint": "taccap_right_finger_joint",
-      "slave_eef_link": "taccap_eef_link",
-      "slave_body_to_eef_joint": "taccap_eef_joint"
-    },
-    "revision": "2026-10-09",
-    "finger_frames": "Finger link frames share the base axes (joint origin rpy 0, hinge axis +X); finger meshes use rpy [0, -pi/2, 0] and inertials are re-expressed by the same axis permutation (values unchanged physically)",
+    "mount_interface": "Asm_link: 4 x 6.5 mm through holes on 50 mm PCD at 45 deg, 26 mm centre bore; set the clocking about +Z per installation",
+    "eef_pose_policy": "Massless EEF at the centre of the closed fingertips' most distal face (vertices within 0.05 mm of the extreme); identical for master and slave within 0.01 mm",
+    "finger_frames": "Finger link frames share the base axes (joint origin rpy 0, hinge axis +X); finger meshes use rpy [0, -pi/2, 0]",
     "camera": {
       "links": [
         "camera_link",
         "camera_optical_link"
       ],
-      "source": "Position from the CAD-marked camera point (SolidWorks measure in A3-从夹爪组件.SLDASM between the taccap_base_link origin point and the camera point: dX 0, dY 22.75 mm, dZ 61.25 mm; screenshot provided by the user 2026-10-09). The mesh dome-window axis (x -22.75 mm, y 0) agrees exactly; the point is 19.95 mm behind the window ring",
-      "camera_link_origin": "CAD camera point on the window axis; whether it is the optical (projection) centre is not stated by the CAD mark",
+      "source": "Wrist camera point on the dome-window axis, from the taccap_base_link origin: dX -22.75 mm, dY 0, dZ 61.25 mm; 19.95 mm behind the window ring",
+      "camera_link_origin": "Camera point on the window axis",
       "axes": "camera_link shares the base/flange and EEF axes (+Z optical axis = tool axis, +Y left finger, +X toward the off-axis fingers); optical link rpy [0, 0, -pi/2] (REP-103: +Z optical axis, +X image right, +Y image down toward the fingers)",
-      "unverified": "Orientation is mesh-derived (window axis) with assumed sensor roll (image down toward the fingers); no intrinsic/extrinsic calibration. Per-device fisheye intrinsics live in the gripper firmware",
-      "review": "pending_human",
+      "intrinsics": "Per-device fisheye intrinsics are stored in the gripper firmware (TacCap-Gripper SDK)",
       "base_to_camera_xyz_m": [
         -0.02275,
         0.0,

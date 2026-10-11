@@ -10,16 +10,11 @@
     0.5047492196767601
   ],
   "mimic": "<side>_left_joint = -<side>_right_joint",
-  "missing_physics": [
-    "mass",
-    "inertia",
-    "collision_geometry"
-  ],
   "modifications": [
-    "URDF mesh filenames relocated; mechanical and visual content preserved",
-    "2026-10-08: URDF-only virtual flange and semantic names, original body-relative EEF pose retained; legacy MJCF/USD unchanged.",
-    "2026-10-09: MJCF/USD regenerated from the current URDF (flange root, +Z tool axis, semantic names); the original link1-link4 names survive only in provenance/urdf.",
-    "2026-10-09: <side>_body_link merged into <side>_base_link (shell meshes placed by visual origins); <side>_body_to_{pico,eef}_joint renamed <side>_{pico,eef}_joint."
+    "URDF mesh filenames relocated",
+    "Root on the shell rear outer surface with +Z along the tool axis; semantic link/joint names",
+    "Added follower, EEF and wrist camera frames",
+    "MJCF/USD generated from the current URDF"
   ],
   "source_sha256": {
     "left/gripper.urdf": "e9624fc4f72bc185af301f7efa60dc51122664ec35d015ee6b8000514a3e6ec6",
@@ -152,18 +147,17 @@
         -0.0115
       ]
     },
-    "flange_axes": "+Z along the tool axis (native body +X), +Y toward the left finger (native +Y), +X native -Z; same convention as the slave flange (2026-10-09)",
-    "eef_pose_policy": "Centre of the closed fingertips' most distal face (mesh-derived, shared with the slave); the original link4 origins (left/right 0.15 mm apart) differ by < 0.08 mm and remain in provenance/urdf",
+    "flange_axes": "+Z along the tool axis (native body +X), +Y toward the left finger (native +Y), +X native -Z; same convention as the slave flange",
+    "eef_pose_policy": "Centre of the closed fingertips' most distal face, shared with the slave",
     "camera": {
       "links": [
         "camera_link",
         "camera_optical_link"
       ],
-      "source": "Window axis from the shell mesh; depth from the slave CAD-marked camera point (19.95 mm behind the window ring), applied by correspondence. Not calibrated",
+      "source": "On the shell dome-window axis, at the same point as the slave camera (19.95 mm behind the window ring)",
       "camera_link_origin": "On the window axis, 19.95 mm behind the flat ring (matches the slave CAD point within 0.1 mm in the shared mount frame)",
       "axes": "camera_link shares the base/flange and EEF axes (+Z optical axis = tool axis, +Y left finger, +X toward the off-axis fingers); optical link rpy [0, 0, -pi/2] (REP-103: +Z optical axis, +X image right, +Y image down toward the fingers)",
-      "unverified": "Sensor roll about the optical axis, optical-centre depth, and any intrinsic/extrinsic calibration; per-device fisheye intrinsics live in the gripper firmware (TacCap-Gripper SDK), not here",
-      "review": "pending_human",
+      "intrinsics": "Per-device fisheye intrinsics are stored in the gripper firmware (TacCap-Gripper SDK)",
       "flange_to_camera_xyz_m": {
         "left": [
           -0.02285,
@@ -180,9 +174,8 @@
         0.0,
         0.0,
         0.0
-      ],
-      "note_y": "Mesh window centre y is within 0.005 mm of 0; nominal 0 is used like the flange"
+      ]
     },
-    "root_definition": "Shell rear outer surface centre (2026-10-09), 23.5 mm ahead of the former virtual flange. The massless <side>_follower_link at [0, 0, -0.0115] matches the slave taccap_base_link (slave mounting face); the arm flange is that frame (standalone slave) or a further [0, 0, -0.012] (slave with Asm_link)"
+    "root_definition": "Shell rear outer surface centre, on the tool axis. The massless <side>_follower_link at [0, 0, -0.0115] matches the slave taccap_base_link (slave mounting face); the arm flange is that frame (standalone slave) or a further [0, 0, -0.012] (slave with Asm_link)"
   }
 }

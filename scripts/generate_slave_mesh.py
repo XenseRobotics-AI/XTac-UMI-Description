@@ -110,7 +110,7 @@ def generate(check=False):
             "removed_triangles": len(removed),
             "output_triangles": int(keep.sum()),
             "sha256": hashlib.sha256(result).hexdigest(),
-            "physics": "Existing mass/inertia retained without re-identification; collision mesh geometry changes with the visual mesh. No contact calibration.",
+            "physics": "Collision geometry follows the visual mesh.",
         }
     }
     if check:

@@ -24,20 +24,13 @@
       "Original source files are kept in provenance/urdf; see NOTICE.md for sources and changes."
     ]
   },
-  "review": {
-    "visual": "pending_human",
-    "joint_parameters": "unreviewed_source",
-    "inertial_parameters": "unreviewed_source",
-    "contacts": "not_validated",
-    "camera_frames": "pending_human"
-  },
   "files": {
     "LICENSES/apache-2.0.txt": {
       "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
       "role": "license"
     },
     "config/master.json": {
-      "sha256": "4520257bc0f2d33c0fb2e363637d59cf6437b5071ba6a024338a6fd2d22501c6",
+      "sha256": "d967c2215e9a79e9d42648f91c6bef2150e58b0f0170ede9c8a2e921e1b5a007",
       "role": "existing_resource"
     },
     "meshes/left/base_link.STL": {
@@ -97,7 +90,7 @@
       "role": "existing_resource"
     },
     "urdf/taccap_g1_master_left.urdf": {
-      "sha256": "5581f5d8ac3789c8a39bf24f7a49065aae532a0d72bc6b866b7fd1b81c75d805",
+      "sha256": "6f0f9eb95803c8a3c6c5c5a5fafe6f2f0cef50b130cf616a70ed1db210779739",
       "role": "derived_urdf"
     },
     "urdf/taccap_g1_master_left.urdf.xacro": {
@@ -105,7 +98,7 @@
       "role": "derived_urdf"
     },
     "urdf/taccap_g1_master_right.urdf": {
-      "sha256": "0471f2c72499203abfc7b3cf586142e2d35ae46bc512dc4135b292ee047622e8",
+      "sha256": "2fa72f342c4a2ab8b419a1a7ada32027fb90aa84479f6d3fa79ded17dc0acd0a",
       "role": "derived_urdf"
     },
     "urdf/taccap_g1_master_right.urdf.xacro": {

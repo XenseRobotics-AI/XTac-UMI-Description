@@ -140,7 +140,7 @@ Only the right joint has a drive; do not add a second drive to the mimic joint.
 - `PhysxMimicJointAPI:rotZ` implements `q_left = -q_right` with gearing `1`.
   Plain OpenUSD reads this authored extension but cannot execute it. A runtime
   supporting the PhysX mimic schema is required.
-- The baseline simulation drive is converted to Nm/degree gains, retaining
+- The simulation drive is converted to Nm/degree gains, retaining
   the 4 Nm cap. Collisions request convex hulls of the source meshes. The
   zero-mass adapter is fixed geometry on the base, so it shares the base's
   collision filtering. The TCP is `/TacCap/taccap_base_link/taccap_eef_link`.

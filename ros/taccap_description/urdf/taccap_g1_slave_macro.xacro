@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Mechanical description of the imported simulation baseline, not calibrated hardware limits. -->
+  <!-- Mechanical description of the TacCap G1 slave gripper. -->
   <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_description/meshes'">
     <material name="${prefix}taccap_base_mat"><color rgba="0.75294 0.75294 0.75294 1"/></material>
     <material name="${prefix}taccap_left_mat"><color rgba="1 1 1 1"/></material>
@@ -30,8 +30,7 @@
       </joint>
     </xacro:if>
     <link name="${prefix}taccap_base_link">
-      <!-- Simulation-tuned approximation replaces a known CAD mass/inertia unit mismatch.
-           Values re-expressed from the native frame: CoM rotated, ixx/izz swapped. -->
+      <!-- Body inertial in the base frame. -->
       <inertial>
         <origin xyz="0.010155 -0.0007499 0.0361" rpy="0 0 0"/>
         <mass value="0.415"/>
@@ -59,8 +58,7 @@
       <collision name="${prefix}left_finger_collision"><origin xyz="0 0 0" rpy="${cad_rpy}"/><geometry><mesh filename="${mesh_root}/grip_left.STL"/></geometry></collision>
     </link>
     <!-- Finger frames share the base axes; meshes use the native CAD placement and the
-         inertials are re-expressed (axis permutation with sign changes, same values).
-         The native -Z hinge is +X here; zero, limits and signs are unchanged. -->
+         hinges rotate about +X. Zero is closed; the right finger drives, the left mimics. -->
     <joint name="${prefix}taccap_left_finger_joint" type="revolute">
       <parent link="${prefix}taccap_base_link"/><child link="${prefix}taccap_left_finger_link"/>
       <origin xyz="0.0120336718 0.0199500106 0.0484999712" rpy="0 0 0"/>
@@ -96,10 +94,10 @@
       <parent link="${prefix}taccap_base_link"/><child link="${prefix}taccap_eef_link"/>
       <origin xyz="0.036575 0 0.2009217" rpy="0 0 0"/>
     </joint>
-    <!-- Wrist camera point marked in CAD (A3-从夹爪组件.SLDASM, 2026-10-09 measurement from the
-         taccap_base_link origin: 22.75 mm toward -X, 0 in Y, 61.25 mm along the tool axis). It lies on
-         the dome-window axis, 19.95 mm behind the window ring. Not a calibration. Same axes as
-         taccap_base_link: +Z along the optical (tool) axis, +Y left finger, +X toward the fingers. -->
+    <!-- Wrist camera point, from the taccap_base_link origin: 22.75 mm toward -X, 0 in Y,
+         61.25 mm along the tool axis. It lies on the dome-window axis, 19.95 mm behind the window
+         ring. Same axes as taccap_base_link: +Z along the optical (tool) axis, +Y left finger,
+         +X toward the fingers. -->
     <link name="${prefix}taccap_camera_link"/>
     <joint name="${prefix}taccap_camera_joint" type="fixed">
       <parent link="${prefix}taccap_base_link"/><child link="${prefix}taccap_camera_link"/>

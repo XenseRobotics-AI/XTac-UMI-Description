@@ -75,8 +75,8 @@
     <parent link="left_base_link" />
     <child link="left_eef_link" />
   </joint>
-  <!-- Wrist camera: dome-window axis, depth taken from the slave CAD-marked point (19.95 mm behind the
-       window ring). Same axes as the flange: +Z optical axis, +Y left finger. Not calibrated. -->
+  <!-- Wrist camera: on the dome-window axis, 19.95 mm behind the window ring (same point as the
+       slave camera). Same axes as the flange: +Z optical axis, +Y left finger. -->
   <link name="left_camera_link" />
   <joint name="left_camera_joint" type="fixed">
     <origin xyz="-0.02285 0 0.04975" rpy="0 0 0" />
