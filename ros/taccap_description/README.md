@@ -112,7 +112,10 @@ share. Pass `prefix:=` to namespace links, joints and materials.
 - The active `taccap_right_finger_joint` uses `[0, 0.5047492196767601]` rad (28.92 degrees);
   `taccap_left_finger_joint` is its passive negative mimic in `[-0.5047492196767601, 0]`.
   Zero is closed, matching the master grippers.
-  URDF effort is 4 Nm and velocity 1 rad/s.
+  URDF effort is 1.1 Nm, the maximum output torque of the RobStride EL05 finger
+  motor (limited in hardware to 1.1 Nm for continuous stall); velocity is 1 rad/s.
+  The effort is defined once in the Xacro macro; the MJCF actuator `forcerange` and
+  the USD drive `maxForce` are generated from it.
 - Base mass is 0.415 kg; each finger is 0.36678 kg.
 
 ## USD / Isaac Sim
@@ -143,7 +146,7 @@ Only the right joint has a drive; do not add a second drive to the mimic joint.
   Plain OpenUSD reads this authored extension but cannot execute it. A runtime
   supporting the PhysX mimic schema is required.
 - The simulation drive is converted to Nm/degree gains, retaining
-  the 4 Nm cap. Collisions request convex hulls of the source meshes. The
+  the 1.1 Nm cap. Collisions request convex hulls of the source meshes. The
   zero-mass adapter is fixed geometry on the base, so it shares the base's
   collision filtering. The TCP is `/TacCap/taccap_base_link/taccap_eef_link`.
 - The asset is fixed to the world by `joints/root_fixed_joint`, whose world

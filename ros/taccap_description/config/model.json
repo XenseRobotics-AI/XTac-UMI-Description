@@ -14,11 +14,15 @@
     "scope": "URDF, MJCF and USD share these names; details in urdf_frames"
   },
   "independent_dof": 1,
+  "finger_motor": {
+    "motor": "RobStride EL05",
+    "max_output_torque_nm": 1.1
+  },
   "parameter_notes": {
     "joint_limits": "Opening limit 28.92 degrees (0.5047492196767601 rad). Both hinge axes +X in the base frame; the -Y taccap_right_finger_joint drives (positive opens) and taccap_left_finger_joint mimics with multiplier -1.",
     "base_inertia": "0.415 kg body inertial expressed in taccap_base_link.",
     "finger_inertia": "0.36678 kg per finger, expressed in the finger link frames.",
-    "effort": "4 Nm actuator force limit (simulation).",
+    "effort": "1.1 Nm: maximum output torque of the finger motor (RobStride EL05), which the hardware limits to 1.1 Nm for continuous stall. The same value is the MJCF actuator forcerange and the USD drive maxForce.",
     "velocity": "1 rad/s URDF joint velocity limit (simulation).",
     "collision_meshes": "Visual and collision geometry share the same meshes."
   },
@@ -77,7 +81,7 @@
       "source": "config/mujoco.xml actuator/position[@joint='taccap_right_finger_joint']",
       "stiffness_nm_per_degree": 0.6981317007977318,
       "damping_nm_s_per_degree": 0.03490658503988659,
-      "max_force_nm": 4.0,
+      "max_force_nm": 1.1,
       "status": "MuJoCo position gains converted per-radian to per-degree"
     },
     "mesh_layers": "usd/meshes/*.usdc",
@@ -88,8 +92,8 @@
       "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
       "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
       "usd/meshes/viusal_link.usdc": "20ad4a25b156c9157b668949654a1a9052d5105b456f27bbc91e59f138f26287",
-      "usd/taccap_g1_slave.usda": "11c514da7071577e25d70daaee33729e8d6e748302e4463591d56db768ab6198",
-      "usd/taccap_g1_slave_with_mount.usda": "744b1bb7d86fded495be091bbc79c7d6e07aa4e1cf52b7c8f0fc796d030a9da4"
+      "usd/taccap_g1_slave.usda": "2191c0349f48494a3fce03bc5a2465a1047dcc6ff12969f92d71801b00fdc797",
+      "usd/taccap_g1_slave_with_mount.usda": "1c3bed186ba35a20188b90aeeaccda6aac12ce791f2da95d106e338d9340866f"
     }
   },
   "derived_meshes": {

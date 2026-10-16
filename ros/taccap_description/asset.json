@@ -29,11 +29,11 @@
       "role": "license"
     },
     "config/model.json": {
-      "sha256": "38497567c5cbd517332c70cd796e02689d55fafed51f244e5924a26b62b4f9b0",
+      "sha256": "fa479b1511033b56c67323face118d726403b1d9c47e281ca71d4953a52551ca",
       "role": "existing_resource"
     },
     "config/mujoco.xml": {
-      "sha256": "51739e8ec743c58142c582f5f18e7c51a1a9f3bc3832d509a7639cbc86d1d36f",
+      "sha256": "94974b6e0427461b38f3e861972da2b964798aa247ba128991ba386a7e97618b",
       "role": "existing_resource"
     },
     "meshes/Asm_link.STL": {
@@ -73,7 +73,7 @@
       "role": "source_urdf"
     },
     "urdf/taccap_g1_slave.urdf": {
-      "sha256": "cbdfc4e045d473c52238ecf13e48518fe7c4a31c008cd5be51b81b6bda64a8fd",
+      "sha256": "82e6dc4ce6fb5820ada8a4391bb05a093666e77fdfeb65fcee75c180ee371e30",
       "role": "existing_resource"
     },
     "urdf/taccap_g1_slave.urdf.xacro": {
@@ -81,11 +81,11 @@
       "role": "existing_resource"
     },
     "urdf/taccap_g1_slave_macro.xacro": {
-      "sha256": "df16cd18837852eaf96671c38440c7db63ab2eb0441c63964560a363f1ac49cc",
+      "sha256": "7dfd37b726caed89ad6ca03912e9e55ea00fea706139ff13c2065f0345b7914d",
       "role": "existing_resource"
     },
     "urdf/taccap_g1_slave_with_mount.urdf": {
-      "sha256": "df2c7c5c0d6a0914fb09b25461ba5ec748706e123eb566cbbf2a3fab9de7ed5d",
+      "sha256": "69643114e2377fe7905b3e84b69f5e3f249ee4054a841db8ed32dda035d857d6",
       "role": "existing_resource"
     }
   }

@@ -1,3 +1,4 @@
+import json
 import math
 import shutil
 import struct
@@ -140,7 +141,8 @@ def test_usd_physics_contract_and_mesh_conversion(with_mount):
     drive = UsdPhysics.DriveAPI(active, "angular")
     assert drive.GetStiffnessAttr().Get() == pytest.approx(40 * math.pi / 180)
     assert drive.GetDampingAttr().Get() == pytest.approx(2 * math.pi / 180)
-    assert drive.GetMaxForceAttr().Get() == 4
+    torque = json.loads((ASSET_ROOT / "config" / "model.json").read_text())["finger_motor"]["max_output_torque_nm"]
+    assert drive.GetMaxForceAttr().Get() == pytest.approx(torque)
     follower = stage.GetPrimAtPath("/TacCap/joints/taccap_left_finger_joint")
     assert (
         "PhysxMimicJointAPI:rotZ"

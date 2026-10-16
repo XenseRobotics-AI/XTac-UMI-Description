@@ -196,3 +196,17 @@ def test_closed_open_closed_motion_and_signed_limits(with_mount):
             mujoco.mj_step(model, data)
         np.testing.assert_allclose(data.qpos, [-target, target], atol=2e-3)
         assert data.ncon == 0
+
+
+@pytest.mark.parametrize("with_mount", [False, True])
+def test_finger_torque_limit_is_the_motor_output_torque(with_mount):
+    """URDF effort and the MJCF actuator forcerange both equal the EL05 output torque."""
+    torque = json.loads((ASSET_ROOT / "config" / "model.json").read_text())["finger_motor"]["max_output_torque_nm"]
+    assert torque == 1.1
+    urdf = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
+    for joint in urdf.findall("joint[@type='revolute']"):
+        assert float(joint.find("limit").get("effort")) == torque
+    model = mujoco.MjModel.from_xml_path(str(get_mjcf_path(with_mount=with_mount)))
+    index = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, "gripper")
+    assert model.actuator_forcelimited[index]
+    np.testing.assert_allclose(model.actuator_forcerange[index], [-torque, torque])

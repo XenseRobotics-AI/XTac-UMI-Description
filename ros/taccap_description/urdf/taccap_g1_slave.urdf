@@ -57,7 +57,7 @@
     <child link="taccap_left_finger_link" />
     <origin rpy="0 0 0" xyz="0.0120336718 0.0199500106 0.0484999712" />
     <axis xyz="1 0 0" />
-    <limit effort="4" lower="-0.5047492196767601" upper="0" velocity="1" />
+    <limit effort="1.1" lower="-0.5047492196767601" upper="0" velocity="1" />
     <dynamics damping="0.08" friction="0.01" />
     <mimic joint="taccap_right_finger_joint" multiplier="-1" offset="0" />
   </joint>
@@ -86,7 +86,7 @@
     <child link="taccap_right_finger_link" />
     <origin rpy="0 0 0" xyz="0.0120336718 -0.0199499894 0.0484999712" />
     <axis xyz="1 0 0" />
-    <limit effort="4" lower="0" upper="0.5047492196767601" velocity="1" />
+    <limit effort="1.1" lower="0" upper="0.5047492196767601" velocity="1" />
     <dynamics damping="0.08" friction="0.01" />
   </joint>
   <link name="taccap_eef_link" />

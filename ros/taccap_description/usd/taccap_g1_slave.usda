@@ -163,7 +163,7 @@ def Xform "TacCap"
         )
         {
             float drive:angular:physics:damping = 0.034906585
-            float drive:angular:physics:maxForce = 4
+            float drive:angular:physics:maxForce = 1.1
             float drive:angular:physics:stiffness = 0.6981317
             float drive:angular:physics:targetPosition = 0
             uniform token drive:angular:physics:type = "force"

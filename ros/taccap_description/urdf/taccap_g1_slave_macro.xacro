@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Mechanical description of the TacCap G1 slave gripper. -->
+  <!-- Maximum output torque (N m) of the finger motor, RobStride EL05; the hardware limits it to
+       1.1 N m for continuous stall. MJCF and USD take their force limits from this effort. -->
+  <xacro:property name="taccap_finger_effort" value="1.1"/>
   <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_description/meshes'">
     <material name="${prefix}taccap_base_mat"><color rgba="0.75294 0.75294 0.75294 1"/></material>
     <material name="${prefix}taccap_left_mat"><color rgba="1 1 1 1"/></material>
@@ -63,8 +66,8 @@
       <parent link="${prefix}taccap_base_link"/><child link="${prefix}taccap_left_finger_link"/>
       <origin xyz="0.0120336718 0.0199500106 0.0484999712" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
-      <!-- Effort and velocity are simulation settings; see config/model.json. -->
-      <limit lower="-0.5047492196767601" upper="0" effort="4" velocity="1"/>
+      <!-- Effort is the finger motor's maximum output torque; see config/model.json. -->
+      <limit lower="-0.5047492196767601" upper="0" effort="${taccap_finger_effort}" velocity="1"/>
       <dynamics damping="0.08" friction="0.01"/>
       <mimic joint="${prefix}taccap_right_finger_joint" multiplier="-1" offset="0"/>
     </joint>
@@ -84,7 +87,7 @@
       <parent link="${prefix}taccap_base_link"/><child link="${prefix}taccap_right_finger_link"/>
       <origin xyz="0.0120336718 -0.0199499894 0.0484999712" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
-      <limit lower="0" upper="0.5047492196767601" effort="4" velocity="1"/>
+      <limit lower="0" upper="0.5047492196767601" effort="${taccap_finger_effort}" velocity="1"/>
       <dynamics damping="0.08" friction="0.01"/>
     </joint>
     <!-- Massless virtual EEF: centre of the closed fingertips' most distal face (mesh-derived,

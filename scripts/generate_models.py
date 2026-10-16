@@ -162,6 +162,10 @@ def make_mjcf(urdf):
                 if target is None:
                     raise ValueError(f"No target for MuJoCo patch: {element.attrib}")
                 target.attrib.update(element.attrib)
+    # The actuator force limit is the finger motor's output torque (URDF effort).
+    for actuator in model.find("actuator"):
+        effort = urdf.find(f"joint[@name='{actuator.get('joint')}']/limit").get("effort")
+        actuator.set("forcerange", f"-{effort} {effort}")
     equality = ET.SubElement(model, "equality")
     for joint in urdf.findall("joint"):
         mimic = joint.find("mimic")

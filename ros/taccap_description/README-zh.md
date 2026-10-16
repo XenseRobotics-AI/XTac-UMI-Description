@@ -62,7 +62,7 @@ ros2 launch taccap_description display.launch.py with_mount:=true # Asm_link 版
 - 长度单位为米，URDF/MJCF 角度为弧度（USD 为度），质量为千克。MJCF 根 body 和 USD stage 原点即 URDF 根（见上文坐标系约定）；`taccap_base_link` 承载本体质量。
 - 为兼容 robosuite 风格的使用方，保留 MuJoCo 专用名称：actuator `gripper`，`taccap_eef_link` 上的 site `grip_site`、`ee*`，以及带传感器 `force_ee`/`torque_ee` 的 `ft_frame`。`ft_frame` 位于根 body 原点，即两种版本中的机械臂法兰接触面。
 - 两个夹指关节、一个独立控制量。共同的 +X 关节轴与 `q_left = -q_right` 产生镜像运动。URDF 使用 `mimic`；MJCF 使用关节等式约束；USD 使用 PhysX mimic 扩展。
-- 主动关节 `taccap_right_finger_joint` 范围为 `[0, 0.5047492196767601]` rad（28.92°）；`taccap_left_finger_joint` 为其被动反向 mimic，范围 `[-0.5047492196767601, 0]`。零位为闭合，与主夹爪一致。URDF effort 为 4 Nm，velocity 为 1 rad/s。
+- 主动关节 `taccap_right_finger_joint` 范围为 `[0, 0.5047492196767601]` rad（28.92°）；`taccap_left_finger_joint` 为其被动反向 mimic，范围 `[-0.5047492196767601, 0]`。零位为闭合，与主夹爪一致。URDF effort 为 1.1 Nm，即夹指电机 RobStride EL05 的最大输出扭矩（为保证连续堵转性能，硬件限制为 1.1 Nm）；velocity 为 1 rad/s。effort 只在 Xacro 宏中定义一次，MJCF 执行器的 `forcerange` 和 USD drive 的 `maxForce` 均由其生成。
 - 本体质量 0.415 kg；每个夹指 0.36678 kg。
 
 ## USD / Isaac Sim
@@ -78,7 +78,7 @@ stage = Usd.Stage.Open(str(get_usd_path(with_mount=True)))
 
 - 主 ASCII 层包含 link 变换、质量、主惯量、关节坐标系与限位。刚体为 `taccap_base_link` 和两个夹指 link；无质量的 `taccap_mount_link`（带连接件时）和 `taccap_eef_link` 是 `/TacCap/taccap_base_link` 下的固定 Xform。裸夹爪版本引用 `usd/meshes` 中的三个二进制网格层；带连接件版本另引用 `Asm_link.usdc`。引用均为相对路径，经 pip 或 ROS 安装后仍然有效。使用方仿真器无需 STL 导入器。
 - `PhysxMimicJointAPI:rotZ` 以 gearing `1` 实现 `q_left = -q_right`。纯 OpenUSD 可读取该扩展但不能执行，需要支持 PhysX mimic schema 的运行时。
-- 仿真 drive 已换算为 Nm/度 增益，保留 4 Nm 上限。碰撞使用源网格的凸包。零质量连接件是固定在本体上的几何，与本体共用碰撞过滤。TCP 为 `/TacCap/taccap_base_link/taccap_eef_link`。
+- 仿真 drive 已换算为 Nm/度 增益，保留 1.1 Nm 上限。碰撞使用源网格的凸包。零质量连接件是固定在本体上的几何，与本体共用碰撞过滤。TCP 为 `/TacCap/taccap_base_link/taccap_eef_link`。
 - 资产通过 `joints/root_fixed_joint` 固定在世界中，其世界坐标系即法兰。挂接到其他机器人时，请用应用中的法兰 joint 替换该锚点，并移除其 articulation-root API，使机械臂拥有合并后的 articulation。不要嵌套两个独立的 articulation。应用需设置实际的法兰变换。
 - PhysX 接触参数和控制器增益可在应用中调整。
 

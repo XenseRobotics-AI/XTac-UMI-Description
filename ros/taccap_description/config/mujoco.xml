@@ -1,9 +1,10 @@
 <mujoco>
-  <!-- MuJoCo-only settings applied to the generated kinematic tree. -->
+  <!-- MuJoCo-only settings applied to the generated kinematic tree. The actuator forcerange is
+       set from the driven joint's URDF effort (finger motor output torque). -->
   <compiler angle="radian" autolimits="true"/>
   <actuator>
     <position name="gripper" joint="taccap_right_finger_joint" ctrllimited="true" ctrlrange="0 0.5047492196767601"
-              forcelimited="true" forcerange="-4 4" kp="40" kv="2"/>
+              forcelimited="true" kp="40" kv="2"/>
   </actuator>
   <worldbody>
     <body name="taccap_mount_link">
