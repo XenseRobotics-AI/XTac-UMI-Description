@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>taccap_description</name>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <description>TacCap G1 slave URDF, Xacro, MJCF and USD descriptions.</description>
-  <maintainer email="wufan@xenserobotics.com">Xense Robotics</maintainer>
+  <maintainer email="dylan@xenserobotics.com">Xense Robotics</maintainer>
   <license>MIT</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <exec_depend>xacro</exec_depend>

@@ -153,5 +153,4 @@ are available through the TacCap-Gripper SDK.
 | MJCF | Generated from the URDF; shares the flange root, +Z tool axis, link/joint names and EEF. The slave MJCF keeps the robosuite interface names (actuator `gripper`, `grip_site`/`ee*` sites, `ft_frame` with `force_ee`/`torque_ee`); `ft_frame` is on the root body (arm-flange contact face). The master MJCF consists of mocap bodies, one per URDF link |
 | USD | Generated from the URDF with the same frames and names. Slave rigid bodies are `taccap_base_link` and the two fingers; the adapter and EEF are fixed Xforms beneath them. The master USD is nested following the URDF tree |
 
-`asset.json` in each package lists the entry points and file hashes. The Python
-resource API and the ROS/RViz launch files point to the URDFs above.
+The Python resource API and the ROS/RViz launch files point to the URDFs above.

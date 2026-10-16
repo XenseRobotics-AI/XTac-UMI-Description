@@ -17,7 +17,7 @@
     <material name="taccap_base_mat" rgba="0.75294 0.75294 0.75294 1" />
     <material name="taccap_left_mat" rgba="1 1 1 1" />
     <material name="taccap_right_mat" rgba="0.60392 0.60392 0.60392 1" />
-    <material name="taccap_cover_mat" rgba="0.89804 0.91765 0.92941 1" />
+    <material name="taccap_mount_mat" rgba="0.89804 0.91765 0.92941 1" />
     <mesh name="taccap_base_mesh" file="../meshes/base_link.STL" />
     <mesh name="taccap_left_mesh" file="../meshes/grip_left.STL" />
     <mesh name="taccap_right_mesh" file="../meshes/grip_right.STL" />

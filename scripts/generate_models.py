@@ -11,7 +11,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import xacro
-from generate_slave_mesh import generate as generate_slave_mesh
 from scipy.spatial.transform import Rotation
 
 ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
@@ -19,7 +18,6 @@ MESH_NAMES = {
     "base_link.STL": "taccap_base_mesh",
     "grip_left.STL": "taccap_left_mesh",
     "grip_right.STL": "taccap_right_mesh",
-    "viusal_link.STL": "taccap_cover_mesh",
     "Asm_link.STL": "taccap_asm_mesh",
 }
 
@@ -217,7 +215,6 @@ def main():
     )
     parser.add_argument("--urdf-only", action="store_true", help="Update URDF only, leaving MJCF untouched")
     args = parser.parse_args()
-    generate_slave_mesh(check=args.check)
     for path, content in generated_files(urdf_only=args.urdf_only):
         if args.check:
             if not path.is_file() or path.read_text() != content:

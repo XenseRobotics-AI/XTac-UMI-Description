@@ -8,7 +8,7 @@
     <material name="${prefix}taccap_base_mat"><color rgba="0.75294 0.75294 0.75294 1"/></material>
     <material name="${prefix}taccap_left_mat"><color rgba="1 1 1 1"/></material>
     <material name="${prefix}taccap_right_mat"><color rgba="0.60392 0.60392 0.60392 1"/></material>
-    <material name="${prefix}taccap_cover_mat"><color rgba="0.89804 0.91765 0.92941 1"/></material>
+    <material name="${prefix}taccap_mount_mat"><color rgba="0.89804 0.91765 0.92941 1"/></material>
     <!-- taccap_base_link: gripper mounting face (body/Asm_link mating face). +Z along the tool
          axis, +Y toward the left finger, +X toward the off-axis fingers. Meshes keep their native
          CAD frame (+X tool axis); their placement is the origin below. -->
@@ -20,7 +20,7 @@
         <visual name="${prefix}asm_visual">
           <origin xyz="0 0 0" rpy="${cad_rpy}"/>
           <geometry><mesh filename="${mesh_root}/Asm_link.STL"/></geometry>
-          <material name="${prefix}taccap_cover_mat"/>
+          <material name="${prefix}taccap_mount_mat"/>
         </visual>
         <collision name="${prefix}asm_collision">
           <origin xyz="0 0 0" rpy="${cad_rpy}"/>

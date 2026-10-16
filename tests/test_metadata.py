@@ -1,4 +1,4 @@
-"""The shipped provenance files must describe the assets actually shipped.
+"""The package config files must describe the assets actually shipped.
 
 The generators mirror their conversion settings into config/*.json so a
 consumer reading only the package can tell which parameters produced the USD.

@@ -12,19 +12,10 @@ from taccap_master_description import ASSET_ROOT, get_master_urdf_path
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
-def test_master_matches_viewer_source(side):
+def test_master_meshes_match_recorded_hashes(side):
     metadata = json.loads((ASSET_ROOT / "config/master.json").read_text())
-    source = (
-        (ASSET_ROOT / "provenance/urdf" / f"{side}.urdf")
-        .read_bytes()
-        .replace(f"../meshes/{side}/".encode(), b"meshes/")
-    )
-    assert (
-        hashlib.sha256(source).hexdigest()
-        == metadata["source_sha256"][f"{side}/gripper.urdf"]
-    )
-    for filename, expected in metadata["source_sha256"].items():
-        if filename.startswith(f"{side}/meshes/"):
+    for filename, expected in metadata["mesh_sha256"].items():
+        if filename.startswith(f"{side}/"):
             path = ASSET_ROOT / "meshes" / side / filename.split("/")[-1]
             data = path.read_bytes()
             assert hashlib.sha256(data).hexdigest() == expected

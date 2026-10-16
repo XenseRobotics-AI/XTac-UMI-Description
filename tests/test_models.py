@@ -162,7 +162,7 @@ def test_xacro_can_compose_two_prefixed_grippers(tmp_path):
     )
 
 
-def test_meshes_match_extraction_provenance():
+def test_meshes_match_recorded_hashes():
     metadata = json.loads((ASSET_ROOT / "config" / "model.json").read_text())
     for filename, expected in metadata["mesh_sha256"].items():
         assert (

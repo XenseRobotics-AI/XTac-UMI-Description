@@ -10,6 +10,9 @@ from scipy.spatial.transform import Rotation
 from taccap_description import ASSET_ROOT as SLAVE_ASSET_ROOT, get_urdf_path
 from taccap_master_description import ASSET_ROOT as MASTER_ASSET_ROOT, get_master_urdf_path
 
+# Original imported URDFs, kept only as regression references.
+DATA = Path(__file__).resolve().parent / "data"
+
 
 # Master and slave flange axes in the native body axes (+X toward the tips):
 # +Z along the tool axis, +Y toward the left finger, +X = native -Z.
@@ -89,7 +92,7 @@ def mesh_triangles(base, side, filename):
 @pytest.mark.parametrize("opening", [0, .25, 1])
 def test_master_visuals_preserved_and_root_on_rear_surface(side, opening):
     current = ET.parse(get_master_urdf_path(side=side)).getroot()
-    original = ET.parse(MASTER_ASSET_ROOT / "provenance/urdf" / f"{side}.urdf").getroot()
+    original = ET.parse(DATA / "master" / f"{side}.urdf").getroot()
     angle = opening * .5047492196767601
     old_fk, new_fk = frames(original, angle), frames(current, angle)
     # The root carries the shell meshes; their native frame is the original base_link.
@@ -141,7 +144,7 @@ def test_slave_geometry_inertias_and_eef_preserved(with_mount, opening):
     suffix = "_with_mount" if with_mount else ""
     path = get_urdf_path(with_mount=with_mount)
     current = ET.parse(path).getroot()
-    original = ET.parse(SLAVE_ASSET_ROOT / "provenance/urdf" / f"taccap_g1_slave{suffix}.urdf").getroot()
+    original = ET.parse(DATA / "slave" / f"taccap_g1_slave{suffix}.urdf").getroot()
     old_fk, new_fk = frames(original, opening * .5047492196767601), frames(current, opening * .5047492196767601)
     shift = slave_shift(with_mount)
     names = {"taccap_base_link", "taccap_left_finger_link", "taccap_right_finger_link", "taccap_eef_link", "taccap_camera_link", "taccap_camera_optical_link"}

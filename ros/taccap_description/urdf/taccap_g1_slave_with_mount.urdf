@@ -9,7 +9,7 @@
   <material name="taccap_right_mat">
     <color rgba="0.60392 0.60392 0.60392 1" />
   </material>
-  <material name="taccap_cover_mat">
+  <material name="taccap_mount_mat">
     <color rgba="0.89804 0.91765 0.92941 1" />
   </material>
   <link name="taccap_mount_link">
@@ -18,7 +18,7 @@
       <geometry>
         <mesh filename="../meshes/Asm_link.STL" />
       </geometry>
-      <material name="taccap_cover_mat" />
+      <material name="taccap_mount_mat" />
     </visual>
     <collision name="asm_collision">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />

@@ -18,13 +18,11 @@ def get_master_xacro_path(*, side):
 def get_master_mjcf_path(*, side):
     """Return a mocap-based visual model with no dynamic DOFs or contacts."""
     get_master_urdf_path(side=side)  # Validate the side; MJCF/USD keep short filenames.
-    name = side
-    return ASSET_ROOT / "mjcf" / f"{name}.xml"
+    return ASSET_ROOT / "mjcf" / f"{side}.xml"
 
 
 def get_master_usd_path(*, side, animated=False):
     """Return a visual-only USD asset, optionally with a 2-second opening cycle."""
     get_master_urdf_path(side=side)  # Validate the side; MJCF/USD keep short filenames.
-    name = side
     suffix = "_open_close" if animated else ""
-    return ASSET_ROOT / "usd" / f"{name}{suffix}.usda"
+    return ASSET_ROOT / "usd" / f"{side}{suffix}.usda"

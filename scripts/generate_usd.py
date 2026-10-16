@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from _provenance import hash_tree, update_config
+from _metadata import hash_tree, update_config
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, Vt
 from scipy.spatial.transform import Rotation
 
@@ -249,7 +249,7 @@ def generate_model(output, with_mount):
 
 
 def usd_metadata():
-    """Mirror this generator's conversion settings into the provenance file."""
+    """Mirror this generator's conversion settings into the package config file."""
     simulation = ET.parse(ASSETS / "config" / "mujoco.xml").getroot()
     urdf = ET.parse(ASSETS / "urdf" / f"{MODEL}.urdf").getroot()
     driven = urdf.find("joint[@name='taccap_right_finger_joint']")

@@ -2,14 +2,13 @@
 
 The USD conversion settings live in the generators, so a consumer reading only
 the shipped assets cannot tell which parameters produced them. These helpers
-mirror those settings, plus a hash of every shipped layer, into the existing
-provenance files. Generators call them with ``check=True`` under ``--check`` so
+mirror those settings, plus a hash of every shipped layer, into the package
+config files. Generators call them with ``check=True`` under ``--check`` so
 stale metadata fails the same regression as stale models.
 """
 
 import hashlib
 import json
-from pathlib import Path
 
 
 def hash_tree(root, subdirectory):

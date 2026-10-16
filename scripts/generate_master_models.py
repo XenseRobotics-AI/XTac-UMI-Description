@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from _provenance import hash_tree, update_config
+from _metadata import hash_tree, update_config
 from pxr import Gf, Sdf, Usd, UsdGeom, Vt
 from scipy.spatial.transform import Rotation
 
@@ -136,7 +136,7 @@ def usd_meshes(output, side):
 def generate_side(output, side):
     urdf = ET.parse(ASSETS / "urdf" / f"taccap_g1_master_{side}.urdf").getroot()
     joints = {joint.find("child").get("link"): joint for joint in urdf.findall("joint")}
-    root_link, tcp_link = f"{side}_base_link", f"{side}_eef_link"
+    tcp_link = f"{side}_eef_link"
     # (driver, follower): the URDF -Y finger drives, the +Y finger mimics it.
     fingers = (f"{side}_right_link", f"{side}_left_link")
     if urdf.find(f"link[@name='{tcp_link}']") is None:
@@ -289,7 +289,7 @@ def generate_side(output, side):
 
 
 def usd_metadata():
-    """Mirror this generator's conversion settings into the provenance file."""
+    """Mirror this generator's conversion settings into the package config file."""
     return {
         "generator": "scripts/generate_master_models.py",
         "entry_points": ["usd/left.usda", "usd/right.usda"],

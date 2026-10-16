@@ -1,6 +1,6 @@
 {
   "model": "taccap_g1_slave",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "simulation_model",
   "units": {
     "length": "m",
@@ -26,20 +26,11 @@
     "velocity": "1 rad/s URDF joint velocity limit (simulation).",
     "collision_meshes": "Visual and collision geometry share the same meshes."
   },
-  "source": {
-    "repository": "Xense Robotics robosuite-based simulation model (not public)",
-    "revision": "865e81be89706f8d1d25ba83119c1d0f3de8d4e9",
-    "mjcf": "robosuite/models/assets/grippers/taccap_g1_slave_gripper.xml",
-    "mjcf_sha256": "36d2f2631edf457c1ebaec3773e8e64dc65c1dfe111d3121fc0b2d689650ab90",
-    "asset_redistribution_confirmed": true,
-    "asset_redistribution_note": "Released by Xense Robotics with XTac-UMI-Description"
-  },
   "mesh_sha256": {
     "Asm_link.STL": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
-    "base_link_with_mount.STL": "a208a872b8f3c47420bb7466ecf7e43113da06aaade5253b3be63786de09b66f",
+    "base_link.STL": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
     "grip_left.STL": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
-    "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
-    "viusal_link.STL": "09596831011ef50fe35a2f33a5fd88c6e0d5b22036d9974b1e9456c4e260cb2b"
+    "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3"
   },
   "joint_contract": {
     "active_joint": "taccap_right_finger_joint",
@@ -88,44 +79,11 @@
     "shipped_layers_sha256": {
       "usd/meshes/Asm_link.usdc": "0bb1f2f2fb5083890cc4280e71ec224bc07450b226a72dc2aab09bc9a26f10d6",
       "usd/meshes/base_link.usdc": "c6e72c6d636382ae5ffb042d0c24255e51f736f2ac558c89d12e794890e86cfd",
-      "usd/meshes/base_link_with_mount.usdc": "a2fafd29e03582c5d4821a81f3c4b1dfd8eff1ac5630e824f8779bcd49f1223b",
       "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
       "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
-      "usd/meshes/viusal_link.usdc": "20ad4a25b156c9157b668949654a1a9052d5105b456f27bbc91e59f138f26287",
       "usd/taccap_g1_slave.usda": "2191c0349f48494a3fce03bc5a2465a1047dcc6ff12969f92d71801b00fdc797",
       "usd/taccap_g1_slave_with_mount.usda": "1c3bed186ba35a20188b90aeeaccda6aac12ce791f2da95d106e338d9340866f"
     }
-  },
-  "derived_meshes": {
-    "base_link.STL": {
-      "generator": "scripts/generate_slave_mesh.py",
-      "operation": "Remove only triangles matching Asm_link.STL in the base frame; retain all other binary STL triangle records in source order.",
-      "source": "base_link_with_mount.STL",
-      "source_original_filename": "base_link.STL",
-      "source_sha256": "a208a872b8f3c47420bb7466ecf7e43113da06aaade5253b3be63786de09b66f",
-      "removed_component": "Asm_link.STL",
-      "removed_component_sha256": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
-      "transform_source": "urdf/taccap_g1_slave_macro.xacro with_mount: inverse(asm_visual origin) * taccap_mount_joint * base_visual origin, inverted",
-      "adapter_to_base_joint_xyz_m": [
-        0.046023,
-        -0.0060769,
-        -0.01975
-      ],
-      "adapter_to_base_joint_rpy_rad": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "vertex_match_tolerance_m": 1e-07,
-      "source_triangles": 71396,
-      "removed_triangles": 1550,
-      "output_triangles": 69846,
-      "sha256": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
-      "physics": "Collision geometry follows the visual mesh."
-    }
-  },
-  "source_mesh_renames": {
-    "base_link.STL": "base_link_with_mount.STL"
   },
   "urdf_frames": {
     "base": "taccap_base_link",

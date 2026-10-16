@@ -124,4 +124,4 @@ EEF 定义为夹指闭合时指尖最远端顶面的中心，轴向与 base link
 | MJCF | 由 URDF 生成，共用法兰根、+Z 工具轴、link/joint 名称与 EEF。从夹爪 MJCF 保留 robosuite 接口名（actuator `gripper`、`grip_site`/`ee*` site、`ft_frame` 及 `force_ee`/`torque_ee`），`ft_frame` 位于根 body（机械臂法兰接触面）。主夹爪 MJCF 由 mocap body 组成，每个 URDF link 对应一个 |
 | USD | 由 URDF 生成，坐标系与命名相同。从夹爪刚体为 `taccap_base_link` 与两个夹指，连接件与 EEF 为其下的固定 Xform；主夹爪 USD 按 URDF 树嵌套 |
 
-各包中的 `asset.json` 列出入口文件与文件哈希。Python 资源 API 及 ROS/RViz 启动文件均指向上述 URDF。
+Python 资源 API 及 ROS/RViz 启动文件均指向上述 URDF。

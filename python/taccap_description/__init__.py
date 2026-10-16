@@ -2,14 +2,7 @@
 
 from taccap_description.share import ASSET_ROOT
 
-__version__ = "0.1.0"
-
-
-def get_master_urdf_path(*, side):
-    """Compatibility entry point; master assets are a separate component."""
-    from taccap_master_description import get_master_urdf_path as master_path
-
-    return master_path(side=side)
+__version__ = "0.1.1"
 
 
 def get_urdf_path(*, with_mount=False):

@@ -8,7 +8,6 @@ import json
 import tempfile
 from pathlib import Path
 
-import numpy as np
 import ovstage
 import ovphysx
 from ovphysx import PhysX, PhysXConfig
