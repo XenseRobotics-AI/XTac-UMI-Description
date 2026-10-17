@@ -31,7 +31,7 @@ Repository = "https://github.com/XenseRobotics-AI/XTac-UMI-Description"
 Documentation = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/blob/main/docs/TACCAP_FLANGE_FRAMES.md"
 Issues = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/issues"
 Changelog = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/releases"
-"G1 documentation" = "https://github.com/XenseRobotics-AI/XTac-UMI-G1-Docs"
+"G1 documentation" = "https://xenserobotics-ai.github.io/XTac-UMI-G1-Docs/"
 SDK = "https://github.com/XenseRobotics-AI/TacCap-Gripper"
 
 [tool.setuptools.dynamic]

@@ -71,7 +71,7 @@ get_master_urdf_path(side="left")
 
 ## 相关链接
 
-- [XTac-UMI G1 文档](https://github.com/XenseRobotics-AI/XTac-UMI-G1-Docs)
+- [XTac-UMI G1 文档](https://xenserobotics-ai.github.io/XTac-UMI-G1-Docs/)
 - [TacCap-Gripper SDK](https://github.com/XenseRobotics-AI/TacCap-Gripper)：电机控制、IMU/编码器读取及每台设备的相机内参
 
 ## 开发

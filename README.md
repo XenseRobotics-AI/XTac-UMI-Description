@@ -73,7 +73,7 @@ Plain `.urdf` files use relative mesh paths and open directly in URDF viewers.
 
 ## Related
 
-- [XTac-UMI G1 documentation](https://github.com/XenseRobotics-AI/XTac-UMI-G1-Docs)
+- [XTac-UMI G1 documentation](https://xenserobotics-ai.github.io/XTac-UMI-G1-Docs/)
 - [TacCap-Gripper SDK](https://github.com/XenseRobotics-AI/TacCap-Gripper): motor
   control, IMU/encoder readout and per-device camera intrinsics
 
