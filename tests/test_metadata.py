@@ -81,3 +81,13 @@ def test_master_tcp_site_sits_on_the_documented_tcp_link(side):
     assert model.site_group[site] == 3
     # The preview stays a pose-only visualization.
     assert (model.nq, model.nv, model.nu) == (0, 0, 0)
+
+
+def test_versions_match_the_python_package():
+    """package.xml must repeat the version defined in taccap_description."""
+    import xml.etree.ElementTree as ET
+
+    import taccap_description
+
+    for root in (SLAVE_ROOT, MASTER_ROOT):
+        assert ET.parse(root / "package.xml").findtext("version") == taccap_description.__version__

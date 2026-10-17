@@ -7,6 +7,10 @@ names and end-effector (EEF) definition of the TacCap (XTac-UMI) master and
 slave grippers. The same conventions apply to the URDF, Xacro, MJCF and USD
 descriptions in this repository.
 
+Terminology: the **master** is the handheld gripper (the leader) and the
+**slave** is the arm-mounted gripper (the follower); the TacCap-Gripper SDK
+calls them leader and follower. `<side>` is `left` or `right`.
+
 ## Units and axes
 
 Lengths are in metres and angles in radians.
@@ -140,7 +144,7 @@ axis.
 | Left/right master | `<side>_base_link` | `-0.02285 0 0.04975` | `0 0 0` |
 
 The camera origin lies on the window axis, 19.95 mm behind the window ring. In
-the common follower frame, the master and slave camera positions agree within
+the `<side>_follower_link` frame, the master and slave camera positions agree within
 0.1 mm. Per-device fisheye intrinsics are stored in the gripper firmware and
 are available through the TacCap-Gripper SDK.
 

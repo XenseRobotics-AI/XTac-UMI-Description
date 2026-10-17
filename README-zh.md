@@ -4,8 +4,8 @@
 
 **XTac-UMI G1** 触觉数据采集夹爪的机器人模型，提供 URDF、Xacro、MJCF 和 USD 格式：
 
-- **从夹爪**（安装在机械臂上）：裸夹爪，或带 Asm_link 连接件。
-- **主夹爪**（手持端），分左、右。
+- **主夹爪**（master，手持端，SDK 中称 leader），分左、右。
+- **从夹爪**（slave，安装在机械臂上，SDK 中称 follower）：裸夹爪，或带 Asm_link 连接件。
 
 以 ROS 2（Humble/Jazzy）包和不依赖 ROS 的 Python wheel 两种形式提供。
 

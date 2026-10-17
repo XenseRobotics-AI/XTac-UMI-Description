@@ -5,6 +5,8 @@
 本文档说明 TacCap（XTac-UMI）主夹爪与从夹爪的坐标系、安装法兰、link/joint
 命名及末端执行器（EEF）定义。本仓库中的 URDF、Xacro、MJCF 和 USD 模型均遵循相同约定。
 
+术语：**主夹爪**（master）为手持端，**从夹爪**（slave）为安装在机械臂上的执行端；TacCap-Gripper SDK 中分别称为 leader 和 follower。`<side>` 为 `left` 或 `right`。
+
 ## 单位与坐标轴
 
 长度单位为 m，角度单位为 rad。
@@ -93,7 +95,7 @@ link。网格保持原生 CAD 坐标，通过 visual/collision/inertial 的 orig
 
 EEF 定义为夹指闭合时指尖最远端顶面的中心，轴向与 base link 相同，因此法兰到 EEF 为纯平移。EEF 沿 +X 偏离法兰轴线 36.58 mm。
 
-| 模型 | EEF 相对根 (m) | EEF 相对从爪等效坐标系 (m) |
+| 模型 | EEF 相对根 (m) | EEF 相对从夹爪等效坐标系 (m) |
 | --- | --- | --- |
 | 左/右主夹爪 | `0.036575 0 0.1894217`（`<side>_base_link`） | `0.036575 0 0.2009217`（`<side>_follower_link`） |
 | 从夹爪 | `0.036575 0 0.2009217`（`taccap_base_link`） | `0.036575 0 0.2009217`（`taccap_base_link`） |
@@ -112,7 +114,7 @@ EEF 定义为夹指闭合时指尖最远端顶面的中心，轴向与 base link
 | 从夹爪 | `taccap_base_link` | `-0.02275 0 0.06125` | `0 0 0` |
 | 左/右主夹爪 | `<side>_base_link` | `-0.02285 0 0.04975` | `0 0 0` |
 
-相机原点位于窗口轴线上、窗口平环后方 19.95 mm。在共同的 follower 坐标系下，主从夹爪相机位置差小于
+相机原点位于窗口轴线上、窗口平环后方 19.95 mm。在 `<side>_follower_link` 坐标系下，主从夹爪相机位置差小于
 0.1 mm。每台设备的鱼眼内参存储于夹爪固件中，可通过 TacCap-Gripper SDK 获取。
 
 ## 格式与生成

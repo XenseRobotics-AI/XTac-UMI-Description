@@ -5,8 +5,8 @@
 Robot descriptions of the **XTac-UMI G1** tactile data-collection gripper, in
 URDF, Xacro, MJCF and USD:
 
-- **Slave** (arm-mounted): bare, or with the Asm_link adapter for the arm flange.
-- **Master** (handheld), left and right.
+- **Master** (handheld, the leader), left and right.
+- **Slave** (arm-mounted, the follower): bare, or with the Asm_link adapter for the arm flange.
 
 Packaged for ROS 2 (Humble/Jazzy) and as a Python wheel that needs no ROS.
 

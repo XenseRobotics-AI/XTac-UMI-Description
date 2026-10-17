@@ -275,7 +275,7 @@ def usd_metadata():
             "anchor_joint": "joints/root_fixed_joint",
             "driven_joint": driven.get("name"),
             "mimic_schema": "PhysxMimicJointAPI:rotZ",
-            "mimic_follower": "taccap_left_finger_joint",
+            "mimic_joint": "taccap_left_finger_joint",
             "mimic_gearing": -float(follower.get("multiplier", "1")),
             # "+ 0.0" normalises the -0.0 that negating a zero offset produces.
             "mimic_offset": -math.degrees(float(follower.get("offset", "0"))) + 0.0,

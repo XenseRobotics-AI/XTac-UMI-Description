@@ -4,19 +4,38 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xtac-umi-description"
-version = "0.1.1"
-description = "XTac-UMI (TacCap) master/slave gripper URDF, Xacro, MJCF and USD descriptions"
+dynamic = ["version"]
+description = "URDF, Xacro, MJCF and USD descriptions of the XTac-UMI G1 master (handheld) and slave (arm-mounted) grippers"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE", "ros/*/NOTICE.md", "ros/*/LICENSES/*.txt"]
 dependencies = []
+authors = [{ name = "Xense Robotics", email = "dylan@xenserobotics.com" }]
+keywords = ["xtac-umi", "taccap", "gripper", "tactile", "urdf", "xacro", "mjcf", "mujoco", "usd", "isaac-sim", "ros2", "robot-learning", "teleoperation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering",
+]
 
 [project.optional-dependencies]
 dev = ["xacro==2.1.1", "numpy", "scipy>=1.10", "mujoco>=3.3,<4", "usd-core==25.11", "pyyaml>=6", "pytest>=8", "build", "wheel"]
 
 [project.urls]
 Repository = "https://github.com/XenseRobotics-AI/XTac-UMI-Description"
+Documentation = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/blob/main/docs/TACCAP_FLANGE_FRAMES.md"
+Issues = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/issues"
+Changelog = "https://github.com/XenseRobotics-AI/XTac-UMI-Description/releases"
+"G1 documentation" = "https://github.com/XenseRobotics-AI/XTac-UMI-G1-Docs"
+SDK = "https://github.com/XenseRobotics-AI/TacCap-Gripper"
+
+[tool.setuptools.dynamic]
+version = { attr = "taccap_description.__version__" }
 
 [tool.setuptools]
 packages = ["taccap_description", "taccap_description.share", "taccap_master_description", "taccap_master_description.share"]

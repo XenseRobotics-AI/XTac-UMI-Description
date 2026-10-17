@@ -1,6 +1,5 @@
 {
   "model": "taccap_g1_slave",
-  "version": "0.1.1",
   "status": "simulation_model",
   "units": {
     "length": "m",
@@ -34,7 +33,7 @@
   },
   "joint_contract": {
     "active_joint": "taccap_right_finger_joint",
-    "follower_joint": "taccap_left_finger_joint",
+    "mimic_joint": "taccap_left_finger_joint",
     "axis": [
       1,
       0,
@@ -62,7 +61,7 @@
       "anchor_joint": "joints/root_fixed_joint",
       "driven_joint": "taccap_right_finger_joint",
       "mimic_schema": "PhysxMimicJointAPI:rotZ",
-      "mimic_follower": "taccap_left_finger_joint",
+      "mimic_joint": "taccap_left_finger_joint",
       "mimic_gearing": 1.0,
       "mimic_offset": 0.0
     },
@@ -90,7 +89,7 @@
     "mount": "taccap_mount_link",
     "eef": "taccap_eef_link",
     "active_joint": "taccap_right_finger_joint",
-    "follower_joint": "taccap_left_finger_joint",
+    "mimic_joint": "taccap_left_finger_joint",
     "base_definition": "Gripper mounting face centre (body/Asm_link mating face) in both variants; carries the body meshes and the 0.415 kg base inertial. Same convention as robotiq_85_base_link / Franka hand / xarm_gripper_base_link.",
     "axes": "+Z tool axis (native CAD +X), +Y toward the left finger (native +Y), +X toward the off-axis fingers (native -Z); taccap_eef_link has the same axes",
     "native_cad_placement": {

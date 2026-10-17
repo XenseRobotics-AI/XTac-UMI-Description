@@ -74,7 +74,7 @@
       "root": "left_base_link",
       "eef": "left_eef_link",
       "active_joint": "left_right_joint",
-      "follower_joint": "left_left_joint",
+      "mimic_joint": "left_left_joint",
       "flange_to_eef_xyz_m": [
         0.036575,
         0.0,
@@ -96,7 +96,7 @@
         0.0
       ],
       "note": "Root on the shell rear outer surface (centre on the tool axis); carries the shell meshes",
-      "follower": "left_follower_link",
+      "follower_link": "left_follower_link",
       "base_to_follower_xyz_m": [
         0.0,
         0.0,
@@ -107,7 +107,7 @@
       "root": "right_base_link",
       "eef": "right_eef_link",
       "active_joint": "right_right_joint",
-      "follower_joint": "right_left_joint",
+      "mimic_joint": "right_left_joint",
       "flange_to_eef_xyz_m": [
         0.036575,
         0.0,
@@ -129,7 +129,7 @@
         0.0
       ],
       "note": "Root on the shell rear outer surface (centre on the tool axis); carries the shell meshes",
-      "follower": "right_follower_link",
+      "follower_link": "right_follower_link",
       "base_to_follower_xyz_m": [
         0.0,
         0.0,

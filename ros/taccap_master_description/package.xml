@@ -2,7 +2,7 @@
 <package format="3">
   <name>taccap_master_description</name>
   <version>0.1.1</version>
-  <description>TacCap left/right master visual and kinematic descriptions.</description>
+  <description>XTac-UMI G1 master (handheld) gripper, left and right: URDF, Xacro, MJCF and USD visual/kinematic descriptions.</description>
   <maintainer email="dylan@xenserobotics.com">Xense Robotics</maintainer>
   <license>MIT</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
