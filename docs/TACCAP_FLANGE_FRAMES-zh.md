@@ -51,6 +51,24 @@ link。网格保持原生 CAD 坐标，通过 visual/collision/inertial 的 orig
   `taccap_base_link`：在该共同坐标系下，主从夹爪的 EEF、指尖、相机及夹指铰链轴线位置差小于 0.1 mm。
 - 遥操作时，裸从夹爪的机械臂法兰即对应 `<side>_follower_link`；带连接件时，机械臂法兰为该坐标系再沿 −Z 平移 12 mm。
 
+### 左右主夹爪
+
+主夹爪有左右两套模型，分别对应左手和右手：`taccap_g1_master_left.urdf` 和 `taccap_g1_master_right.urdf`。通过 `side:=left|right`（launch）或 `side="left"|"right"`（Python）选择；所有 link 和 joint 名称都带 `left_` 或 `right_` 前缀。
+
+两侧相同：坐标系约定、位于壳体后表面的根、`<side>_follower_link`、EEF、相机坐标系及夹指关节范围。
+
+两侧不同：
+
+| | 左主夹爪 | 右主夹爪 |
+| --- | --- | --- |
+| PICO 追踪器（`<side>_pico_link`，相对 `<side>_base_link` 的 xyz，单位 m） | `-0.032054 -0.023651 0.014053`（−Y 侧） | `-0.032782 0.024077 0.013155`（+Y 侧） |
+| 网格 | `meshes/left/` | `meshes/right/`（镜像件） |
+| 夹指显示颜色 | 青色 | 粉色 |
+
+PICO 追踪器装在壳体的相反两侧，因此追踪器到 EEF 的变换左右不同，请使用对应一侧 URDF 中的数值。
+
+左/右主夹爪与左/右夹指不是一回事：每个主夹爪都有左夹指（+Y，`<side>_left_link`）和右夹指（−Y，`<side>_right_link`）。
+
 ### 本体网格放置
 
 本体网格（原生 CAD 坐标）在 base link 中的放置：

@@ -38,8 +38,8 @@ Python：`taccap_description` 中的 `get_urdf_path`、`get_mjcf_path`、`get_us
 ## RViz
 
 ```bash
-ros2 launch taccap_description display.launch.py                   # 裸夹爪
-ros2 launch taccap_description display.launch.py with_mount:=true  # 带连接件
+ros2 launch taccap_description display.launch.py                   # bare
+ros2 launch taccap_description display.launch.py with_mount:=true  # with adapter
 ```
 
 打开带关节滑块的 RViz（固定坐标系 `taccap_base_link`）。传入 `prefix:=` 可为 link、joint 和材质加命名空间。

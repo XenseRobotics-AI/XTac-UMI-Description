@@ -21,6 +21,8 @@
 
 轴向与从夹爪一致：+Z 沿工具轴指向指尖，+Y 指向左夹指。在 `<side>_follower_link` 坐标系下，主从夹爪的 EEF、指尖、相机及铰链轴线位置差小于 0.1 mm。遥操作时，裸从夹爪的机械臂法兰即该坐标系；带连接件的从夹爪，机械臂法兰为该坐标系再平移 `[0, 0, -0.012]` m。详见[坐标系规范](../../docs/TACCAP_FLANGE_FRAMES-zh.md)。
 
+左右主夹爪共用全部坐标系、EEF 和关节范围；区别在于 PICO 追踪器的位置（装在壳体相反两侧）以及各自的网格。详见[左右主夹爪](../../docs/TACCAP_FLANGE_FRAMES-zh.md#左右主夹爪)。
+
 `<side>_right_joint` 为主动关节，范围 0 至 0.5047 rad（28.92°），0 为闭合；`<side>_left_joint` 以倍率 −1 mimic。追踪器到 TCP 的变换由应用定义。
 
 ## 入口文件
@@ -41,7 +43,7 @@ USD 旋转单位为度；prim 按 URDF 树嵌套，例如 `/Master/left_base_lin
 ## RViz
 
 ```bash
-ros2 launch taccap_master_description display.launch.py            # 左
+ros2 launch taccap_master_description display.launch.py            # left
 ros2 launch taccap_master_description display.launch.py side:=right
 ```
 
@@ -50,8 +52,8 @@ ros2 launch taccap_master_description display.launch.py side:=right
 ## MuJoCo 预览
 
 ```bash
-python scripts/view_master.py --side left                  # 循环动画
-python scripts/view_master.py --side right --opening 0.5   # 固定开度
+python scripts/view_master.py --side left                  # animated
+python scripts/view_master.py --side right --opening 0.5   # fixed opening
 python -m mujoco.viewer --mjcf ros/taccap_master_description/mjcf/left.xml
 ```
 
@@ -62,10 +64,10 @@ from taccap_master_description.mujoco_preview import set_opening
 
 model = mujoco.MjModel.from_xml_path(str(get_master_mjcf_path(side="left")))
 data = mujoco.MjData(model)
-set_opening(model, data, 0.5)  # 归一化开度 [0, 1]，不是弧度
+set_opening(model, data, 0.5)  # normalized [0, 1], not radians
 
 site = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "tcp")
-position = data.site_xpos[site]  # 即 <side>_eef_link 原点
+position = data.site_xpos[site]  # the <side>_eef_link origin
 ```
 
 该模型没有自由度（`nq = nv = nu = 0`），`mj_step` 不会驱动夹指；`set_opening` 设置夹指位姿并调用 `mj_forward`。`tcp` site 位于显示组 3（在查看器中按 `3` 显示）；`open` 关键帧为完全打开姿态。

@@ -49,7 +49,7 @@ ros2 launch taccap_master_description display.launch.py side:=left
 <xacro:taccap_g1_slave prefix="right_" with_mount="false"/>
 <joint name="arm_to_gripper" type="fixed">
   <parent link="tool0"/><child link="right_taccap_base_link"/>
-  <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- 绕 Z 的安装相位按实际安装设定 -->
+  <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- clocking about Z per installation -->
 </joint>
 ```
 
@@ -78,9 +78,9 @@ get_master_urdf_path(side="left")
 
 ```bash
 pip install -e '.[dev]'
-python scripts/generate_models.py          # 由 Xacro 生成从夹爪 URDF + MJCF
-python scripts/generate_usd.py             # 从夹爪 USD
-python scripts/generate_master_models.py   # 由 URDF 生成主夹爪 Xacro/MJCF/USD
+python scripts/generate_models.py          # slave URDF + MJCF from the Xacro
+python scripts/generate_usd.py             # slave USD
+python scripts/generate_master_models.py   # master Xacro/MJCF/USD from the URDFs
 python -m pytest -q
 ```
 

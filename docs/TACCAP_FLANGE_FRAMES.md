@@ -71,6 +71,32 @@ visual/collision/inertial origins.
   `<side>_follower_link`; with the adapter, the arm flange is this frame
   translated a further 12 mm along −Z.
 
+### Left and right masters
+
+There are two master models, one for each hand: `taccap_g1_master_left.urdf`
+and `taccap_g1_master_right.urdf`. Select one with `side:=left|right` (launch)
+or `side="left"|"right"` (Python); every link and joint name carries the
+`left_` or `right_` prefix.
+
+Identical on both sides: the frame convention, the root on the shell rear
+surface, `<side>_follower_link`, the EEF, the camera frames and the finger
+joint limits.
+
+Different between the sides:
+
+| | Left master | Right master |
+| --- | --- | --- |
+| PICO tracker (`<side>_pico_link`, xyz in m from `<side>_base_link`) | `-0.032054 -0.023651 0.014053` (−Y side) | `-0.032782 0.024077 0.013155` (+Y side) |
+| Meshes | `meshes/left/` | `meshes/right/` (mirrored parts) |
+| Finger display colour | cyan | pink |
+
+The PICO tracker is mounted on opposite sides of the shell, so the
+tracker-to-EEF transform differs between the two masters; take it from the
+URDF of the side in use.
+
+Left/right master is not the same as left/right finger: each master has a left
+finger (+Y, `<side>_left_link`) and a right finger (−Y, `<side>_right_link`).
+
 ### Body mesh placement
 
 Placement of the body mesh (native CAD frame) in the base link:

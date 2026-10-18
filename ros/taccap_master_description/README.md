@@ -27,6 +27,11 @@ arm flange is that frame for a bare slave, or that frame shifted by
 `[0, 0, -0.012]` m for a slave with the adapter. Details are in the
 [frame specification](../../docs/TACCAP_FLANGE_FRAMES.md).
 
+The left and right masters share all frames, the EEF and the joint limits;
+they differ in the PICO tracker position (mounted on opposite sides of the
+shell) and the side-specific meshes. See
+[left and right masters](../../docs/TACCAP_FLANGE_FRAMES.md#left-and-right-masters).
+
 `<side>_right_joint` drives, 0 to 0.5047 rad (28.92°), 0 = closed;
 `<side>_left_joint` mimics it with multiplier −1. Tracker-to-TCP transforms
 belong to the application.
