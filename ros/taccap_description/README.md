@@ -2,7 +2,9 @@
 
 [中文](README-zh.md)
 
-Arm-mounted gripper, bare or with the Asm_link mounting adapter. ROS package:
+Model `slave-v2026.10.23`: arm-mounted gripper, bare or with the mounting adapter.
+Mass: 0.750 kg bare / 0.785 kg with adapter. Body, motor and physical camera
+have separate inertial links; COM and full inertia tensors come from upstream. ROS package:
 `taccap_description`. Run commands from the repository root.
 
 ![Without mount (left) and with mount (right), closed and open](preview.png)
@@ -14,6 +16,7 @@ Arm-mounted gripper, bare or with the Asm_link mounting adapter. ROS package:
 | `taccap_mount_link` (`with_mount` only, root) | Asm_link face that contacts the arm flange |
 | `taccap_base_link` (root when bare) | Gripper mounting face, 12 mm above the mount face; carries the body |
 | `taccap_left_finger_link` / `taccap_right_finger_link` | Finger hinges (+Y / −Y) |
+| `taccap_motor_link` / `taccap_camera_body_link` | Physical motor (299 g) / camera (18 g), fixed to the base |
 | `taccap_eef_link` | Centre of the closed fingertips' most distal face |
 | `taccap_camera_link` / `taccap_camera_optical_link` | Wrist camera; optical frame follows REP-103 |
 
@@ -30,7 +33,7 @@ pose and the master correspondence are in the
   joint equality, USD PhysX mimic joint).
 - Torque limit 1.1 N·m: the maximum output torque of the RobStride EL05 finger
   motor, limited in hardware for continuous stall. It is defined once in the
-  Xacro macro; the MJCF actuator `forcerange` and the USD drive `maxForce` are
+  importer (`scripts/import_slave.py`); the MJCF actuator `forcerange` and the USD drive `maxForce` are
   generated from it.
 
 ## Entry points
@@ -86,6 +89,8 @@ stage = Usd.Stage.Open(str(get_usd_path(with_mount=True)))
 
 ## Regenerate
 
-Edit `urdf/taccap_g1_slave_macro.xacro`, then run
-`python scripts/generate_models.py` (URDF + MJCF) and
-`python scripts/generate_usd.py`. See [source and notices](NOTICE.md).
+Run `python scripts/import_slave.py` to adapt the locked upstream snapshot,
+then `python scripts/generate_models.py` (URDF + MJCF) and
+`python scripts/generate_usd.py`. MJCF/USD are local derivatives; the upstream
+version supplies URDF only. `--check` verifies the snapshot and generated files.
+See [source and notices](NOTICE.md) and the [update workflow](../../docs/UPSTREAM_SLAVE.md).

@@ -5,6 +5,8 @@
     <position name="gripper" joint="taccap_right_finger_joint" ctrllimited="true" ctrlrange="0 0.5047492196767601" forcelimited="true" kp="40" kv="2" forcerange="-1.1 1.1" />
   </actuator>
   <contact>
+    <exclude body1="taccap_motor_link" body2="taccap_left_finger_link" />
+    <exclude body1="taccap_motor_link" body2="taccap_right_finger_link" />
     <exclude body1="taccap_base_link" body2="taccap_left_finger_link" />
     <exclude body1="taccap_base_link" body2="taccap_right_finger_link" />
     <exclude body1="taccap_left_finger_link" body2="taccap_right_finger_link" />
@@ -17,31 +19,39 @@
     <material name="taccap_base_mat" rgba="0.75294 0.75294 0.75294 1" />
     <material name="taccap_left_mat" rgba="1 1 1 1" />
     <material name="taccap_right_mat" rgba="0.60392 0.60392 0.60392 1" />
-    <material name="taccap_mount_mat" rgba="0.89804 0.91765 0.92941 1" />
-    <mesh name="taccap_base_mesh" file="../meshes/base_link.STL" />
-    <mesh name="taccap_left_mesh" file="../meshes/grip_left.STL" />
-    <mesh name="taccap_right_mesh" file="../meshes/grip_right.STL" />
-    <mesh name="taccap_asm_mesh" file="../meshes/Asm_link.STL" />
+    <material name="taccap_cover_mat" rgba="0.89804 0.91765 0.92941 1" />
+    <mesh name="taccap_body_link_mesh" file="../meshes/body_link.STL" />
+    <mesh name="taccap_camera_link_mesh" file="../meshes/camera_link.STL" />
+    <mesh name="taccap_collision_body_link_mesh" file="../meshes/collision/body_link.stl" />
+    <mesh name="taccap_collision_flange_link_mesh" file="../meshes/collision/flange_link.stl" />
+    <mesh name="taccap_collision_left_link_mesh" file="../meshes/collision/left_link.stl" />
+    <mesh name="taccap_collision_motor_link_mesh" file="../meshes/collision/motor_link.stl" />
+    <mesh name="taccap_collision_right_link_mesh" file="../meshes/collision/right_link.stl" />
+    <mesh name="taccap_flange_link_mesh" file="../meshes/flange_link.STL" />
+    <mesh name="taccap_left_link_mesh" file="../meshes/left_link.STL" />
+    <mesh name="taccap_motor_link_mesh" file="../meshes/motor_link.STL" />
+    <mesh name="taccap_right_link_mesh" file="../meshes/right_link.STL" />
   </asset>
   <worldbody>
     <body name="taccap_mount_link">
-      <geom name="asm_visual" type="mesh" mass="0" mesh="taccap_asm_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_mount_mat" />
-      <geom name="asm_collision" type="mesh" mass="0" mesh="taccap_asm_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="0.89804 0.91765 0.92941 0" />
+      <inertial pos="0 0 0.00489788" mass="0.035" fullinertia="8.044150799999998e-06 8.044150800000001e-06 1.52699406e-05 1.145205007058267e-21 0 0" />
+      <geom name="flange_link_visual" type="mesh" mass="0" mesh="taccap_flange_link_mesh" pos="-3.552713678800501e-18 0 -7.105427357601002e-18" quat="0.7071067811865474 0 -0.7071067811865477 0" group="1" contype="0" conaffinity="0" material="taccap_cover_mat" />
+      <geom name="flange_link_collision" type="mesh" mass="0" mesh="taccap_collision_flange_link_mesh" pos="-3.552713678800501e-18 0 -7.105427357601002e-18" quat="0.7071067811865474 0 -0.7071067811865477 0" group="0" rgba="0.89804 0.91765 0.92941 0" />
       <body name="taccap_base_link" pos="0 0 0.012" quat="1 0 0 0">
-        <inertial pos="0.010155 -0.0007499 0.0361" mass="0.415" diaginertia="0.000573 0.000748 0.000680" />
-        <geom name="base_visual" type="mesh" mass="0" mesh="taccap_base_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_base_mat" />
-        <geom name="base_collision" type="mesh" mass="0" mesh="taccap_base_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="0.75294 0.75294 0.75294 0" />
+        <inertial pos="0.00055404 -0.0011065 0.03389788000000001" mass="0.153" fullinertia="0.0001662522337781271 0.000126891433023779 0.0001290344694980937 5.051220230199417e-07 1.023875307549503e-05 -1.820980122271716e-06" />
+        <geom name="body_link_visual" type="mesh" mass="0" mesh="taccap_body_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="1" contype="0" conaffinity="0" material="taccap_base_mat" />
+        <geom name="body_link_collision" type="mesh" mass="0" mesh="taccap_collision_body_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="0" rgba="0.75294 0.75294 0.75294 0" />
         <body name="taccap_left_finger_link" pos="0.0120336718 0.0199500106 0.0484999712" quat="1 0 0 0">
-          <inertial pos="0.020693 -0.00669 0.074921" mass="0.36678" fullinertia="0.00015235 0.00015466 3.3606e-05 2.9254e-07 -2.4362e-06 -6.6715e-06" />
+          <inertial pos="0.0140949482 -0.00330133312635219 0.04838757908594267" mass="0.14" fullinertia="0.0003065325738824327 0.0003222085257195986 3.792830299796826e-05 1.304843016703693e-06 -6.577075277330767e-05 7.713878953415112e-06" />
           <joint name="taccap_left_finger_joint" type="hinge" axis="1 0 0" range="-0.5047492196767601 0" damping="0.08" frictionloss="0.01" armature="0.002" />
-          <geom name="left_finger_visual" type="mesh" mass="0" mesh="taccap_left_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_left_mat" />
-          <geom name="left_finger_collision" type="mesh" mass="0" mesh="taccap_left_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
+          <geom name="left_link_visual" type="mesh" mass="0" mesh="taccap_left_link_mesh" pos="1.776356839400251e-18 0 0" quat="0.7068120400999784 0.02041420999467325 -0.7068120400999782 -0.02041420999467325" group="1" contype="0" conaffinity="0" material="taccap_left_mat" />
+          <geom name="left_link_collision" type="mesh" mass="0" mesh="taccap_collision_left_link_mesh" pos="1.776356839400251e-18 0 0" quat="0.7068120400999784 0.02041420999467325 -0.7068120400999782 -0.02041420999467325" group="0" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
         </body>
         <body name="taccap_right_finger_link" pos="0.0120336718 -0.0199499894 0.0484999712" quat="1 0 0 0">
-          <inertial pos="0.020629 0.0066814 0.07491" mass="0.36678" fullinertia="0.00015238 0.0001547 3.3592e-05 -2.9549e-07 -2.4418e-06 6.6629e-06" />
+          <inertial pos="0.0140399882 0.003278948264701973 0.04829841241419621" mass="0.14" fullinertia="0.0003063018651248454 0.0003219105627972025 3.79806639779513e-05 -1.332880396949135e-06 -6.566639014047093e-05 -7.90572760751648e-06" />
           <joint name="taccap_right_finger_joint" type="hinge" axis="1 0 0" range="0 0.5047492196767601" damping="0.08" frictionloss="0.01" armature="0.002" />
-          <geom name="right_finger_visual" type="mesh" mass="0" mesh="taccap_right_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_right_mat" />
-          <geom name="right_finger_collision" type="mesh" mass="0" mesh="taccap_right_mesh" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
+          <geom name="right_link_visual" type="mesh" mass="0" mesh="taccap_right_link_mesh" pos="1.776356839400251e-18 0 0" quat="0.7068120400999784 -0.02041420999467325 -0.7068120400999782 0.02041420999467325" group="1" contype="0" conaffinity="0" material="taccap_right_mat" />
+          <geom name="right_link_collision" type="mesh" mass="0" mesh="taccap_collision_right_link_mesh" pos="1.776356839400251e-18 0 0" quat="0.7068120400999784 -0.02041420999467325 -0.7068120400999782 0.02041420999467325" group="0" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
         </body>
         <body name="taccap_eef_link" pos="0.036575 0 0.2009217" quat="1 0 0 0">
           <site name="grip_site" size="0.01" rgba="1 0 0 0.5" type="sphere" group="1" />
@@ -53,6 +63,16 @@
         </body>
         <body name="taccap_camera_link" pos="-0.02275 0 0.06125" quat="1 0 0 0">
           <body name="taccap_camera_optical_link" pos="0 0 0" quat="0.7071067811865476 0 0 -0.7071067811865475" />
+        </body>
+        <body name="taccap_motor_link" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="0.03743085 -0.00109355 0.02554797" mass="0.299" fullinertia="2.530466922324684e-05 4.01613260249333e-05 4.954026835181985e-05 -2.027952739115101e-06 -1.239938363961379e-07 -7.393526076882528e-07" />
+          <geom name="motor_link_visual" type="mesh" mass="0" mesh="taccap_motor_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="1" contype="0" conaffinity="0" material="taccap_base_mat" />
+          <geom name="motor_link_collision" type="mesh" mass="0" mesh="taccap_collision_motor_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="0" rgba="0.75294 0.75294 0.75294 0" />
+        </body>
+        <body name="taccap_camera_body_link" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="-0.02305604 9.135000000000001e-05 0.06677412000000001" mass="0.018" fullinertia="2.08279730304444e-06 2.153388567352938e-06 1.83083202960262e-06 2.468185608919793e-08 -6.715076777008704e-08 1.990738215085462e-08" />
+          <geom name="camera_link_visual" type="mesh" mass="0" mesh="taccap_camera_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="1" contype="0" conaffinity="0" material="taccap_base_mat" />
+          <geom name="camera_link_collision" type="mesh" mass="0" mesh="taccap_camera_link_mesh" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865474 0 -0.7071067811865477 0" group="0" rgba="0.75294 0.75294 0.75294 0" />
         </body>
       </body>
       <site name="ft_frame" pos="0 0 0" size="0.005" rgba="1 0 0 0" group="1" />

@@ -21,7 +21,7 @@ from scipy.spatial.transform import Rotation
 ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
 ROOT = "/TacCap"
 MODEL = "taccap_g1_slave"
-# Rigid body that carries the massless adapter and EEF frames.
+# Rigid body that carries massless EEF and camera reference frames.
 BASE = "taccap_base_link"
 
 
@@ -58,7 +58,7 @@ def new_stage(path):
 
 def generate_meshes(output):
     (output / "meshes").mkdir(parents=True)
-    for source in sorted((ASSETS / "meshes").glob("*.STL")):
+    for source in sorted(p for p in (ASSETS / "meshes").rglob("*") if p.suffix.lower() == ".stl"):
         data = source.read_bytes()
         count = struct.unpack_from("<I", data, 80)[0]
         if len(data) != 84 + count * 50:
@@ -72,7 +72,9 @@ def generate_meshes(output):
             count=count,
         )
         points = triangles["vertices"].reshape(-1, 3).copy()
-        stage = new_stage(output / "meshes" / f"{source.stem}.usdc")
+        target = output / "meshes" / source.relative_to(ASSETS / "meshes").with_suffix(".usdc")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        stage = new_stage(target)
         mesh = UsdGeom.Mesh.Define(stage, ROOT + "/Mesh")
         mesh.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(points))
         mesh.CreateFaceVertexCountsAttr(
@@ -110,8 +112,7 @@ def generate_model(output, with_mount):
             joint.find("origin")
         )
 
-    # The adapter has no source mass. Attach it to the base instead of
-    # inventing a mass for another dynamic rigid body. The EEF is a frame.
+    # Physical parts retain their own mass/inertia. Virtual frames follow the base.
     paths = {
         name: f"{ROOT}/{name}"
         if link.find("inertial") is not None
@@ -155,7 +156,7 @@ def generate_model(output, with_mount):
                 mesh = UsdGeom.Mesh.Define(stage, path)
                 filename = Path(geometry.find("geometry/mesh").get("filename"))
                 mesh.GetPrim().GetReferences().AddReference(
-                    f"./meshes/{filename.stem}.usdc", ROOT + "/Mesh"
+                    "./meshes/" + filename.relative_to("../meshes").with_suffix(".usdc").as_posix(), ROOT + "/Mesh"
                 )
                 mesh.AddTransformOp().Set(
                     Gf.Matrix4d(transform(geometry.find("origin")).T.tolist())
@@ -177,17 +178,27 @@ def generate_model(output, with_mount):
     anchor.CreateLocalPos0Attr(Gf.Vec3f(*world_pose(BASE)[:3, 3]))
     anchor.CreateLocalRot0Attr(quat(world_pose(BASE)[:3, :3]))
     UsdPhysics.ArticulationRootAPI.Apply(anchor.GetPrim())
-    for child, source in parents.items():
+    physical_joints = dict(parents)
+    if with_mount:
+        root_joint = ET.Element("joint", name="mount_to_base_fixed", type="fixed")
+        ET.SubElement(root_joint, "parent", link=BASE)
+        physical_joints["taccap_mount_link"] = root_joint
+    for child, source in physical_joints.items():
         if links[child].find("inertial") is None or child == BASE:
-            continue  # Adapter and EEF are already fixed Xforms on the base.
+            continue  # Virtual frames are already fixed Xforms on the base.
         path = ROOT + "/joints/" + source.get("name")
         revolute = source.get("type") == "revolute"
         joint = (
             UsdPhysics.RevoluteJoint if revolute else UsdPhysics.FixedJoint
         ).Define(stage, path)
-        joint.CreateBody0Rel().SetTargets([paths[source.find("parent").get("link")]])
+        parent = source.find("parent").get("link")
+        joint.CreateBody0Rel().SetTargets([paths[parent]])
         joint.CreateBody1Rel().SetTargets([paths[child]])
         pose = transform(source.find("origin"))
+        if child == "taccap_mount_link":
+            # Root adapter is physical; connect it to the anchored base body.
+            joint.CreateBody0Rel().SetTargets([paths[BASE]])
+            pose = np.linalg.inv(world_pose(BASE)) @ world_pose(child)
         joint.CreateLocalPos0Attr(Gf.Vec3f(*pose[:3, 3]))
         # USD revolute joints and the rotZ mimic use the joint-frame Z axis;
         # rotate BOTH joint frames so that Z lies along the signed URDF axis.
@@ -268,7 +279,7 @@ def usd_metadata():
         "mass_unit": "kg",
         "angular_unit": "degree",
         "collider_approximation": "convexHull",
-        "collision_from_visuals": True,
+        "collision_from_visuals": False,
         "merge_fixed_joints": False,
         "articulation": {
             "fixed_base": True,
@@ -303,6 +314,13 @@ def main():
         generate_meshes(output)
         for mounted in (False, True):
             generate_model(output, mounted)
+        expected = {ASSETS / "usd" / p.relative_to(output) for p in output.rglob("*.usd*")}
+        stale = set((ASSETS / "usd").rglob("*.usd*")) - expected
+        if args.check and stale:
+            raise SystemExit(f"Stale USD layers: {sorted(stale)}")
+        if not args.check:
+            for path in stale:
+                path.unlink()
         for source in sorted(output.rglob("*.usd*")):
             target = ASSETS / "usd" / source.relative_to(output)
             if args.check:

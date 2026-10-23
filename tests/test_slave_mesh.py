@@ -1,88 +1,97 @@
-"""Geometry regression: the base mesh is the original body mesh minus exactly the adapter."""
+"""The imported STEP-derived geometry and measured physics remain traceable."""
 
-import struct
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
 import xml.etree.ElementTree as ET
-from collections import Counter
 from pathlib import Path
 
-import numpy as np
 import pytest
-from scipy.spatial import cKDTree
 
-from taccap_description import ASSET_ROOT, get_mjcf_path, get_urdf_path
+from taccap_description import ASSET_ROOT, get_urdf_path
 
-
-# The original body mesh with the adapter embedded, kept only as a regression reference.
-ORIGINAL_BASE = Path(__file__).resolve().parent / "data" / "slave" / "base_link_with_mount.STL"
+REPOSITORY = Path(__file__).resolve().parents[1]
+VENDOR = REPOSITORY / "vendor/taccap_slave"
 
 
-def records(name):
-    path = ORIGINAL_BASE if name == ORIGINAL_BASE.name else ASSET_ROOT / "meshes" / name
-    data = path.read_bytes()
-    count = struct.unpack_from("<I", data, 80)[0]
-    assert len(data) == 84 + 50 * count
-    return [data[i : i + 50] for i in range(84, len(data), 50)]
-
-
-def vertices(facets):
-    return np.array([struct.unpack_from("<9f", f, 12) for f in facets]).reshape(
-        -1, 3, 3
-    )
-
-
-def test_derived_base_removes_only_the_adapter():
-    # Only the derived base ships; the original is a test reference.
-    assert not (ASSET_ROOT / "meshes/base_link_with_mount.STL").exists()
-    original = records("base_link_with_mount.STL")
-    derived = records("base_link.STL")
-    remaining = Counter(derived)
-    removed = []
-    # Verify surviving records occur in exactly their original sequence.
-    retained = []
-    for record in original:
-        if remaining[record]:
-            remaining[record] -= 1
-            retained.append(record)
-        else:
-            removed.append(record)
-    assert not +remaining
-    assert retained == derived
-    assert len(original) == 71396
-    assert len(derived) == 69846
-    assert len(removed) == len(records("Asm_link.STL")) == 1550
-    adapter = vertices(records("Asm_link.STL")) + [-0.046023, 0.0060769, 0.01975]
-    removed_vertices = vertices(removed)
-    # Every removed face corresponds to exactly one adapter face, including
-    # all three vertices; centroid proximity alone would be insufficient.
-    distances, indices = cKDTree(removed_vertices.mean(axis=1)).query(
-        adapter.mean(axis=1)
-    )
-    assert max(distances) < 1e-7
-    assert len(set(indices)) == 1550
-    for expected, actual in zip(adapter, removed_vertices[indices]):
-        d = np.linalg.norm(expected[:, None] - actual[None], axis=2)
-        assert np.all(d.min(axis=1) < 1e-7)
-    # The adapter's rear-most surface cannot survive in the derived base.
-    assert vertices(derived)[:, :, 0].min() > adapter[:, :, 0].min() + 0.003
+def test_snapshot_and_shipped_meshes_match_upstream_lock():
+    lock = json.loads((VENDOR / "upstream.json").read_text())
+    assert json.loads((ASSET_ROOT / "config/upstream.json").read_text()) == lock
+    actual = {
+        str(p.relative_to(VENDOR / "source")): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in (VENDOR / "source").rglob("*") if p.is_file()
+    }
+    assert actual == lock["files_sha256"]
+    assert lock["path"].endswith("/slave-v2026.10.23")
+    for relative, digest in actual.items():
+        if relative.startswith("meshes/"):
+            assert hashlib.sha256((ASSET_ROOT / relative).read_bytes()).hexdigest() == digest
+    subprocess.run([sys.executable, str(REPOSITORY / "scripts/import_slave.py"), "--check"], check=True)
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
-def test_entry_points_use_derived_base_and_optional_adapter(with_mount):
+def test_six_part_model_mass_and_camera_com(with_mount):
     root = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
-    base = root.find("link[@name='taccap_base_link']")
-    for kind in ("visual", "collision"):
-        assert (
-            base.find(f"{kind}/geometry/mesh").get("filename")
-            == "../meshes/base_link.STL"
-        )
-    mount = root.find("link[@name='taccap_mount_link']")
-    assert (mount is not None) == with_mount
+    masses = {link.get("name"): float(link.find("inertial/mass").get("value"))
+              for link in root.findall("link") if link.find("inertial") is not None}
+    expected = {"taccap_base_link": .153, "taccap_motor_link": .299,
+                "taccap_left_finger_link": .140, "taccap_right_finger_link": .140,
+                "taccap_camera_body_link": .018}
     if with_mount:
-        assert len(mount.findall("visual")) == len(mount.findall("collision")) == 1
+        expected["taccap_mount_link"] = .035
+    assert masses == expected
+    assert sum(masses.values()) == pytest.approx(.785 if with_mount else .750)
+    camera = root.find("link[@name='taccap_camera_body_link']")
+    com = [float(v) for v in camera.find("inertial/origin").get("xyz").split()]
+    assert com == pytest.approx([-.02305604, .00009135, .06677412], abs=1e-14)
+    for name in ("taccap_eef_link", "taccap_camera_link", "taccap_camera_optical_link"):
+        assert not list(root.find(f"link[@name='{name}']"))
+    base = root.find("link[@name='taccap_base_link']")
+    assert base.find("visual/geometry/mesh").get("filename") == "../meshes/body_link.STL"
+    assert base.find("collision/geometry/mesh").get("filename") == "../meshes/collision/body_link.stl"
     assert len(root.findall("joint[@name='taccap_mount_joint']")) == int(with_mount)
-    mjcf = ET.parse(get_mjcf_path(with_mount=with_mount)).getroot()
-    assert (
-        mjcf.find("asset/mesh[@name='taccap_base_mesh']").get("file")
-        == "../meshes/base_link.STL"
-    )
-    assert len(mjcf.findall("asset/mesh[@name='taccap_asm_mesh']")) == int(with_mount)
+
+
+def test_commit_pin_accepts_exact_snapshot_and_rejects_changed_or_missing_files(tmp_path):
+    """Exercise real Git commits in scratch repos, without changing either live repo."""
+    upstream = tmp_path / "upstream"
+    upstream.mkdir()
+    git = ["git", "-C", str(upstream), "-c", "init.defaultBranch=fixture",
+           "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false",
+           "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid"]
+    subprocess.run(git + ["init", "-q"], check=True)
+    lock = json.loads((VENDOR / "upstream.json").read_text())
+    source = upstream / lock["path"]
+    shutil.copytree(VENDOR / "source", source)
+
+    def commit():
+        subprocess.run(git + ["add", "."], check=True)
+        subprocess.run(git + ["commit", "-qm", "fixture"], check=True)
+        return subprocess.check_output(git + ["rev-parse", "HEAD"], text=True).strip()
+
+    revision = commit()
+    sandbox = tmp_path / "downstream"
+    shutil.copytree(VENDOR, sandbox / "vendor/taccap_slave")
+    (sandbox / "scripts").mkdir()
+    importer = sandbox / "scripts/import_slave.py"
+    shutil.copyfile(REPOSITORY / "scripts/import_slave.py", importer)
+
+    def pin(sha):
+        return subprocess.run([sys.executable, str(importer), "--source-repo",
+                               str(upstream), "--pin-commit", sha], capture_output=True, text=True)
+
+    assert pin(revision).returncode == 0
+    pinned = sandbox / "vendor/taccap_slave/upstream.json"
+    accepted = pinned.read_bytes()
+    assert json.loads(accepted)["revision"] == revision
+    assert (sandbox / "ros/taccap_description/config/upstream.json").read_bytes() == accepted
+    (source / "README.md").write_text("changed source\n")
+    rejected = pin(commit())
+    assert rejected.returncode != 0 and "differs from snapshot" in rejected.stderr
+    assert pinned.read_bytes() == accepted
+    (source / "README.md").unlink()
+    rejected = pin(commit())
+    assert rejected.returncode != 0 and "file set differs" in rejected.stderr
+    assert pinned.read_bytes() == accepted

@@ -127,7 +127,7 @@ Placement of the body mesh (native CAD frame) in the base link:
 | Link | Joint | Description |
 | --- | --- | --- |
 | `taccap_mount_link` | — | Root with adapter, arm-flange contact face |
-| `taccap_base_link` | `taccap_mount_joint` (fixed, adapter version only) | Gripper mounting face, body mesh and inertial (0.415 kg) |
+| `taccap_base_link` | `taccap_mount_joint` (fixed, adapter version only) | Gripper mounting face, body mesh and inertial (0.153 kg) |
 | `taccap_right_finger_link` | `taccap_right_finger_joint` | Right finger (−Y), driven; positive angle opens |
 | `taccap_left_finger_link` | `taccap_left_finger_joint` | Left finger (+Y), mimics the right finger with multiplier −1 |
 | `taccap_eef_link` | `taccap_eef_joint` (fixed) | End effector |
@@ -179,8 +179,8 @@ are available through the TacCap-Gripper SDK.
 | Format | Notes |
 | --- | --- |
 | URDF | Master: `taccap_g1_master_{left,right}.urdf`. Slave: `taccap_g1_slave.urdf`, `taccap_g1_slave_with_mount.urdf` |
-| Xacro | Prefixable macros. Master Xacro is generated from the URDF with `python scripts/generate_master_models.py --urdf-only`; the slave URDFs are generated from `taccap_g1_slave_macro.xacro` with `python scripts/generate_models.py --urdf-only` |
+| Xacro | Prefixable macros. Master Xacro is generated from the URDF with `python scripts/generate_master_models.py --urdf-only`; the slave Xacro is generated from the locked upstream snapshot by `scripts/import_slave.py`, then the URDFs are generated from `taccap_g1_slave_macro.xacro` with `python scripts/generate_models.py --urdf-only` |
 | MJCF | Generated from the URDF; shares the flange root, +Z tool axis, link/joint names and EEF. The slave MJCF keeps the robosuite interface names (actuator `gripper`, `grip_site`/`ee*` sites, `ft_frame` with `force_ee`/`torque_ee`); `ft_frame` is on the root body (arm-flange contact face). The master MJCF consists of mocap bodies, one per URDF link |
-| USD | Generated from the URDF with the same frames and names. Slave rigid bodies are `taccap_base_link` and the two fingers; the adapter and EEF are fixed Xforms beneath them. The master USD is nested following the URDF tree |
+| USD | Generated from the URDF with the same frames and names. Slave rigid bodies include the body, two fingers, motor, physical camera and optional adapter; EEF and reference camera frames are fixed Xforms under the base. The master USD is nested following the URDF tree |
 
 The Python resource API and the ROS/RViz launch files point to the URDFs above.
