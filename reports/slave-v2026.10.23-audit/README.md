@@ -1,6 +1,6 @@
 # 从夹爪逐项差异审计
 
-本仓库原版：`f2d701e6d8173f56800ddf93cd13625b666de916`。上游：`assets/grippers/xense/taccap/slave-v2026.10.23`，正式 commit 尚未固定。
+本仓库原版：`f2d701e6d8173f56800ddf93cd13625b666de916`。上游：`assets/grippers/xense/taccap/slave-v2026.10.23`，commit：`b67736ce4d3bce785bedbb49f4c14011d38a7159`。
 
 本次运行逐文件复核了实时上游与快照（如传入 `--live-source`）；完整字段、文件哈希、网格边界、惯量张量及全部差异见 [details.json](details.json)。
 

@@ -23,6 +23,44 @@ def frame(position, rotation):
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
+def test_every_physical_part_is_connected_and_joint_frames_close(with_mount):
+    stage = Usd.Stage.Open(str(get_usd_path(with_mount=with_mount)))
+    cache = UsdGeom.XformCache()
+    rigid_bodies = {str(prim.GetPath()) for prim in stage.Traverse()
+                    if prim.HasAPI(UsdPhysics.RigidBodyAPI)}
+    assert len(rigid_bodies) == (6 if with_mount else 5)
+    edges = []
+    for prim in stage.Traverse():
+        if not prim.IsA(UsdPhysics.Joint):
+            continue
+        joint = UsdPhysics.Joint(prim)
+        endpoints = []
+        for relationship, position, rotation in (
+            (joint.GetBody0Rel(), joint.GetLocalPos0Attr(), joint.GetLocalRot0Attr()),
+            (joint.GetBody1Rel(), joint.GetLocalPos1Attr(), joint.GetLocalRot1Attr()),
+        ):
+            targets = relationship.GetTargets()
+            assert len(targets) <= 1
+            path = str(targets[0]) if targets else "world"
+            if targets:
+                assert path in rigid_bodies
+                pose = np.array(cache.GetLocalToWorldTransform(stage.GetPrimAtPath(path))).T
+            else:
+                pose = np.eye(4)
+            endpoints.append((path, pose @ frame(position.Get(), rotation.Get())))
+        np.testing.assert_allclose(endpoints[0][1], endpoints[1][1], atol=1e-8)
+        edges.append((endpoints[0][0], endpoints[1][0]))
+    assert len(edges) == len(rigid_bodies)
+    reached = {"world"}
+    while True:
+        connected = reached | {b for a, b in edges if a in reached} | {a for a, b in edges if b in reached}
+        if connected == reached:
+            break
+        reached = connected
+    assert reached == rigid_bodies | {"world"}
+
+
+@pytest.mark.parametrize("with_mount", [False, True])
 def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount):
     destination = tmp_path / "relocated assets"
     shutil.copytree(ASSET_ROOT / "usd", destination)

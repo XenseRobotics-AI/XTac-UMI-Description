@@ -82,7 +82,7 @@
       "max_force_nm": 1.1,
       "status": "MuJoCo position gains converted per-radian to per-degree"
     },
-    "mesh_layers": "usd/meshes/*.usdc",
+    "mesh_layers": "usd/meshes/**/*.usdc",
     "shipped_layers_sha256": {
       "usd/meshes/body_link.usdc": "57acee730599eccd324d2ccf9dea8e82bfed16b1477c1e13c184a7ab0f2ae3c2",
       "usd/meshes/camera_link.usdc": "1527beb11be4f3ea7db05ad199f9837706406ed67dbb6bdb85745014c7d3ef2a",
@@ -153,8 +153,8 @@
     "finger_frames": "Finger link frames share base axes (joint origin rpy 0, hinge axis +X). Finger mesh placements retain the upstream +/-0.05774812915895569 rad hinge-axis correction relative to native 0,-pi/2,0 placement; this converts the measurement pose to closed q=0.",
     "camera": {
       "links": [
-        "camera_link",
-        "camera_optical_link"
+        "taccap_camera_link",
+        "taccap_camera_optical_link"
       ],
       "source": "Wrist camera point on the dome-window axis, from the taccap_base_link origin: dX -22.75 mm, dY 0, dZ 61.25 mm; 19.95 mm behind the window ring",
       "camera_link_origin": "Camera point on the window axis",

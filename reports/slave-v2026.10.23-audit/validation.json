@@ -1,5 +1,5 @@
 {
-  "scope": "feat/slave-v2026.10.23",
+  "scope": "feat/slave-v2026.10.23 branch validation only; no release, main commit or PR",
   "source_audit": {
     "files": 38,
     "source_meshes": 11,
@@ -13,10 +13,12 @@
     "generate_models_check": "passed",
     "generate_usd_check": "passed",
     "generate_master_models_check": "passed",
-    "pytest": "107 passed",
+    "pytest": "110 passed",
     "git_diff_check": "passed",
     "sdist_and_wheel_build": "passed",
-    "independent_wheel_install": "passed"
+    "independent_wheel_install": "passed",
+    "ros_humble_build_install_xacro_urdf": "passed",
+    "usd_physical_connectivity_and_joint_frames": "passed"
   },
   "wheel_install_checks": [
     "Both slave entry variants and all 11 mesh hashes",
@@ -32,9 +34,20 @@
     "Missing-file commit rejected without changing accepted lock"
   ],
   "not_run": [
-    "ROS 2 colcon/runtime and RViz",
+    "RViz GUI",
     "Isaac Sim PhysX runtime",
     "Hardware/contact validation"
   ],
-  "upstream_commit": "pending: source asset remains untracked in the read-only upstream worktree"
+  "upstream_commit": "b67736ce4d3bce785bedbb49f4c14011d38a7159",
+  "review_findings_fixed": [
+    "USD mesh_layers glob now includes collision subdirectory",
+    "Camera metadata names now refer to existing taccap_camera_link and taccap_camera_optical_link"
+  ],
+  "review_invariants": {
+    "model_resources_unchanged_from_commit": "305aa1d",
+    "package_version_unchanged": "0.1.1",
+    "raw_upstream_snapshot_unchanged": true,
+    "main_unchanged": true,
+    "no_publication_or_pr": true
+  }
 }

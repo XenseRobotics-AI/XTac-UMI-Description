@@ -100,4 +100,4 @@ visual/collision 元素名称随上游改变：`base_*`→`body_link_*`、`left_
 
 对上游原始 URDF 与当前 URDF 进行全属性、子元素及顺序比较，明确应用上述根坐标映射后，每个入口仅剩两处夹指 effort 的 `4→1.1` 差异；不存在其他未解释的物理或几何参数偏差。源目录的全部 38 个文件与快照相同，原始 asset.json 内的哈希核对无不一致。
 
-MuJoCo 编译、开合、URDF/MJCF FK/完整惯量对照、USD 属性/引用与上游物理属性复算均有自动验证。三角网格简化及引擎凸包化不等于实物接触验证；ROS/RViz、Isaac Sim PhysX 及硬件运行没有在本次环境执行。
+MuJoCo 编译、开合、URDF/MJCF FK/完整惯量对照、USD 属性/引用/物理连接与上游物理属性复算均有自动验证。ROS Humble 下两个包的 colcon 构建、安装、两种从夹爪与前缀 Xacro 展开、URDF 解析和网格哈希检查均已通过。三角网格简化及引擎凸包化不等于实物接触验证；RViz GUI、Isaac Sim PhysX 及硬件运行未执行。

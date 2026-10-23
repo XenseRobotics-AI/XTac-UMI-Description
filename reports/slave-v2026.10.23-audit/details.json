@@ -3,7 +3,7 @@
   "upstream": {
     "repository": "https://github.com/XenseRobotics-AI/xense-description.git",
     "path": "assets/grippers/xense/taccap/slave-v2026.10.23",
-    "revision": null
+    "revision": "b67736ce4d3bce785bedbb49f4c14011d38a7159"
   },
   "live_source_matches_snapshot": true,
   "upstream_files_sha256": {
@@ -81,13 +81,13 @@
     "current": {
       "CMakeLists.txt": "e9287a318ce6979e89b53689c2b381b5b4d2cc22ea5762938f3d73817698dc0b",
       "LICENSES/robosuite.txt": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
-      "NOTICE.md": "ddb883362cbda1f2a0bb92b42e6abd177d9c857de2b80a4a9845163786999bb5",
+      "NOTICE.md": "3cdcd4053f087aad4599b6fbaa19524e1f788d79d44187ffb5fa4adc73153d83",
       "README-zh.md": "daeeca88e2b70213d9d2b68fe268e70e09155ae604a778a39ad66437c4409f53",
       "README.md": "6ab225e721b8619848f5471ffcd9991bf560ffda9223931faa40ed445d450c48",
       "__init__.py": "6806a2b36854b6dd36aaadfcc947222fd2c541df7e3cad1b44279eeb94f514c5",
-      "config/model.json": "b3c5cf5a5c34e2e9d2cc38fdeaa4b9784966fdc4c0004f10fca0bc0db98383c3",
+      "config/model.json": "e8a3a33a98722b65632a3dc33debe3c34fe88a6414caada0eba0a7f7dae68fbb",
       "config/mujoco.xml": "be230665bc470675e81578f3d5753a42f7c9b99e2e2c88cc46cbc64aa01166c2",
-      "config/upstream.json": "2fe31dca9d6bafd4c02cc85116fc9ff49a4373fce519b774a1cd3012be35c4f7",
+      "config/upstream.json": "a4595f84a4b08deb9af9785249a99034eea50f8e865c4d64f266d8f10128c7d1",
       "launch/display.launch.py": "a4c02f2fcf89553e3faa8422bb0443db552e70d14927d985ea0e823af8238d21",
       "meshes/body_link.STL": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
       "meshes/camera_link.STL": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
@@ -129,7 +129,7 @@
     {
       "field": "NOTICE.md",
       "before": "88b55d3c10cc5a633aa5d7d50008d339043a76e6912a83fdf619962aa1f3605d",
-      "after": "ddb883362cbda1f2a0bb92b42e6abd177d9c857de2b80a4a9845163786999bb5"
+      "after": "3cdcd4053f087aad4599b6fbaa19524e1f788d79d44187ffb5fa4adc73153d83"
     },
     {
       "field": "README-zh.md",
@@ -144,7 +144,7 @@
     {
       "field": "config/model.json",
       "before": "5bbdb490b3ee026a82bc2d06f17614a1a60c3f8064f63b90e598a63ba2db0b47",
-      "after": "b3c5cf5a5c34e2e9d2cc38fdeaa4b9784966fdc4c0004f10fca0bc0db98383c3"
+      "after": "e8a3a33a98722b65632a3dc33debe3c34fe88a6414caada0eba0a7f7dae68fbb"
     },
     {
       "field": "config/mujoco.xml",
@@ -154,7 +154,7 @@
     {
       "field": "config/upstream.json",
       "before": null,
-      "after": "2fe31dca9d6bafd4c02cc85116fc9ff49a4373fce519b774a1cd3012be35c4f7"
+      "after": "a4595f84a4b08deb9af9785249a99034eea50f8e865c4d64f266d8f10128c7d1"
     },
     {
       "field": "meshes/Asm_link.STL",

@@ -3,7 +3,7 @@
   "repository": "https://github.com/XenseRobotics-AI/xense-description.git",
   "path": "assets/grippers/xense/taccap/slave-v2026.10.23",
   "version": "slave-v2026.10.23",
-  "revision": null,
+  "revision": "b67736ce4d3bce785bedbb49f4c14011d38a7159",
   "capture": {
     "kind": "uncommitted_worktree_snapshot",
     "captured_at": "2026-10-23T10:50:20.569105+00:00",
@@ -55,5 +55,6 @@
     "Retain downstream root frames: bare taccap_base_link; mounted taccap_mount_link. Remove upstream virtual flange_link from bare; rename mounted flange_link and flange_to_base_joint.",
     "Retain downstream finger motor effort 1.1 Nm (RobStride EL05).",
     "Generate prefixed Xacro and downstream URDF/MJCF/USD from the locked URDF snapshot; keep physical geometry, masses, COMs, inertia, joint origins, axes and mimic."
-  ]
+  ],
+  "verification": "Every source file matches the pinned commit byte for byte."
 }

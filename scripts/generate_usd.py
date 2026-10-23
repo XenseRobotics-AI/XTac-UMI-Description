@@ -300,7 +300,7 @@ def usd_metadata():
             "max_force_nm": float(limit.get("effort")),
             "status": "MuJoCo position gains converted per-radian to per-degree",
         },
-        "mesh_layers": "usd/meshes/*.usdc",
+        "mesh_layers": "usd/meshes/**/*.usdc",
         "shipped_layers_sha256": hash_tree(ASSETS, "usd"),
     }
 

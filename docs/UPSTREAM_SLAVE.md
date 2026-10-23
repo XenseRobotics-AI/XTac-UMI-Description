@@ -1,6 +1,6 @@
 # 从夹爪上游同步流程
 
-本分支 `feat/slave-v2026.10.23` 从本仓库 `f2d701e` 创建。修改仅在此分支完成，未向 `main` 创建 PR，也未推送分支。
+本分支 `feat/slave-v2026.10.23` 从本仓库 `f2d701e` 创建。模型更新和验证在该功能分支完成，不直接向 `main` 写入。分支提交与远端同步状态以 Git 为准；PR 作为后续独立审查步骤处理。
 
 ## 原模型来源调查
 
@@ -26,7 +26,7 @@
 - `scripts/import_slave.py`：唯一的本地适配入口。
 - `ros/taccap_description/config/upstream.json`：随 ROS/Python 包分发的来源锁副本。
 
-快照采集前后分别计算所有源文件哈希，并与副本比较；三者一致才接受。采集时源目录尚未提交，因此 `revision` 为 `null`，`capture.kind` 为 `uncommitted_worktree_snapshot`。`head_context_only` 只说明当时上游工作区所在提交，**不是新版模型所属的 commit**。不得将其填入 `revision`。
+快照采集前后分别计算所有源文件哈希，并与副本比较；三者一致才接受。初次采集时源目录尚未提交，`capture.kind` 记录为 `uncommitted_worktree_snapshot`。随后已逐文件核验正式上游提交 `b67736ce4d3bce785bedbb49f4c14011d38a7159`，当前 `revision` 已固定到该提交。`head_context_only` 只说明当时上游工作区所在提交，**不是新版模型所属的 commit**。不得将其填入 `revision`。
 
 本流程不会在上游仓库执行 checkout、add、commit、stash、reset 或 push，不占用其他 agent 的分支和暂存区。
 
@@ -45,9 +45,9 @@ MJCF 的执行器、传感器、接触/控制参数在 `config/mujoco.xml` 维�
 
 原始来源的 CAD 修订仍是 2026.10.15，模型版本为 2026.10.23；两者不能混用。原始 NOTICE、测量截图和历史声明均保留于快照。
 
-## 上游 agent 提交完成后补齐 commit
+## 正式上游 commit 的核验与记录
 
-先确定对方实际提交的完整 commit SHA（以下 `<upstream-commit>` 为占位符），再在本仓库运行：
+本次已完成上述正式 commit 的逐文件核验。后续复核或升级时，先确定实际提交的完整 commit SHA（以下 `<upstream-commit>` 为占位符），再在本仓库运行：
 
 ```bash
 python scripts/import_slave.py \

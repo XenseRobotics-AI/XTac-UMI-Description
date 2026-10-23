@@ -239,7 +239,7 @@ def main():
         assert inventory(args.live_source) == hashes, "Live upstream changed during audit"
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "details.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
-    lines = ["# 从夹爪逐项差异审计", "", f"本仓库原版：`{baseline}`。上游：`{lock['path']}`，正式 commit 尚未固定。",
+    lines = ["# 从夹爪逐项差异审计", "", f"本仓库原版：`{baseline}`。上游：`{lock['path']}`，commit：`{lock['revision'] or '尚未固定'}`。",
              "", "本次运行逐文件复核了实时上游与快照（如传入 `--live-source`）；完整字段、文件哈希、网格边界、惯量张量及全部差异见 [details.json](details.json)。",
              "", "## 质量与物理 link", "", "| Link | 原版 kg | 上游 kg | 适配后 kg |", "| --- | ---: | ---: | ---: |"]
     old_links, raw_links, local_links = [report["models"]["_with_mount"][key] for key in ("baseline_links", "upstream_links", "current_links")]
