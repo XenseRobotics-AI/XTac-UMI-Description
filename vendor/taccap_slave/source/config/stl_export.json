@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "stl_export_recipe",
+  "source": {
+    "path": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+    "sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561"
+  },
+  "frame_policy": "original_sw",
+  "frame_inputs": {
+    "original_bare": {
+      "path": "assets/grippers/xense/taccap/slave-v2026.08.03/provenance/urdf/taccap_g1_slave.urdf",
+      "sha256": "5075df57ecc53e3f672d24c1e055c024282bc1918edcd106a7dc8804a42c67a6"
+    },
+    "original_with_mount": {
+      "path": "assets/grippers/xense/taccap/slave-v2026.08.03/provenance/urdf/taccap_g1_slave_with_mount.urdf",
+      "sha256": "6ccf7272b8da4c45a828d5268cd3f638f732a1bc90946b81f7ea46dba3a2a50a"
+    },
+    "current_bare": {
+      "path": "assets/grippers/xense/taccap/slave-v2026.08.03/urdf/taccap_g1_slave.urdf",
+      "sha256": "626526bfc5455f81be421420ec83f61f23a60228df25261d766de0a2fddd7961"
+    },
+    "current_with_mount": {
+      "path": "assets/grippers/xense/taccap/slave-v2026.08.03/urdf/taccap_g1_slave_with_mount.urdf",
+      "sha256": "838f68d59b0775a472e6e9894047786bb8d297c0802da04f07c9648e47094f36"
+    }
+  },
+  "standard_parts_policy": "retain_10_15_simplification",
+  "omitted_standard_parts": [
+    {
+      "name": "GB／T276-94深沟球轴承619／5-2Z",
+      "count": 2
+    },
+    {
+      "name": "轴套",
+      "count": 2
+    },
+    {
+      "name": "M2.5-27螺柱",
+      "count": 1
+    },
+    {
+      "name": "十字扁头螺丝M3X7",
+      "count": 8
+    }
+  ],
+  "tessellation": {
+    "linear_deflection_mm": 0.1,
+    "angular_deflection_rad": 0.2,
+    "relative": false,
+    "fallbacks": [
+      {
+        "linear_deflection_mm": 0.05,
+        "angular_deflection_rad": 0.15
+      },
+      {
+        "linear_deflection_mm": 0.01,
+        "angular_deflection_rad": 0.1
+      },
+      {
+        "linear_deflection_mm": 0.5,
+        "angular_deflection_rad": 0.3
+      }
+    ]
+  },
+  "no_recenter": true,
+  "no_mirror": true,
+  "new_motor_frame_policy": "reuse_locked_body_frame; no independent old motor frame exists",
+  "physics": "not_authored",
+  "urdf": "not_generated"
+}

@@ -1,0 +1,79 @@
+{
+  "scope": "Superseded source and temporary override, retained verbatim for traceability",
+  "previous_config_sha256": "d6518091fe5a5f1f4c12e902daf371768cff7ceb32bce142b0539549dc2e70f4",
+  "previous_camera_part": {
+    "link": "taccap_camera_body_link",
+    "mass_g": 18,
+    "sw_mass_g": 17.9,
+    "com_cm": [
+      2e-06,
+      -2.461779,
+      -20.967424
+    ],
+    "axes": [
+      [
+        0.074208,
+        -0.246534,
+        0.966289
+      ],
+      [
+        0.294596,
+        -0.920297,
+        -0.257424
+      ],
+      [
+        0.952736,
+        0.303768,
+        0.004334
+      ]
+    ],
+    "moments": [
+      18.121707,
+      20.936797,
+      21.611675
+    ],
+    "image": "camera.png",
+    "review": "temporary_link_origin_COM_override; original_SW_COM_pending_SW_review; not_calibrated",
+    "frame_like": "taccap_base_link",
+    "mesh_placement_like": "body_link",
+    "geometry": {
+      "path": "meshes/camera_link.STL",
+      "sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+      "source_occurrence": [
+        1,
+        5,
+        1
+      ],
+      "vertex_units": "m",
+      "verification": "provenance/camera_entity_verification.json",
+      "verification_sha256": "b8cd0781c0b479e4f078c0045eca9db717d56f721d3bb05a079217e5ef77ecc1"
+    },
+    "sources": {
+      "mass": {
+        "path": "provenance/mass-properties/2026-10-15/mass_table.png",
+        "column": "actual weighed approximate integer, camera row",
+        "rule": "18 g; includes camera mounting plate, housing and lens entity; counted only on physical camera link"
+      },
+      "center_of_mass": {
+        "path": "provenance/mass-properties/2026-10-15/camera.png",
+        "rule": "Original common-flange SW COM retained as source. Active COM temporarily overridden to physical camera link origin by user request on 2026-10-16."
+      },
+      "inertia": {
+        "path": "provenance/mass-properties/2026-10-15/camera.png",
+        "rule": "SW COM-centred principal moments and axes, g*cm^2; no scaling to weighed mass"
+      }
+    },
+    "com_override": {
+      "frame": "link",
+      "xyz_m": [
+        0,
+        0,
+        0
+      ],
+      "status": "temporary_user_requested_placeholder",
+      "requested_date": "2026-10-16",
+      "reason": "User requests the physical camera COM at taccap_camera_body_link coordinate origin until a corrected SW COM is supplied. Keep original SW COM and inertia as provenance; no density or parallel-axis estimate."
+    }
+  },
+  "previous_camera_review": "temporary_link_origin_override; pending_SW_review of original screenshot Z=-209.67424 mm; not_calibrated"
+}

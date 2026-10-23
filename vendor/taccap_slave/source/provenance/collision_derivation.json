@@ -1,0 +1,175 @@
+{
+  "generator": "scripts/generators/generate_taccap_slave_1015.py --collisions",
+  "collision_inputs_sha256": "59adfc0af4c5f7078c66051989072d12380e662fa4267586aaf3c7d9a0a6e8de",
+  "pymeshlab_version": "2025.7",
+  "method": {
+    "method": "alpha_wrap_exterior_then_QEM_with_separate_distal_finger_component",
+    "target_faces_per_part": 2900,
+    "alpha_m": 0.003,
+    "offset_m": 0.0005,
+    "finger_envelope_faces": 2000,
+    "finger_distal_faces": 900,
+    "finger_distal_fallback_alpha_m": 0.0008,
+    "finger_distal_fallback_offset_m": 5e-05,
+    "scope": "One nonconvex simplified triangle set. Camera retained when already below budget; flange directly QEM-reduced. Full geometry remains in visual. Finite surface sampling, no signed enclosure/contact/engine-convexification acceptance."
+  },
+  "meshes": {
+    "body_link": {
+      "source": "meshes/body_link.STL",
+      "source_sha256": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
+      "output": "meshes/collision/body_link.stl",
+      "output_sha256": "e40866ec9a44b9209881ae053882595c1c11abbdb623a1b25fc50b85933b1cdc",
+      "source_faces": 52736,
+      "output_faces": 2900,
+      "source_components": 18,
+      "derivation": {
+        "wrap_faces": 8582,
+        "method": "Alpha_Wrap_then_QEM"
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "samples": 4096,
+          "maximum_m": 0.005097454602617149,
+          "p99_m": 0.004388038381211443
+        },
+        "collision_to_source": {
+          "samples": 4096,
+          "maximum_m": 0.003139711556223887,
+          "p99_m": 0.0018863998112233604
+        }
+      }
+    },
+    "motor_link": {
+      "source": "meshes/motor_link.STL",
+      "source_sha256": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
+      "output": "meshes/collision/motor_link.stl",
+      "output_sha256": "904aba324248d8f12e38c41bd5227d20afb04c5e44941926a5d73a2ab904b40f",
+      "source_faces": 138664,
+      "output_faces": 2590,
+      "source_components": 31,
+      "derivation": {
+        "wrap_faces": 2590,
+        "method": "Alpha_Wrap_then_QEM"
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "samples": 4096,
+          "maximum_m": 0.01500172541961272,
+          "p99_m": 0.01440079469958989
+        },
+        "collision_to_source": {
+          "samples": 4096,
+          "maximum_m": 0.002421563516791148,
+          "p99_m": 0.001640536486700104
+        }
+      }
+    },
+    "left_link": {
+      "source": "meshes/left_link.STL",
+      "source_sha256": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69",
+      "output": "meshes/collision/left_link.stl",
+      "output_sha256": "57709f0dd3e83ad2da5d2cd2cab29d86c4f9b2f3eb2eb66f044f310cd0d6becc",
+      "source_faces": 98646,
+      "output_faces": 2900,
+      "source_components": 23,
+      "derivation": {
+        "proximal_wrap_faces": 3140,
+        "distal_source_faces": 16500,
+        "distal_method": "QEM",
+        "output_piece_faces": [
+          2000,
+          900
+        ]
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "samples": 4096,
+          "maximum_m": 0.007140672891102209,
+          "p99_m": 0.005363747819912351
+        },
+        "collision_to_source": {
+          "samples": 4096,
+          "maximum_m": 0.002674242349477457,
+          "p99_m": 0.001554462906929161
+        }
+      }
+    },
+    "right_link": {
+      "source": "meshes/right_link.STL",
+      "source_sha256": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53",
+      "output": "meshes/collision/right_link.stl",
+      "output_sha256": "ec45904d48ec00f358cc7218ebee412f79b7926c6d9f0c469829f6620502e5d5",
+      "source_faces": 91878,
+      "output_faces": 2900,
+      "source_components": 56,
+      "derivation": {
+        "proximal_wrap_faces": 3124,
+        "distal_source_faces": 16500,
+        "distal_method": "QEM",
+        "output_piece_faces": [
+          2000,
+          900
+        ]
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "samples": 4096,
+          "maximum_m": 0.007266277653152552,
+          "p99_m": 0.005393733722989741
+        },
+        "collision_to_source": {
+          "samples": 4096,
+          "maximum_m": 0.002422981178624807,
+          "p99_m": 0.0015446311388525487
+        }
+      }
+    },
+    "camera_link": {
+      "source": "meshes/camera_link.STL",
+      "source_sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+      "output": "meshes/camera_link.STL",
+      "output_sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+      "source_faces": 2674,
+      "output_faces": 2674,
+      "source_components": 1,
+      "derivation": {
+        "method": "exact_source"
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "exact_source_bytes": true,
+          "maximum_m": 0.0
+        },
+        "collision_to_source": {
+          "exact_source_bytes": true,
+          "maximum_m": 0.0
+        }
+      }
+    },
+    "flange_link": {
+      "source": "meshes/flange_link.STL",
+      "source_sha256": "bfd7cdc06fada26a0e8ddb9627e44f1fb652b30b8384c59f5098d2a6e8c4f6f6",
+      "output": "meshes/collision/flange_link.stl",
+      "output_sha256": "4c2c3a36c4c94bf34cd939def0e989cbc764c40296132efc61f4eb5413d83da7",
+      "source_faces": 5136,
+      "output_faces": 2900,
+      "source_components": 1,
+      "derivation": {
+        "method": "QEM"
+      },
+      "sampled_surface_distances": {
+        "source_to_collision": {
+          "samples": 4096,
+          "maximum_m": 0.00015498743629110008,
+          "p99_m": 6.01007294593253e-05
+        },
+        "collision_to_source": {
+          "samples": 4096,
+          "maximum_m": 0.00019973934705565745,
+          "p99_m": 4.457996197674351e-05
+        }
+      }
+    }
+  },
+  "scope": "Nonconvex exterior/QEM triangle derivatives; finite sampling includes hidden internal source surfaces, not a complete surface bound, conservative envelope or contact certificate."
+}

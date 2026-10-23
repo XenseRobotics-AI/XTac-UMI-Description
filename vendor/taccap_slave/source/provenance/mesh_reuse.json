@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-15",
+  "scope": "Byte-identical camera visual/collision reuse, without remeshing or physical changes.",
+  "files": [
+    {
+      "canonical": "meshes/camera_link.STL",
+      "sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+      "original_files": {
+        "meshes/collision/camera_link.stl": {
+          "sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+          "source": "meshes/camera_link.STL",
+          "source_sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+          "role": "derived_collision_mesh"
+        },
+        "meshes/camera_link.STL": {
+          "sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+          "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+          "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+          "role": "step_derived_visual_mesh"
+        }
+      }
+    }
+  ]
+}

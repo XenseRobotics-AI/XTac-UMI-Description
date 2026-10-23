@@ -1,0 +1,512 @@
+{
+  "config_sha256": "77aad03d6ffa3b760bba8d9ace44b1c41d1082612a2333228915b885c662ea24",
+  "sw_reference": {
+    "origin": "SW total-assembly origin = flange_link origin = robot end-flange origin, shared by both URDF variants.",
+    "sw_to_mount_rotation": [
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        -1
+      ]
+    ],
+    "com_unit": "cm",
+    "principal_moment_unit": "g*cm^2",
+    "principal_axes": "Ix/Iy/Iz rows in the SW screenshot; transpose to columns for Q diag(P) Q^T",
+    "screenshots": {
+      "mass_table.png": {
+        "path": "provenance/mass-properties/2026-10-15/mass_table.png",
+        "sha256": "af61d7e3ff0ee6ed2122fbe9085f46ce5d1600e98cd4e2d958961c373c9012d8"
+      },
+      "body.png": {
+        "path": "provenance/mass-properties/2026-10-15/body.png",
+        "sha256": "6d726c7ed8b6a1e111f42454b07157d3a267951a218f873d4e1b9ee5a7d4095f"
+      },
+      "motor.png": {
+        "path": "provenance/mass-properties/2026-10-15/motor.png",
+        "sha256": "af42ab2fd1b45746e89cb6227003bb087cd65646a38a401f8050a89353af4b30"
+      },
+      "left.png": {
+        "path": "provenance/mass-properties/2026-10-15/left.png",
+        "sha256": "96fafe514405b8ce777207a264f7817f79fb0c0fae6a0ff0e2f722b551229a22"
+      },
+      "right.png": {
+        "path": "provenance/mass-properties/2026-10-15/right.png",
+        "sha256": "6d3bde38900ad5a2ca8757177ebb308e0ac1effc6e9744a74367579186d11509"
+      },
+      "camera.png": {
+        "path": "provenance/mass-properties/2026-10-15/camera.png",
+        "sha256": "76c1f82bbdcbd85525aeaf7c15e91a9410e24f2117c7dcf6eb931dd2f38c09a3"
+      },
+      "flange.png": {
+        "path": "provenance/mass-properties/2026-10-15/flange.png",
+        "sha256": "3ee765e30dda1ef38fde318e69e7542127287a2ece6737129cb7707160ef82a7"
+      },
+      "camera_com_corrected.png": {
+        "path": "provenance/mass-properties/2026-10-23/camera_com_corrected.png",
+        "sha256": "530b6cff22f3109f7a9d5fc5bdee5d8caabeeadbe4a9a9087acedf9cd50c6c39"
+      }
+    },
+    "inertia_mass_rule": "Use weighed integer masses but literal SW COM and principal moments, without mass scaling. Screenshot axes are projected to the nearest orthogonal matrix to remove six-decimal rounding only.",
+    "finger_pose": "User confirms screenshots use the 10.15 sensor-surface-aligned STEP assembly. Its driver angle is derived in provenance/finger_reference.json; q=0 retains the 08.03 fingertip-aligned closed pose.",
+    "source_frame": "flange_link",
+    "urdf_frame": "flange_link",
+    "position_scope": "Every parts.*.com_cm is expressed in the same flange_link reference; never interpret it as a part-local or subassembly-local COM.",
+    "local_conversion": "Rotate common SW coordinates into flange_link axes, then apply the inverse flange-to-link transform at the recorded measurement pose. Both URDF roots are flange_link; taccap_base_link remains +12 mm along flange +Z.",
+    "origin_review": "explicitly_confirmed_by_user; do_not_treat_default_UI_label_as_evidence_of_a_different_origin"
+  },
+  "camera_contract": {
+    "physical_part": "camera_link",
+    "reference_link": "taccap_camera_link",
+    "optical_link": "taccap_camera_optical_link",
+    "eef_link": "taccap_eef_link",
+    "virtual_frame_policy": "Retain inherited fixed-joint positions and rotations. No visual, collision or inertial on reference/optical/EEF links; do not substitute COM for optical centre.",
+    "handoff": {
+      "path": "provenance/camera_stl_handoff.md",
+      "sha256": "39b6927aca591e16e321d5026d6bbe0a11143c0a02d8155dacd80f023b0f813e"
+    },
+    "new_physical_measurements": "User supplied corrected SW camera COM on 2026-10-23; mass manually fixed at 18 g; original principal axes/moments unchanged without mass scaling."
+  },
+  "flange_contract": {
+    "physical_part": "flange_link",
+    "source_frame": "taccap_mount_link",
+    "source_connection_joint": "taccap_mount_joint",
+    "connection_joint": "flange_to_base_joint",
+    "body_link": "taccap_base_link",
+    "bare": "Empty virtual root: no visual/collision/inertial. Same origin and axes as the mounted physical flange.",
+    "with_mount": "Root carries source C4 flange geometry and 35 g physical properties.",
+    "purpose": "Both models expose the same customer attachment reference at the SW assembly/robot flange origin; the customer may choose their own adapter."
+  },
+  "finger_kinematics": {
+    "policy": {
+      "closed_reference": "Archived 08.03 URDF q=0, fingertips aligned, explicitly selected by user.",
+      "measurement_reference": "10.15 STEP and SW mass-property screenshots, sensor surfaces aligned. This is a nonzero opening pose in the corrected URDF.",
+      "driver_joint": "taccap_right_finger_joint",
+      "closed_reference_inputs": {
+        "left_link": {
+          "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_left.STL",
+          "sha256": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
+          "inner_normal_sign": -1
+        },
+        "right_link": {
+          "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_right.STL",
+          "sha256": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+          "inner_normal_sign": 1
+        }
+      },
+      "normal_datum": {
+        "description": "Largest planar normal cluster on the inward-facing distal sensor housing, in native STL coordinates. Rounded normals select a plane only; the area-weighted full precision normals determine the rotation.",
+        "minimum_face_center_x_m": 0.115,
+        "maximum_abs_normal_z": 1e-05,
+        "minimum_inner_normal_y": 0.99,
+        "maximum_abs_normal_x": 0.1,
+        "normal_cluster_decimals": 5
+      },
+      "maximum_left_right_angle_difference_rad": 1e-07,
+      "derivation": "provenance/finger_reference.json",
+      "placement_rule": "Apply one rigid hinge-axis rotation to each source visual/collision placement and its local COM/inertia. Do not edit source meshes, joint origins, axes, limits, or mimic.",
+      "physical_rule": "Convert flange-referenced SW COM and centroidal inertia using each link pose at the derived measurement driver angle, not closed q=0."
+    },
+    "measurement_driver_angle_rad": 0.05774812915895569,
+    "measurement_driver_angle_deg": 3.3087240755845255,
+    "left_right_angle_difference_rad": 5.30825383648903e-15,
+    "parts": {
+      "left_link": {
+        "link": "taccap_left_finger_link",
+        "closed_reference": {
+          "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_left.STL",
+          "sha256": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
+          "inner_normal_sign": -1
+        },
+        "measurement_mesh": {
+          "path": "meshes/left_link.STL",
+          "sha256": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69"
+        },
+        "closed_datum": {
+          "faces": 31,
+          "area_m2": 0.00044191333852522163,
+          "normal_in_mesh": [
+            -0.05771588885923229,
+            -0.9983330487233129,
+            6.434696359733569e-08
+          ]
+        },
+        "measurement_datum": {
+          "faces": 160,
+          "area_m2": 0.0004903056564981189,
+          "normal_in_mesh": [
+            1.4904266997989264e-07,
+            -0.9999999999999889,
+            0.0
+          ]
+        },
+        "hinge_axis_in_link": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "joint_multiplier": -1.0,
+        "independently_measured_driver_angle_rad": 0.05774812915895304,
+        "closed_from_measurement_in_link": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.9983330401211736,
+            -0.057716037653457536,
+            0.0
+          ],
+          [
+            0.0,
+            0.057716037653457536,
+            0.9983330401211736,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "placement_correction_rad": 0.05774812915895569
+      },
+      "right_link": {
+        "link": "taccap_right_finger_link",
+        "closed_reference": {
+          "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_right.STL",
+          "sha256": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+          "inner_normal_sign": 1
+        },
+        "measurement_mesh": {
+          "path": "meshes/right_link.STL",
+          "sha256": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53"
+        },
+        "closed_datum": {
+          "faces": 31,
+          "area_m2": 0.000441913296839134,
+          "normal_in_mesh": [
+            -0.05771588885923627,
+            0.9983330487233125,
+            -6.434696966724392e-08
+          ]
+        },
+        "measurement_datum": {
+          "faces": 160,
+          "area_m2": 0.0004903056521458365,
+          "normal_in_mesh": [
+            1.4904267130289553e-07,
+            0.9999999999999889,
+            0.0
+          ]
+        },
+        "hinge_axis_in_link": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "joint_multiplier": 1.0,
+        "independently_measured_driver_angle_rad": 0.05774812915895835,
+        "closed_from_measurement_in_link": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.9983330401211736,
+            0.057716037653457536,
+            0.0
+          ],
+          [
+            0.0,
+            -0.057716037653457536,
+            0.9983330401211736,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "placement_correction_rad": -0.05774812915895569
+      }
+    },
+    "scope": "Mesh planar datums align 10.15 source pose to archived 08.03 q=0. Hinge origins, axes, limits and mimic are unchanged. Not an independent hardware calibration."
+  },
+  "camera_sources": {
+    "mass": {
+      "path": "provenance/mass-properties/2026-10-15/mass_table.png",
+      "column": "actual weighed approximate integer, camera row",
+      "rule": "18 g manually specified and reaffirmed by user on 2026-10-23; camera mounting plate, housing and lens entity counted once on physical camera link"
+    },
+    "center_of_mass": {
+      "path": "provenance/mass-properties/2026-10-23/camera_com_corrected.png",
+      "sha256": "530b6cff22f3109f7a9d5fc5bdee5d8caabeeadbe4a9a9087acedf9cd50c6c39",
+      "unit": "cm",
+      "reference_origin": "flange_link; source STEP total-assembly coordinates, verified through existing geometry transforms",
+      "rule": "Use new user SW COM with existing SW-to-flange rotation, then inverse flange-to-camera transform; no link-origin override.",
+      "verification": "provenance/mass-properties/2026-10-23/camera_com_correction.md",
+      "superseded": "provenance/mass-properties/2026-10-23/superseded_camera_com.json"
+    },
+    "inertia": {
+      "path": "provenance/mass-properties/2026-10-15/camera.png",
+      "rule": "SW COM-centred principal moments and axes, g*cm^2; no scaling to weighed mass"
+    }
+  },
+  "parts": {
+    "body_link": {
+      "link": "taccap_base_link",
+      "mass_kg": 0.153,
+      "com_in_link_m": [
+        0.00055404,
+        -0.0011065,
+        0.033897880000000005
+      ],
+      "com_in_mount_m": [
+        0.00055404,
+        -0.0011065,
+        0.04589788
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          0.00016625223377812707,
+          5.051220230199417e-07,
+          1.023875307549503e-05
+        ],
+        [
+          5.05122023019946e-07,
+          0.000126891433023779,
+          -1.8209801222717162e-06
+        ],
+        [
+          1.023875307549503e-05,
+          -1.8209801222717118e-06,
+          0.00012903446949809365
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        0.00012474248809999999,
+        0.0001285526196,
+        0.0001688830286
+      ],
+      "principal_axes_rounding_orthogonality_defect": 1.1229574049528544e-06,
+      "principal_axes_max_rounding_adjustment": 4.936799803123559e-07
+    },
+    "motor_link": {
+      "link": "taccap_motor_link",
+      "mass_kg": 0.299,
+      "com_in_link_m": [
+        0.03743085,
+        -0.00109355,
+        0.02554797
+      ],
+      "com_in_mount_m": [
+        0.03743085,
+        -0.00109355,
+        0.03754797
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          2.5304669223246843e-05,
+          -2.027952739115101e-06,
+          -1.2399383639613794e-07
+        ],
+        [
+          -2.027952739115101e-06,
+          4.01613260249333e-05,
+          -7.393526076882528e-07
+        ],
+        [
+          -1.2399383639613786e-07,
+          -7.393526076882533e-07,
+          4.9540268351819854e-05
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        2.50308275e-05,
+        4.0377190799999996e-05,
+        4.95982453e-05
+      ],
+      "principal_axes_rounding_orthogonality_defect": 1.3298064491340772e-06,
+      "principal_axes_max_rounding_adjustment": 4.441843060032369e-07
+    },
+    "left_link": {
+      "link": "taccap_left_finger_link",
+      "mass_kg": 0.14,
+      "com_in_link_m": [
+        0.014094948199999999,
+        -0.00330133312635219,
+        0.04838757908594267
+      ],
+      "com_in_mount_m": [
+        0.026128619999999998,
+        0.019446920000000003,
+        0.10899743
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          0.0003065325738824327,
+          1.3048430167036931e-06,
+          -6.577075277330767e-05
+        ],
+        [
+          1.3048430167036838e-06,
+          0.0003222085257195986,
+          7.713878953415112e-06
+        ],
+        [
+          -6.577075277330767e-05,
+          7.713878953415112e-06,
+          3.792830299796826e-05
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        2.24848125e-05,
+        0.00032152390269999997,
+        0.0003226606874
+      ],
+      "principal_axes_rounding_orthogonality_defect": 1.0296089435848676e-06,
+      "principal_axes_max_rounding_adjustment": 4.3756255285742895e-07
+    },
+    "right_link": {
+      "link": "taccap_right_finger_link",
+      "mass_kg": 0.14,
+      "com_in_link_m": [
+        0.014039988199999999,
+        0.0032789482647019733,
+        0.04829841241419621
+      ],
+      "com_in_mount_m": [
+        0.02607366,
+        -0.0194641,
+        0.10890712000000001
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          0.00030630186512484544,
+          -1.3328803969491354e-06,
+          -6.566639014047093e-05
+        ],
+        [
+          -1.3328803969491805e-06,
+          0.00032191056279720246,
+          -7.90572760751648e-06
+        ],
+        [
+          -6.56663901404709e-05,
+          -7.90572760751648e-06,
+          3.79806639779513e-05
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        2.25581849e-05,
+        0.00032124335349999997,
+        0.0003223915535
+      ],
+      "principal_axes_rounding_orthogonality_defect": 1.1471020212044844e-06,
+      "principal_axes_max_rounding_adjustment": 3.794573637527776e-07
+    },
+    "camera_link": {
+      "link": "taccap_camera_body_link",
+      "mass_kg": 0.018000000000000002,
+      "com_in_link_m": [
+        -0.023056040000000003,
+        9.135000000000001e-05,
+        0.06677412
+      ],
+      "com_in_mount_m": [
+        -0.023056040000000003,
+        9.135000000000001e-05,
+        0.07877412
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          2.0827973030444403e-06,
+          2.468185608919793e-08,
+          -6.715076777008704e-08
+        ],
+        [
+          2.4681856089197975e-08,
+          2.153388567352938e-06,
+          1.9907382150854623e-08
+        ],
+        [
+          -6.715076777008705e-08,
+          1.9907382150854646e-08,
+          1.83083202960262e-06
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        1.8121707e-06,
+        2.0936796999999996e-06,
+        2.1611675e-06
+      ],
+      "principal_axes_rounding_orthogonality_defect": 7.642787882652274e-07,
+      "principal_axes_max_rounding_adjustment": 2.953097374552849e-07
+    },
+    "flange_link": {
+      "link": "flange_link",
+      "mass_kg": 0.035,
+      "com_in_link_m": [
+        0.0,
+        0.0,
+        0.00489788
+      ],
+      "com_in_mount_m": [
+        0.0,
+        0.0,
+        0.00489788
+      ],
+      "inertia_in_link_kg_m2": [
+        [
+          8.044150799999998e-06,
+          1.1452050070582669e-21,
+          0.0
+        ],
+        [
+          1.1777652915460766e-21,
+          8.044150800000001e-06,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.52699406e-05
+        ]
+      ],
+      "principal_moments_kg_m2": [
+        8.0441508e-06,
+        8.0441508e-06,
+        1.52699406e-05
+      ],
+      "principal_axes_rounding_orthogonality_defect": 6.188980002149291e-07,
+      "principal_axes_max_rounding_adjustment": 2.1881345257934726e-07
+    }
+  },
+  "review": {
+    "camera_com": "corrected_user_SW_COM; geometry_consistency_verified; not_hardware_calibrated",
+    "inertia": "source values converted; not identified against measured mass distribution",
+    "contacts": "not_validated",
+    "camera_frames": "inherited_reference_points_not_calibrated",
+    "finger_reference": "08.03 closed mesh planar datums determine 10.15 rigid placement correction; motion hardware calibration not independently validated"
+  },
+  "scope": "SW screenshot principal tensors and COM converted to link coordinates; explicit user COM overrides retain original coordinates in source_com fields. Weighed masses substituted without inertia scaling. No hardware identification."
+}

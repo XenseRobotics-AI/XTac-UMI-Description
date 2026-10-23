@@ -1,0 +1,165 @@
+{
+  "policy": {
+    "closed_reference": "Archived 08.03 URDF q=0, fingertips aligned, explicitly selected by user.",
+    "measurement_reference": "10.15 STEP and SW mass-property screenshots, sensor surfaces aligned. This is a nonzero opening pose in the corrected URDF.",
+    "driver_joint": "taccap_right_finger_joint",
+    "closed_reference_inputs": {
+      "left_link": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_left.STL",
+        "sha256": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
+        "inner_normal_sign": -1
+      },
+      "right_link": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_right.STL",
+        "sha256": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+        "inner_normal_sign": 1
+      }
+    },
+    "normal_datum": {
+      "description": "Largest planar normal cluster on the inward-facing distal sensor housing, in native STL coordinates. Rounded normals select a plane only; the area-weighted full precision normals determine the rotation.",
+      "minimum_face_center_x_m": 0.115,
+      "maximum_abs_normal_z": 1e-05,
+      "minimum_inner_normal_y": 0.99,
+      "maximum_abs_normal_x": 0.1,
+      "normal_cluster_decimals": 5
+    },
+    "maximum_left_right_angle_difference_rad": 1e-07,
+    "derivation": "provenance/finger_reference.json",
+    "placement_rule": "Apply one rigid hinge-axis rotation to each source visual/collision placement and its local COM/inertia. Do not edit source meshes, joint origins, axes, limits, or mimic.",
+    "physical_rule": "Convert flange-referenced SW COM and centroidal inertia using each link pose at the derived measurement driver angle, not closed q=0."
+  },
+  "measurement_driver_angle_rad": 0.05774812915895569,
+  "measurement_driver_angle_deg": 3.3087240755845255,
+  "left_right_angle_difference_rad": 5.30825383648903e-15,
+  "parts": {
+    "left_link": {
+      "link": "taccap_left_finger_link",
+      "closed_reference": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_left.STL",
+        "sha256": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
+        "inner_normal_sign": -1
+      },
+      "measurement_mesh": {
+        "path": "meshes/left_link.STL",
+        "sha256": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69"
+      },
+      "closed_datum": {
+        "faces": 31,
+        "area_m2": 0.00044191333852522163,
+        "normal_in_mesh": [
+          -0.05771588885923229,
+          -0.9983330487233129,
+          6.434696359733569e-08
+        ]
+      },
+      "measurement_datum": {
+        "faces": 160,
+        "area_m2": 0.0004903056564981189,
+        "normal_in_mesh": [
+          1.4904266997989264e-07,
+          -0.9999999999999889,
+          0.0
+        ]
+      },
+      "hinge_axis_in_link": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "joint_multiplier": -1.0,
+      "independently_measured_driver_angle_rad": 0.05774812915895304,
+      "closed_from_measurement_in_link": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9983330401211736,
+          -0.057716037653457536,
+          0.0
+        ],
+        [
+          0.0,
+          0.057716037653457536,
+          0.9983330401211736,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "placement_correction_rad": 0.05774812915895569
+    },
+    "right_link": {
+      "link": "taccap_right_finger_link",
+      "closed_reference": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/meshes/grip_right.STL",
+        "sha256": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+        "inner_normal_sign": 1
+      },
+      "measurement_mesh": {
+        "path": "meshes/right_link.STL",
+        "sha256": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53"
+      },
+      "closed_datum": {
+        "faces": 31,
+        "area_m2": 0.000441913296839134,
+        "normal_in_mesh": [
+          -0.05771588885923627,
+          0.9983330487233125,
+          -6.434696966724392e-08
+        ]
+      },
+      "measurement_datum": {
+        "faces": 160,
+        "area_m2": 0.0004903056521458365,
+        "normal_in_mesh": [
+          1.4904267130289553e-07,
+          0.9999999999999889,
+          0.0
+        ]
+      },
+      "hinge_axis_in_link": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "joint_multiplier": 1.0,
+      "independently_measured_driver_angle_rad": 0.05774812915895835,
+      "closed_from_measurement_in_link": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9983330401211736,
+          0.057716037653457536,
+          0.0
+        ],
+        [
+          0.0,
+          -0.057716037653457536,
+          0.9983330401211736,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "placement_correction_rad": -0.05774812915895569
+    }
+  },
+  "scope": "Mesh planar datums align 10.15 source pose to archived 08.03 q=0. Hinge origins, axes, limits and mimic are unchanged. Not an independent hardware calibration."
+}

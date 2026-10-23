@@ -1,0 +1,30 @@
+{
+  "source": {
+    "path": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+    "sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561"
+  },
+  "selection": [
+    1,
+    5,
+    1
+  ],
+  "source_name_path": [
+    "A3-从夹爪组件",
+    "B1-摄像头装配体^A3-从夹爪组件",
+    "相机"
+  ],
+  "source_leaf_occurrences": 1,
+  "source_brep_faces": 48,
+  "output": "assets/grippers/xense/taccap/slave-v2026.10.15/meshes/camera_link.STL",
+  "output_sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+  "triangles": 2674,
+  "vertex_units": "m",
+  "actual_tessellation": {
+    "linear_deflection_mm": 0.1,
+    "angular_deflection_rad": 0.2
+  },
+  "camera_only_reextract_byte_match": true,
+  "optical_or_eef_geometry_included": false,
+  "stl_recentered_or_coordinate_frame_changed": false,
+  "physical_properties_assigned_by_this_step": false
+}

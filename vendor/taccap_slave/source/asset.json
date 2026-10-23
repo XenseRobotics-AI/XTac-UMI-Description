@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "id": "xense.taccap_slave_v2026_10_23",
+  "category": "grippers",
+  "display_name": "TacCap slave v2026.10.23 (six parts)",
+  "entrypoints": {
+    "default": "urdf/taccap_g1_slave.urdf",
+    "with_mount": "urdf/taccap_g1_slave_with_mount.urdf"
+  },
+  "units": {
+    "length": "m",
+    "angle": "rad",
+    "mass": "kg"
+  },
+  "authoring": {
+    "mode": "step_generated",
+    "authority": "config/model.json",
+    "generator": "scripts/generators/generate_taccap_slave_1023.py",
+    "geometry_authority": "config/stl_export.json",
+    "geometry_derivation": "provenance/stl_export.json",
+    "inherited_frame_inputs": {
+      "bare": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/urdf/taccap_g1_slave.urdf",
+        "sha256": "626526bfc5455f81be421420ec83f61f23a60228df25261d766de0a2fddd7961"
+      },
+      "with_mount": {
+        "path": "assets/grippers/xense/taccap/slave-v2026.08.03/urdf/taccap_g1_slave_with_mount.urdf",
+        "sha256": "838f68d59b0775a472e6e9894047786bb8d297c0802da04f07c9648e47094f36"
+      }
+    },
+    "collision_derivation": "provenance/collision_derivation.json",
+    "physical_conversion": "provenance/physical_properties_conversion.json",
+    "flange_contract": "config/model.json:flange_contract",
+    "finger_kinematics": "config/model.json:finger_kinematics",
+    "model_revision": "v2026.10.23-rc.1"
+  },
+  "source": {
+    "repository": null,
+    "revision": "v2026.10.15-rc.1",
+    "snapshot": "user_STEP_and_SW_screenshots",
+    "license_status": "unconfirmed_for_new_CAD_and_screenshots; inherited_license_texts_retained",
+    "step": {
+      "path": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561"
+    },
+    "notes": [
+      "Six visual STLs from the locked user 10.15 STEP; source vertices already in metres. C4 adapter is the STEP part, not an independent CNC adapter asset.",
+      "Masses 153/299/140/140/18/35 g use the approximate weighed integer column. Source SW COM and principal moments are converted without mass scaling.",
+      "SW-to-mount coordinates are [SW_y,SW_x,-SW_z]; screenshots use cm and g*cm^2. Raw screenshots, principal axes, conversion and hashes are retained.",
+      "Camera COM was corrected from the new user SW screenshot on 2026-10-23 and checked against locked STEP geometry. The active COM is [-0.02305604,0.00009135,0.06677412] m in taccap_camera_body_link; mass stays manually assigned 18 g and original SW principal moments are not scaled. Superseded COM=0 and the original erroneous screenshot are retained in provenance. Hardware mass distribution remains uncalibrated.",
+      "Inherited semantic frames, limits, joint axes and mimic are locked to the 08.03 archive. No physical parameters copied from the archive.",
+      "This separately versioned asset has two URDF entries and one simplified collision set. Existing xense.taccap_slave compatibility APIs and ROS retain the archive; current TacCap workcell recipes explicitly select this 10.15 asset. New MJCF/USD not generated.",
+      "Camera-only handoff: physical camera_link.STL and 18 g belong to taccap_camera_body_link; inherited reference/optical/EEF nodes remain geometry-free and inertia-free. The initial geometry handoff supplied no new physics; the corrected user SW COM screenshot was supplied separately on 2026-10-23.",
+      "Both URDFs expose the same nominal flange_link origin and axes. Bare root is virtual; mounted root carries C4 geometry and 35 g. Base is +12 mm along flange +Z. Dedicated-adapter assemblies compose this internal transform to preserve mounting seats. Legacy taccap_mount_link is only a locked source-frame name.",
+      "2026-10-23: user-directed model version/path/ID migration from slave-v2026.10.15 and xense.taccap_slave_v2026_10_15. The current model release is v2026.10.23-rc.1; source.revision retains the actual 10.15 CAD revision. Raw geometry, measurements, frozen provenance and all physical/kinematic definitions are retained."
+    ]
+  },
+  "review": {
+    "visual": "pending_human",
+    "joint_parameters": "08.03 origins_axes_limits_mimic_preserved; 10.15 measurement_pose_separate_from_fingertip_aligned_closed_zero; hardware_unvalidated",
+    "inertial_parameters": "weighed_integer_masses_and_SW_inertia_without_mass_scaling; corrected_user_camera_COM_2026_10_23; geometry_consistency_verified; hardware_unvalidated",
+    "contacts": "simplified_triangle_geometry_only; contact_and_convexification_unvalidated",
+    "camera_frames": "inherited_points_not_calibrated",
+    "camera_entity": "camera_only_STEP_reextract_byte_match; physical_mass_on_entity_only; optical_and_EEF_virtual_frames_separate",
+    "flange_frames": "common_flange_link_root; bare_virtual_and_mounted_physical; hardware_installation_not_validated"
+  },
+  "files": {
+    "LICENSES/robosuite.txt": {
+      "sha256": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
+      "source": "assets/grippers/xense/taccap/slave-v2026.08.03/LICENSES/robosuite.txt",
+      "source_sha256": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
+      "role": "license",
+      "modification": "2026-10-23: resolve the unchanged source file after layout migration; previous source pointer assets/grippers/xense/taccap/slave-v2026.08.03/body/LICENSES/robosuite.txt; source_sha256 retained."
+    },
+    "LICENSES/xtac-umi-description.txt": {
+      "sha256": "e377d313ab1da9536ccb3c97583680fbb8e818c3a89c9cd15724cc1f3fa92834",
+      "source": "assets/grippers/xense/taccap/slave-v2026.08.03/LICENSES/xtac-umi-description.txt",
+      "source_sha256": "e377d313ab1da9536ccb3c97583680fbb8e818c3a89c9cd15724cc1f3fa92834",
+      "role": "license",
+      "modification": "2026-10-23: resolve the unchanged source file after layout migration; previous source pointer assets/grippers/xense/taccap/slave-v2026.08.03/body/LICENSES/xtac-umi-description.txt; source_sha256 retained."
+    },
+    "NOTICE.md": {
+      "sha256": "aad907b65887ab967875ae7208113ada5f3e88755cc6ffb5a2c3fde17b891e70",
+      "source": "xense-description:local/NOTICE.md",
+      "source_sha256": "aad907b65887ab967875ae7208113ada5f3e88755cc6ffb5a2c3fde17b891e70",
+      "role": "documentation"
+    },
+    "README.md": {
+      "sha256": "87b8d461ee556501365695168ce3239a6c8d7f927bb977dd2231ccfcf589f84b",
+      "source": "xense-description:local/README.md",
+      "source_sha256": "87b8d461ee556501365695168ce3239a6c8d7f927bb977dd2231ccfcf589f84b",
+      "role": "documentation",
+      "modification": "2026-10-15: normalize local directory names/relative resource paths; preserve source bytes, source hashes and mechanical parameters."
+    },
+    "config/model.json": {
+      "sha256": "77aad03d6ffa3b760bba8d9ace44b1c41d1082612a2333228915b885c662ea24",
+      "source": "xense-description:local/config/model.json",
+      "source_sha256": "77aad03d6ffa3b760bba8d9ace44b1c41d1082612a2333228915b885c662ea24",
+      "role": "authoring_input",
+      "modification": "2026-10-15: normalize local directory names/relative resource paths; preserve source bytes, source hashes and mechanical parameters."
+    },
+    "config/stl_export.json": {
+      "sha256": "bcaa368a194bacdd679d25a50249a2dce66ec60dcc65e4956b749a164e0778eb",
+      "source": "xense-description:local/config/stl_export.json",
+      "source_sha256": "bcaa368a194bacdd679d25a50249a2dce66ec60dcc65e4956b749a164e0778eb",
+      "role": "authoring_input"
+    },
+    "meshes/body_link.STL": {
+      "sha256": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "meshes/camera_link.STL": {
+      "sha256": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "meshes/collision/body_link.stl": {
+      "sha256": "e40866ec9a44b9209881ae053882595c1c11abbdb623a1b25fc50b85933b1cdc",
+      "source": "meshes/body_link.STL",
+      "source_sha256": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
+      "role": "derived_collision_mesh"
+    },
+    "meshes/collision/flange_link.stl": {
+      "sha256": "4c2c3a36c4c94bf34cd939def0e989cbc764c40296132efc61f4eb5413d83da7",
+      "source": "meshes/flange_link.STL",
+      "source_sha256": "bfd7cdc06fada26a0e8ddb9627e44f1fb652b30b8384c59f5098d2a6e8c4f6f6",
+      "role": "derived_collision_mesh"
+    },
+    "meshes/collision/left_link.stl": {
+      "sha256": "57709f0dd3e83ad2da5d2cd2cab29d86c4f9b2f3eb2eb66f044f310cd0d6becc",
+      "source": "meshes/left_link.STL",
+      "source_sha256": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69",
+      "role": "derived_collision_mesh"
+    },
+    "meshes/collision/motor_link.stl": {
+      "sha256": "904aba324248d8f12e38c41bd5227d20afb04c5e44941926a5d73a2ab904b40f",
+      "source": "meshes/motor_link.STL",
+      "source_sha256": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
+      "role": "derived_collision_mesh"
+    },
+    "meshes/collision/right_link.stl": {
+      "sha256": "ec45904d48ec00f358cc7218ebee412f79b7926c6d9f0c469829f6620502e5d5",
+      "source": "meshes/right_link.STL",
+      "source_sha256": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53",
+      "role": "derived_collision_mesh"
+    },
+    "meshes/flange_link.STL": {
+      "sha256": "bfd7cdc06fada26a0e8ddb9627e44f1fb652b30b8384c59f5098d2a6e8c4f6f6",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "meshes/left_link.STL": {
+      "sha256": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "meshes/motor_link.STL": {
+      "sha256": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "meshes/right_link.STL": {
+      "sha256": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53",
+      "source": "step/grippers/xense/taccap/slave/A3-TacCap从夹爪-简化装配体-v2026.10.15-rc.1.STEP",
+      "source_sha256": "34b96afe37dcb5cb92b81a3d81a1334dfad8f75e610036077a9e278002ea5561",
+      "role": "step_derived_visual_mesh"
+    },
+    "provenance/collision_derivation.json": {
+      "sha256": "fb5a06ea0f3790562db5850e1c4fd76ce93dd8ca0a4d2d1d8fa9dcc379e650d9",
+      "source": "xense-description:local/provenance/collision_derivation.json",
+      "source_sha256": "fb5a06ea0f3790562db5850e1c4fd76ce93dd8ca0a4d2d1d8fa9dcc379e650d9",
+      "role": "derivation"
+    },
+    "provenance/mass-properties/2026-10-15/body.png": {
+      "sha256": "6d726c7ed8b6a1e111f42454b07157d3a267951a218f873d4e1b9ee5a7d4095f",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/body.png",
+      "source_sha256": "6d726c7ed8b6a1e111f42454b07157d3a267951a218f873d4e1b9ee5a7d4095f",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/camera.png": {
+      "sha256": "76c1f82bbdcbd85525aeaf7c15e91a9410e24f2117c7dcf6eb931dd2f38c09a3",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/camera.png",
+      "source_sha256": "76c1f82bbdcbd85525aeaf7c15e91a9410e24f2117c7dcf6eb931dd2f38c09a3",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/flange.png": {
+      "sha256": "3ee765e30dda1ef38fde318e69e7542127287a2ece6737129cb7707160ef82a7",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/flange.png",
+      "source_sha256": "3ee765e30dda1ef38fde318e69e7542127287a2ece6737129cb7707160ef82a7",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/left.png": {
+      "sha256": "96fafe514405b8ce777207a264f7817f79fb0c0fae6a0ff0e2f722b551229a22",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/left.png",
+      "source_sha256": "96fafe514405b8ce777207a264f7817f79fb0c0fae6a0ff0e2f722b551229a22",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/mass_table.png": {
+      "sha256": "af61d7e3ff0ee6ed2122fbe9085f46ce5d1600e98cd4e2d958961c373c9012d8",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/mass_table.png",
+      "source_sha256": "af61d7e3ff0ee6ed2122fbe9085f46ce5d1600e98cd4e2d958961c373c9012d8",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/motor.png": {
+      "sha256": "af42ab2fd1b45746e89cb6227003bb087cd65646a38a401f8050a89353af4b30",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/motor.png",
+      "source_sha256": "af42ab2fd1b45746e89cb6227003bb087cd65646a38a401f8050a89353af4b30",
+      "role": "measurement_source"
+    },
+    "provenance/mass-properties/2026-10-15/right.png": {
+      "sha256": "6d3bde38900ad5a2ca8757177ebb308e0ac1effc6e9744a74367579186d11509",
+      "source": "user-provided:2026-10-15/SW-and-weighed-mass-screenshots/right.png",
+      "source_sha256": "6d3bde38900ad5a2ca8757177ebb308e0ac1effc6e9744a74367579186d11509",
+      "role": "measurement_source"
+    },
+    "provenance/physical_properties_conversion.json": {
+      "sha256": "528fa313a9051e432b941d72619a84132f8f371ca38da9c8cc7802d7258a49b2",
+      "source": "xense-description:local/provenance/physical_properties_conversion.json",
+      "source_sha256": "528fa313a9051e432b941d72619a84132f8f371ca38da9c8cc7802d7258a49b2",
+      "role": "derivation",
+      "modification": "2026-10-15: normalize local directory names/relative resource paths; preserve source bytes, source hashes and mechanical parameters."
+    },
+    "provenance/stl_export.json": {
+      "sha256": "a6bb35ba0c443f6fb68f1823a9cc8aee5114bee9c9df6a977726f7ba1b7f9667",
+      "source": "xense-description:local/provenance/stl_export.json",
+      "source_sha256": "a6bb35ba0c443f6fb68f1823a9cc8aee5114bee9c9df6a977726f7ba1b7f9667",
+      "role": "derivation"
+    },
+    "urdf/taccap_g1_slave.urdf": {
+      "sha256": "3d56ee94a2939c172fcc0b88b503f4c37c9cede7b1886d92ba7dc098116104e0",
+      "source": "xense-description:local/urdf/taccap_g1_slave.urdf",
+      "source_sha256": "3d56ee94a2939c172fcc0b88b503f4c37c9cede7b1886d92ba7dc098116104e0",
+      "role": "generated_description"
+    },
+    "urdf/taccap_g1_slave_with_mount.urdf": {
+      "sha256": "fa0bf715fa52d3e1f09956dfa257b2db7ce38cfec62b29d6f13306f9f3712445",
+      "source": "xense-description:local/urdf/taccap_g1_slave_with_mount.urdf",
+      "source_sha256": "fa0bf715fa52d3e1f09956dfa257b2db7ce38cfec62b29d6f13306f9f3712445",
+      "role": "generated_description"
+    },
+    "provenance/camera_entity_verification.json": {
+      "sha256": "b8cd0781c0b479e4f078c0045eca9db717d56f721d3bb05a079217e5ef77ecc1",
+      "source": "reports/taccap_slave_1015_export/camera_entity_verification.json",
+      "source_sha256": "852d8ed633ba7a9808ad7261a01acc1aef2a8a53b50be22aaafc0b5890ef5ce8",
+      "role": "camera_source_verification"
+    },
+    "provenance/camera_stl_handoff.md": {
+      "sha256": "39b6927aca591e16e321d5026d6bbe0a11143c0a02d8155dacd80f023b0f813e",
+      "source": "assets/grippers/xense/taccap/slave-v2026.10.23/CAMERA_STL_HANDOFF.md",
+      "source_sha256": "3bdb215f3b0e12814ce5d13ec7b821426ee18d3b541d93d84e6b56320fe284ce",
+      "role": "camera_handoff_snapshot",
+      "modification": "2026-10-15: normalize local directory names/relative resource paths; preserve source bytes, source hashes and mechanical parameters."
+    },
+    "provenance/finger_reference.json": {
+      "sha256": "5414c0c497632fdf08caa59f789f80696c298bb1f74976c2f9384bfbea7d13bf",
+      "source": "xense-description:local/provenance/finger_reference.json",
+      "source_sha256": "5414c0c497632fdf08caa59f789f80696c298bb1f74976c2f9384bfbea7d13bf",
+      "role": "provenance"
+    },
+    "provenance/mesh_reuse.json": {
+      "sha256": "ddc9659cbd4acfe75dbc569434952bda894c6509e5e056b9d7a8f1bd736e7d46",
+      "source": "xense-description:byte-identical-STL-reuse",
+      "source_sha256": "ddc9659cbd4acfe75dbc569434952bda894c6509e5e056b9d7a8f1bd736e7d46",
+      "role": "provenance"
+    },
+    "provenance/mass-properties/2026-10-23/camera_com_corrected.png": {
+      "sha256": "530b6cff22f3109f7a9d5fc5bdee5d8caabeeadbe4a9a9087acedf9cd50c6c39",
+      "source": "user:SW-camera-COM-2026-10-23",
+      "source_sha256": "530b6cff22f3109f7a9d5fc5bdee5d8caabeeadbe4a9a9087acedf9cd50c6c39",
+      "role": "measurement"
+    },
+    "provenance/mass-properties/2026-10-23/superseded_camera_com.json": {
+      "sha256": "0d72137995ea47bf9b1f82b4dedeebd04cdcd419090dd72ef67b43bd6e4f62cf",
+      "source": "xense-description:local/provenance/mass-properties/2026-10-23/superseded_camera_com.json",
+      "source_sha256": "0d72137995ea47bf9b1f82b4dedeebd04cdcd419090dd72ef67b43bd6e4f62cf",
+      "role": "provenance"
+    },
+    "provenance/mass-properties/2026-10-23/camera_com_correction.md": {
+      "sha256": "a6fbb4bd89250e2635ee10978c47157c34a24f8f62086c38161d7ee4a33e2b06",
+      "source": "xense-description:local/provenance/mass-properties/2026-10-23/camera_com_correction.md",
+      "source_sha256": "a6fbb4bd89250e2635ee10978c47157c34a24f8f62086c38161d7ee4a33e2b06",
+      "role": "provenance"
+    },
+    "provenance/version_migration.json": {
+      "sha256": "ac79768771487f0a4e844294c720177246a39df7a15786ea866b24ccb43efef3",
+      "source": "xense-description:local/provenance/version_migration.json",
+      "source_sha256": "ac79768771487f0a4e844294c720177246a39df7a15786ea866b24ccb43efef3",
+      "role": "derivation"
+    }
+  }
+}
