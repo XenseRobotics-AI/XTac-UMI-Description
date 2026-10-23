@@ -14,7 +14,7 @@
     "generate_usd_check": "passed",
     "generate_master_models_check": "passed",
     "pytest": "110 passed",
-    "git_diff_check": "passed",
+    "git_diff_check": "passed for maintained files; two inherited trailing-space warnings in the unmodified vendor license",
     "sdist_and_wheel_build": "passed",
     "independent_wheel_install": "passed",
     "ros_humble_build_install_xacro_urdf": "passed",
@@ -49,5 +49,15 @@
     "raw_upstream_snapshot_unchanged": true,
     "main_unchanged": true,
     "no_publication_or_pr": true
+  },
+  "preserved_upstream_formatting": {
+    "path": "vendor/taccap_slave/source/LICENSES/robosuite.txt",
+    "trailing_space_lines": [
+      23,
+      25
+    ],
+    "identical_to_main_path": "ros/taccap_description/LICENSES/robosuite.txt",
+    "sha256": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
+    "reason": "Preserve the byte-identical upstream notice; no new repository whitespace policy is introduced."
   }
 }

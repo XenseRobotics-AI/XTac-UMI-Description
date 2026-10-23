@@ -905,8 +905,10 @@ python -m build
 | ROS Xacro/URDF | 裸/带座及 arm_ 前缀模型展开并经 check_urdf 通过 | 还核对安装后全部 11 个网格哈希和来源 commit，主夹爪入口也解析通过 |
 | sdist/wheel | 构建通过，独立 wheel 安装通过 | 原版本 0.1.1，仅为分支测试，没有发布 |
 | 版本核对 | Python、两个 ROS 包及 wheel metadata 一致 | 保持 0.1.1；撤回临时 0.1.2 |
-| git diff --check | 通过 | 空白/补丁格式检查 |
+| 自有文件空白检查 | 通过 | 相对基线检查时排除原样 vendor 快照；完整分支差异中的原始许可证格式例外见下文 |
 | 不变量 | 本轮审查未修改模型资源、上游原始快照及 main | 原始快照字节不变，实际 main SHA 保持基线 |
+
+准备完整 PR 差异时补充核对：`vendor/taccap_slave/source/LICENSES/robosuite.txt` 第 23、25 行存在上游原有尾随空格。该文件与基线 `ros/taccap_description/LICENSES/robosuite.txt` 逐字节相同，因此保留原始文本和来源哈希，不修改外部许可证，也不新增 `.gitattributes` 等项目级规则。完整分支空白检查对自有文件执行 `git diff --check origin/main...HEAD -- . ':(exclude)vendor/taccap_slave/source/**'`；未排除 vendor 的检查会如实报告这两处已知告警。
 
 本文件引用的是前一轮已经执行并留存的验证结果；本轮新增总结文档只检查内容、链接和变更范围，没有把“写文档”记为再次执行了所有模型或环境测试。
 
@@ -994,7 +996,7 @@ RViz GUI、Isaac Sim/PhysX 运行时和硬件/实物接触验证未执行。USD 
 | M | [pyproject.toml](../pyproject.toml) | 2814 | 2826 | 仅为从夹爪 wheel 增加小写 .stl 资源匹配 |
 | A | [reports/slave-v2026.10.23-audit/README.md](../reports/slave-v2026.10.23-audit/README.md) | — | 5781 | 数值与网格审计，显示正式 commit |
 | A | [reports/slave-v2026.10.23-audit/details.json](../reports/slave-v2026.10.23-audit/details.json) | — | 313876 | 全量字段、文件清单、哈希、完整物理属性和差异 |
-| A | [reports/slave-v2026.10.23-audit/validation.json](../reports/slave-v2026.10.23-audit/validation.json) | — | 1960 | 110 项回归/ROS/安装验证及本轮范围记录 |
+| A | [reports/slave-v2026.10.23-audit/validation.json](../reports/slave-v2026.10.23-audit/validation.json) | — | 2489 | 110 项回归/ROS/安装验证及本轮范围记录 |
 | M | [ros/taccap_description/NOTICE.md](../ros/taccap_description/NOTICE.md) | 1146 | 2238 | 精确新来源/commit、历史来源和本地差异；不改变原始授权状态 |
 | M | [ros/taccap_description/README-zh.md](../ros/taccap_description/README-zh.md) | 3946 | 4455 | 对应语言的新模型、质量、实体 link、力矩和重新生成说明 |
 | M | [ros/taccap_description/README.md](../ros/taccap_description/README.md) | 3857 | 4381 | 对应语言的新模型、质量、实体 link、力矩和重新生成说明 |
@@ -1176,7 +1178,7 @@ RViz GUI、Isaac Sim/PhysX 运行时和硬件/实物接触验证未执行。USD 
 
 ```text
 更新前 SHA-256: 不存在
-更新后 SHA-256: 121bb2f0342597f4d7e3e5eff79de67e4bb04efcdd50ed1aad875385e8b189cc
+更新后 SHA-256: 6af2d3181717f759fadeda5f2ab31161fd9abfba43bdc6f6b4b395c0e0c1ca69
 ```
 
 ### M ros/taccap_description/NOTICE.md
