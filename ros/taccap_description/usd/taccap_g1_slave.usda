@@ -13,19 +13,19 @@ def Xform "TacCap"
         prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
     )
     {
-        point3f physics:centerOfMass = (0.010155, -0.0007499, 0.0361)
-        float3 physics:diagonalInertia = (0.000573, 0.00068, 0.000748)
+        point3f physics:centerOfMass = (0.00055404, -0.0011065, 0.03389788)
+        float3 physics:diagonalInertia = (0.0001247425, 0.00012855262, 0.00016888302)
         prepend rel physics:filteredPairs = [
             </TacCap/taccap_left_finger_link>,
             </TacCap/taccap_right_finger_link>,
         ]
-        float physics:mass = 0.415
-        quatf physics:principalAxes = (0, 0, 0.70710677, 0.70710677)
+        float physics:mass = 0.153
+        quatf physics:principalAxes = (0.21656106, 0.73946524, -0.278571, -0.5733155)
         matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
         uniform token[] xformOpOrder = ["xformOp:transform"]
 
-        def Mesh "base_visual" (
-            prepend references = @./meshes/base_link.usdc@</TacCap/Mesh>
+        def Mesh "body_link_visual" (
+            prepend references = @./meshes/body_link.usdc@</TacCap/Mesh>
         )
         {
             color3f[] primvars:displayColor = [(0.75294, 0.75294, 0.75294)]
@@ -33,9 +33,9 @@ def Xform "TacCap"
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
-        def Mesh "base_collision" (
+        def Mesh "body_link_collision" (
             prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
-            prepend references = @./meshes/base_link.usdc@</TacCap/Mesh>
+            prepend references = @./meshes/collision/body_link.usdc@</TacCap/Mesh>
         )
         {
             uniform token physics:approximation = "convexHull"
@@ -63,35 +63,71 @@ def Xform "TacCap"
         }
     }
 
-    def Xform "taccap_left_finger_link" (
+    def Xform "taccap_motor_link" (
         prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
     )
     {
-        point3f physics:centerOfMass = (0.020693, -0.00669, 0.074921)
-        float3 physics:diagonalInertia = (0.000033190427, 0.00015233176, 0.0001550938)
-        prepend rel physics:filteredPairs = </TacCap/taccap_right_finger_link>
-        float physics:mass = 0.36678
-        quatf physics:principalAxes = (0.51945496, -0.46907228, 0.5555276, 0.4489173)
-        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0.0120336718, 0.0199500106, 0.0484999712, 1) )
+        point3f physics:centerOfMass = (0.03743085, -0.00109355, 0.02554797)
+        float3 physics:diagonalInertia = (0.000025030828, 0.000040377192, 0.000049598246)
+        prepend rel physics:filteredPairs = [
+            </TacCap/taccap_left_finger_link>,
+            </TacCap/taccap_right_finger_link>,
+        ]
+        float physics:mass = 0.299
+        quatf physics:principalAxes = (0.99698675, 0.039200388, -0.0018997355, 0.06691165)
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
         uniform token[] xformOpOrder = ["xformOp:transform"]
 
-        def Mesh "left_finger_visual" (
-            prepend references = @./meshes/grip_left.usdc@</TacCap/Mesh>
+        def Mesh "motor_link_visual" (
+            prepend references = @./meshes/motor_link.usdc@</TacCap/Mesh>
         )
         {
-            color3f[] primvars:displayColor = [(1, 1, 1)]
-            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            color3f[] primvars:displayColor = [(0.75294, 0.75294, 0.75294)]
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
-        def Mesh "left_finger_collision" (
+        def Mesh "motor_link_collision" (
             prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
-            prepend references = @./meshes/grip_left.usdc@</TacCap/Mesh>
+            prepend references = @./meshes/collision/motor_link.usdc@</TacCap/Mesh>
         )
         {
             uniform token physics:approximation = "convexHull"
             uniform token purpose = "guide"
-            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+    }
+
+    def Xform "taccap_left_finger_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0.014094948, -0.0033013332, 0.04838758)
+        float3 physics:diagonalInertia = (0.000022484812, 0.0003215239, 0.0003226607)
+        prepend rel physics:filteredPairs = </TacCap/taccap_right_finger_link>
+        float physics:mass = 0.14
+        quatf physics:principalAxes = (0.6747538, -0.39688262, -0.52772087, -0.3297001)
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0.0120336718, 0.0199500106, 0.0484999712, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+
+        def Mesh "left_link_visual" (
+            prepend references = @./meshes/left_link.usdc@</TacCap/Mesh>
+        )
+        {
+            color3f[] primvars:displayColor = [(1, 1, 1)]
+            matrix4d xformOp:transform = ( (0, -0.057716037653457, 0.998333040121174, 0), (0, 0.998333040121174, 0.057716037653457, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Mesh "left_link_collision" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+            prepend references = @./meshes/collision/left_link.usdc@</TacCap/Mesh>
+        )
+        {
+            uniform token physics:approximation = "convexHull"
+            uniform token purpose = "guide"
+            matrix4d xformOp:transform = ( (0, -0.057716037653457, 0.998333040121174, 0), (0, 0.998333040121174, 0.057716037653457, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
     }
@@ -100,30 +136,62 @@ def Xform "TacCap"
         prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
     )
     {
-        point3f physics:centerOfMass = (0.020629, 0.0066814, 0.07491)
-        float3 physics:diagonalInertia = (0.000033177326, 0.00015236124, 0.00015513343)
-        float physics:mass = 0.36678
-        quatf physics:principalAxes = (0.519597, 0.46889442, 0.5556412, -0.44879824)
+        point3f physics:centerOfMass = (0.014039989, 0.0032789484, 0.04829841)
+        float3 physics:diagonalInertia = (0.000022558184, 0.00032124337, 0.00032239154)
+        float physics:mass = 0.14
+        quatf physics:principalAxes = (-0.39109015, 0.67808735, 0.3255742, 0.5303277)
         matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0.0120336718, -0.0199499894, 0.0484999712, 1) )
         uniform token[] xformOpOrder = ["xformOp:transform"]
 
-        def Mesh "right_finger_visual" (
-            prepend references = @./meshes/grip_right.usdc@</TacCap/Mesh>
+        def Mesh "right_link_visual" (
+            prepend references = @./meshes/right_link.usdc@</TacCap/Mesh>
         )
         {
             color3f[] primvars:displayColor = [(0.60392, 0.60392, 0.60392)]
-            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            matrix4d xformOp:transform = ( (0, 0.057716037653457, 0.998333040121174, 0), (0, 0.998333040121174, -0.057716037653457, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
-        def Mesh "right_finger_collision" (
+        def Mesh "right_link_collision" (
             prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
-            prepend references = @./meshes/grip_right.usdc@</TacCap/Mesh>
+            prepend references = @./meshes/collision/right_link.usdc@</TacCap/Mesh>
         )
         {
             uniform token physics:approximation = "convexHull"
             uniform token purpose = "guide"
-            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            matrix4d xformOp:transform = ( (0, 0.057716037653457, 0.998333040121174, 0), (0, 0.998333040121174, -0.057716037653457, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+    }
+
+    def Xform "taccap_camera_body_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (-0.02305604, 0.00009135, 0.06677412)
+        float3 physics:diagonalInertia = (0.0000018121707, 0.0000020936798, 0.0000021611675)
+        float physics:mass = 0.018
+        quatf physics:principalAxes = (-0.34029558, -0.510815, -0.48672467, 0.6215835)
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+
+        def Mesh "camera_link_visual" (
+            prepend references = @./meshes/camera_link.usdc@</TacCap/Mesh>
+        )
+        {
+            color3f[] primvars:displayColor = [(0.75294, 0.75294, 0.75294)]
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Mesh "camera_link_collision" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+            prepend references = @./meshes/camera_link.usdc@</TacCap/Mesh>
+        )
+        {
+            uniform token physics:approximation = "convexHull"
+            uniform token purpose = "guide"
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
     }
@@ -176,6 +244,26 @@ def Xform "TacCap"
             quatf physics:localRot1 = (0, 0.70710677, 0, 0.70710677)
             float physics:lowerLimit = 0
             float physics:upperLimit = 28.92
+        }
+
+        def PhysicsFixedJoint "taccap_motor_joint"
+        {
+            rel physics:body0 = </TacCap/taccap_base_link>
+            rel physics:body1 = </TacCap/taccap_motor_link>
+            bool physics:collisionEnabled = 0
+            point3f physics:localPos0 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsFixedJoint "taccap_camera_body_joint"
+        {
+            rel physics:body0 = </TacCap/taccap_base_link>
+            rel physics:body1 = </TacCap/taccap_camera_body_link>
+            bool physics:collisionEnabled = 0
+            point3f physics:localPos0 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
         }
     }
 }

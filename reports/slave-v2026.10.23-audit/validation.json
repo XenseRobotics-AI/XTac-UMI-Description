@@ -1,0 +1,40 @@
+{
+  "scope": "feat/slave-v2026.10.23",
+  "source_audit": {
+    "files": 38,
+    "source_meshes": 11,
+    "live_upstream_matches_snapshot": true,
+    "manifest_hash_discrepancies": 0,
+    "independently_recomputed_parts": 6,
+    "unexplained_urdf_differences_after_root_and_effort_policy": 0
+  },
+  "checks": {
+    "import_slave_check": "passed",
+    "generate_models_check": "passed",
+    "generate_usd_check": "passed",
+    "generate_master_models_check": "passed",
+    "pytest": "107 passed",
+    "git_diff_check": "passed",
+    "sdist_and_wheel_build": "passed",
+    "independent_wheel_install": "passed"
+  },
+  "wheel_install_checks": [
+    "Both slave entry variants and all 11 mesh hashes",
+    "Five lowercase collision STL resources included",
+    "URDF and MJCF references resolve outside the checkout",
+    "Model masses 0.750 / 0.785 kg",
+    "Master entry points resolve",
+    "Source lock included; ROS-only files excluded"
+  ],
+  "pin_commit_integration_test": [
+    "Exact committed snapshot accepted in isolated temporary repositories",
+    "Content-changed commit rejected without changing accepted lock",
+    "Missing-file commit rejected without changing accepted lock"
+  ],
+  "not_run": [
+    "ROS 2 colcon/runtime and RViz",
+    "Isaac Sim PhysX runtime",
+    "Hardware/contact validation"
+  ],
+  "upstream_commit": "pending: source asset remains untracked in the read-only upstream worktree"
+}

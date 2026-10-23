@@ -35,7 +35,7 @@ def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount):
     layers, assets, unresolved = UsdUtils.ComputeAllDependencies(str(path))
     assert not assets  # All dependencies are USD layers, no external textures.
     assert not unresolved
-    assert len(layers) == (5 if with_mount else 4)
+    assert len(layers) == (12 if with_mount else 10)
     assert all(str(destination) in layer.realPath for layer in layers)
     stage = Usd.Stage.CreateInMemory()
     for instance in ("/World/Left", "/World/Right"):
@@ -116,7 +116,7 @@ def test_usd_joint_frames_and_mass_match_mujoco(with_mount, opening):
     for name in ("taccap_eef_link", "taccap_mount_link") if with_mount else ("taccap_eef_link",):
         pose = np.array(
             cache.GetLocalToWorldTransform(
-                stage.GetPrimAtPath(f"/TacCap/taccap_base_link/{name}")
+                stage.GetPrimAtPath(f"/TacCap/{name}" if name == "taccap_mount_link" else f"/TacCap/taccap_base_link/{name}")
             )
         ).T
         np.testing.assert_allclose(pose[:3, 3], data.body(name).xpos, atol=1e-12)
@@ -158,11 +158,7 @@ def test_usd_physics_contract_and_mesh_conversion(with_mount):
     for geometry in urdf.findall(".//visual") + urdf.findall(".//collision"):
         prim = next(p for p in stage.Traverse() if p.GetName() == geometry.get("name"))
         mesh = UsdGeom.Mesh(prim)
-        source = (
-            ASSET_ROOT
-            / "meshes"
-            / geometry.find("geometry/mesh").get("filename").split("/")[-1]
-        )
+        source = get_urdf_path(with_mount=with_mount).parent / geometry.find("geometry/mesh").get("filename")
         data = source.read_bytes()
         count = struct.unpack_from("<I", data, 80)[0]
         vertices = np.ndarray(

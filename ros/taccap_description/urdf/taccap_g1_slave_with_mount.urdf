@@ -9,69 +9,137 @@
   <material name="taccap_right_mat">
     <color rgba="0.60392 0.60392 0.60392 1" />
   </material>
-  <material name="taccap_mount_mat">
+  <material name="taccap_cover_mat">
     <color rgba="0.89804 0.91765 0.92941 1" />
   </material>
-  <link name="taccap_mount_link">
-    <visual name="asm_visual">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
-      <geometry>
-        <mesh filename="../meshes/Asm_link.STL" />
-      </geometry>
-      <material name="taccap_mount_mat" />
-    </visual>
-    <collision name="asm_collision">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
-      <geometry>
-        <mesh filename="../meshes/Asm_link.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="taccap_mount_joint" type="fixed">
-    <parent link="taccap_mount_link" />
-    <child link="taccap_base_link" />
-    <origin rpy="0 0 0" xyz="0 0 0.012" />
-  </joint>
   <link name="taccap_base_link">
     <inertial>
-      <origin rpy="0 0 0" xyz="0.010155 -0.0007499 0.0361" />
-      <mass value="0.415" />
-      <inertia ixx="0.000573" ixy="0" ixz="0" iyy="0.000748" iyz="0" izz="0.000680" />
+      <origin rpy="0 0 0" xyz="0.00055404 -0.0011065 0.03389788000000001" />
+      <mass value="0.153" />
+      <inertia ixx="0.0001662522337781271" ixy="5.051220230199417e-07" ixz="1.023875307549503e-05" iyy="0.000126891433023779" iyz="-1.820980122271716e-06" izz="0.0001290344694980937" />
     </inertial>
-    <visual name="base_visual">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0.01975 -0.0060769 0.034023" />
+    <visual name="body_link_visual">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
       <geometry>
-        <mesh filename="../meshes/base_link.STL" />
+        <mesh filename="../meshes/body_link.STL" />
       </geometry>
       <material name="taccap_base_mat" />
     </visual>
-    <collision name="base_collision">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0.01975 -0.0060769 0.034023" />
+    <collision name="body_link_collision">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
       <geometry>
-        <mesh filename="../meshes/base_link.STL" />
+        <mesh filename="../meshes/collision/body_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="taccap_motor_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.03743085 -0.00109355 0.02554797" />
+      <mass value="0.299" />
+      <inertia ixx="2.530466922324684e-05" ixy="-2.027952739115101e-06" ixz="-1.239938363961379e-07" iyy="4.01613260249333e-05" iyz="-7.393526076882528e-07" izz="4.954026835181985e-05" />
+    </inertial>
+    <visual name="motor_link_visual">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
+      <geometry>
+        <mesh filename="../meshes/motor_link.STL" />
+      </geometry>
+      <material name="taccap_base_mat" />
+    </visual>
+    <collision name="motor_link_collision">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
+      <geometry>
+        <mesh filename="../meshes/collision/motor_link.stl" />
       </geometry>
     </collision>
   </link>
   <link name="taccap_left_finger_link">
     <inertial>
-      <origin rpy="0 0 0" xyz="0.020693 -0.00669 0.074921" />
-      <mass value="0.36678" />
-      <inertia ixx="0.00015235" ixy="2.9254e-07" ixz="-2.4362e-06" iyy="0.00015466" iyz="-6.6715e-06" izz="3.3606e-05" />
+      <origin rpy="0 0 0" xyz="0.0140949482 -0.00330133312635219 0.04838757908594267" />
+      <mass value="0.14" />
+      <inertia ixx="0.0003065325738824327" ixy="1.304843016703693e-06" ixz="-6.577075277330767e-05" iyy="0.0003222085257195986" iyz="7.713878953415112e-06" izz="3.792830299796826e-05" />
     </inertial>
-    <visual name="left_finger_visual">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
+    <visual name="left_link_visual">
+      <origin rpy="1.570796326794894 -1.513048197635941 -1.570796326794894" xyz="1.776356839400251e-18 0 0" />
       <geometry>
-        <mesh filename="../meshes/grip_left.STL" />
+        <mesh filename="../meshes/left_link.STL" />
       </geometry>
       <material name="taccap_left_mat" />
     </visual>
-    <collision name="left_finger_collision">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
+    <collision name="left_link_collision">
+      <origin rpy="1.570796326794894 -1.513048197635941 -1.570796326794894" xyz="1.776356839400251e-18 0 0" />
       <geometry>
-        <mesh filename="../meshes/grip_left.STL" />
+        <mesh filename="../meshes/collision/left_link.stl" />
       </geometry>
     </collision>
   </link>
+  <link name="taccap_right_finger_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.0140399882 0.003278948264701973 0.04829841241419621" />
+      <mass value="0.14" />
+      <inertia ixx="0.0003063018651248454" ixy="-1.332880396949135e-06" ixz="-6.566639014047093e-05" iyy="0.0003219105627972025" iyz="-7.90572760751648e-06" izz="3.79806639779513e-05" />
+    </inertial>
+    <visual name="right_link_visual">
+      <origin rpy="-1.570796326794894 -1.513048197635941 1.570796326794894" xyz="1.776356839400251e-18 0 0" />
+      <geometry>
+        <mesh filename="../meshes/right_link.STL" />
+      </geometry>
+      <material name="taccap_right_mat" />
+    </visual>
+    <collision name="right_link_collision">
+      <origin rpy="-1.570796326794894 -1.513048197635941 1.570796326794894" xyz="1.776356839400251e-18 0 0" />
+      <geometry>
+        <mesh filename="../meshes/collision/right_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="taccap_camera_body_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.02305604 9.135000000000001e-05 0.06677412000000001" />
+      <mass value="0.018" />
+      <inertia ixx="2.08279730304444e-06" ixy="2.468185608919793e-08" ixz="-6.715076777008704e-08" iyy="2.153388567352938e-06" iyz="1.990738215085462e-08" izz="1.83083202960262e-06" />
+    </inertial>
+    <visual name="camera_link_visual">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
+      <geometry>
+        <mesh filename="../meshes/camera_link.STL" />
+      </geometry>
+      <material name="taccap_base_mat" />
+    </visual>
+    <collision name="camera_link_collision">
+      <origin rpy="-0 -1.570796326794897 0" xyz="0.01975 -0.0060769 0.034023" />
+      <geometry>
+        <mesh filename="../meshes/camera_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="taccap_mount_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.00489788" />
+      <mass value="0.035" />
+      <inertia ixx="8.044150799999998e-06" ixy="1.145205007058267e-21" ixz="0" iyy="8.044150800000001e-06" iyz="0" izz="1.52699406e-05" />
+    </inertial>
+    <visual name="flange_link_visual">
+      <origin rpy="-0 -1.570796326794897 0" xyz="-3.552713678800501e-18 0 -7.105427357601002e-18" />
+      <geometry>
+        <mesh filename="../meshes/flange_link.STL" />
+      </geometry>
+      <material name="taccap_cover_mat" />
+    </visual>
+    <collision name="flange_link_collision">
+      <origin rpy="-0 -1.570796326794897 0" xyz="-3.552713678800501e-18 0 -7.105427357601002e-18" />
+      <geometry>
+        <mesh filename="../meshes/collision/flange_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="taccap_eef_link" />
+  <link name="taccap_camera_link" />
+  <link name="taccap_camera_optical_link" />
+  <joint name="taccap_mount_joint" type="fixed">
+    <parent link="taccap_mount_link" />
+    <child link="taccap_base_link" />
+    <origin rpy="0 0 0" xyz="0 0 0.012" />
+  </joint>
   <joint name="taccap_left_finger_joint" type="revolute">
     <parent link="taccap_base_link" />
     <child link="taccap_left_finger_link" />
@@ -81,26 +149,6 @@
     <dynamics damping="0.08" friction="0.01" />
     <mimic joint="taccap_right_finger_joint" multiplier="-1" offset="0" />
   </joint>
-  <link name="taccap_right_finger_link">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0.020629 0.0066814 0.07491" />
-      <mass value="0.36678" />
-      <inertia ixx="0.00015238" ixy="-2.9549e-07" ixz="-2.4418e-06" iyy="0.0001547" iyz="6.6629e-06" izz="3.3592e-05" />
-    </inertial>
-    <visual name="right_finger_visual">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
-      <geometry>
-        <mesh filename="../meshes/grip_right.STL" />
-      </geometry>
-      <material name="taccap_right_mat" />
-    </visual>
-    <collision name="right_finger_collision">
-      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
-      <geometry>
-        <mesh filename="../meshes/grip_right.STL" />
-      </geometry>
-    </collision>
-  </link>
   <joint name="taccap_right_finger_joint" type="revolute">
     <parent link="taccap_base_link" />
     <child link="taccap_right_finger_link" />
@@ -109,22 +157,29 @@
     <limit effort="1.1" lower="0" upper="0.5047492196767601" velocity="1" />
     <dynamics damping="0.08" friction="0.01" />
   </joint>
-  <link name="taccap_eef_link" />
   <joint name="taccap_eef_joint" type="fixed">
     <parent link="taccap_base_link" />
     <child link="taccap_eef_link" />
     <origin rpy="0 0 0" xyz="0.036575 0 0.2009217" />
   </joint>
-  <link name="taccap_camera_link" />
   <joint name="taccap_camera_joint" type="fixed">
     <parent link="taccap_base_link" />
     <child link="taccap_camera_link" />
     <origin rpy="0 0 0" xyz="-0.02275 0 0.06125" />
   </joint>
-  <link name="taccap_camera_optical_link" />
   <joint name="taccap_camera_optical_joint" type="fixed">
     <parent link="taccap_camera_link" />
     <child link="taccap_camera_optical_link" />
     <origin rpy="0 0 -1.5707963267948966" xyz="0 0 0" />
+  </joint>
+  <joint name="taccap_motor_joint" type="fixed">
+    <parent link="taccap_base_link" />
+    <child link="taccap_motor_link" />
+    <origin rpy="0 0 0" xyz="0 0 0" />
+  </joint>
+  <joint name="taccap_camera_body_joint" type="fixed">
+    <parent link="taccap_base_link" />
+    <child link="taccap_camera_body_link" />
+    <origin rpy="0 0 0" xyz="0 0 0" />
   </joint>
 </robot>

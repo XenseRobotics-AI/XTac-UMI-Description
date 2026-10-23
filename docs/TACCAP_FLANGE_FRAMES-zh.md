@@ -99,7 +99,7 @@ PICO 追踪器装在壳体的相反两侧，因此追踪器到 EEF 的变换左�
 | Link | Joint | 说明 |
 | --- | --- | --- |
 | `taccap_mount_link` | — | 带连接件时的根，贴合机械臂法兰面 |
-| `taccap_base_link` | `taccap_mount_joint`（fixed，仅带连接件版本） | 夹爪安装面，带本体网格与惯量（0.415 kg） |
+| `taccap_base_link` | `taccap_mount_joint`（fixed，仅带连接件版本） | 夹爪安装面，带本体网格与惯量（0.153 kg） |
 | `taccap_right_finger_link` | `taccap_right_finger_joint` | 右夹指（−Y），主动关节，正角度打开 |
 | `taccap_left_finger_link` | `taccap_left_finger_joint` | 左夹指（+Y），mimic 右夹指，倍率 −1 |
 | `taccap_eef_link` | `taccap_eef_joint`（fixed） | 末端执行器 |
@@ -140,8 +140,8 @@ EEF 定义为夹指闭合时指尖最远端顶面的中心，轴向与 base link
 | 格式 | 说明 |
 | --- | --- |
 | URDF | 主夹爪：`taccap_g1_master_{left,right}.urdf`；从夹爪：`taccap_g1_slave.urdf`、`taccap_g1_slave_with_mount.urdf` |
-| Xacro | 支持前缀的宏。主夹爪 Xacro 由 URDF 通过 `python scripts/generate_master_models.py --urdf-only` 生成；从夹爪 URDF 由 `taccap_g1_slave_macro.xacro` 通过 `python scripts/generate_models.py --urdf-only` 生成 |
+| Xacro | 支持前缀的宏。主夹爪 Xacro 由 URDF 通过 `python scripts/generate_master_models.py --urdf-only` 生成；从夹爪 Xacro 由 `scripts/import_slave.py` 从锁定的上游快照生成，再由 `taccap_g1_slave_macro.xacro` 通过 `python scripts/generate_models.py --urdf-only` 生成 |
 | MJCF | 由 URDF 生成，共用法兰根、+Z 工具轴、link/joint 名称与 EEF。从夹爪 MJCF 保留 robosuite 接口名（actuator `gripper`、`grip_site`/`ee*` site、`ft_frame` 及 `force_ee`/`torque_ee`），`ft_frame` 位于根 body（机械臂法兰接触面）。主夹爪 MJCF 由 mocap body 组成，每个 URDF link 对应一个 |
-| USD | 由 URDF 生成，坐标系与命名相同。从夹爪刚体为 `taccap_base_link` 与两个夹指，连接件与 EEF 为其下的固定 Xform；主夹爪 USD 按 URDF 树嵌套 |
+| USD | 由 URDF 生成，坐标系与命名相同。从夹爪刚体包含本体、两个夹指、电机、实体相机及可选安装座；EEF 与参考相机坐标系为本体下的固定 Xform；主夹爪 USD 按 URDF 树嵌套 |
 
 Python 资源 API 及 ROS/RViz 启动文件均指向上述 URDF。

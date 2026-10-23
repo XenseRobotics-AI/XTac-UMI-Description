@@ -78,14 +78,17 @@ get_master_urdf_path(side="left")
 
 ```bash
 pip install -e '.[dev]'
+python scripts/import_slave.py             # locked upstream snapshot -> Xacro + meshes
 python scripts/generate_models.py          # slave URDF + MJCF from the Xacro
 python scripts/generate_usd.py             # slave USD
 python scripts/generate_master_models.py   # master Xacro/MJCF/USD from the URDFs
 python -m pytest -q
 ```
 
-编辑 `ros/taccap_description/urdf/taccap_g1_slave_macro.xacro`（从夹爪）或
-`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`（主夹爪），其余文件均为生成产物。`--check` 用于校验生成文件是否最新。
+从夹爪由锁定的上游 `slave-v2026.10.23` 快照导入，本地适配在 `scripts/import_slave.py` 中维护；
+具体操作见[上游同步流程](docs/UPSTREAM_SLAVE.md)。主夹爪仍编辑
+`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`。
+`--check` 用于校验导入与生成文件是否最新。
 
 ## 许可证与联系方式
 
