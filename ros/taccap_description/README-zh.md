@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-安装在机械臂上的夹爪，提供裸夹爪与带 Asm_link 安装连接件两种版本。ROS 包名：`taccap_description`。以下命令均在仓库根目录执行。
+模型版本 `slave-v2026.10.23`，提供裸夹爪与带安装连接件两种版本。裸模型总质量 0.750 kg，带安装座为 0.785 kg；本体、电机和实体相机采用独立惯性 link，质心与完整惯量张量来自上游。ROS 包名：`taccap_description`。以下命令均在仓库根目录执行。
 
 ![不带连接件（左）与带连接件（右），闭合与打开](preview.png)
 
@@ -13,6 +13,7 @@
 | `taccap_mount_link`（仅 `with_mount`，为根） | Asm_link 贴合机械臂法兰的一面 |
 | `taccap_base_link`（裸夹爪时为根） | 夹爪安装面，位于 mount 面上方 12 mm；带本体 |
 | `taccap_left_finger_link` / `taccap_right_finger_link` | 夹指铰链（+Y / −Y） |
+| `taccap_motor_link` / `taccap_camera_body_link` | 实体电机（299 g）/相机（18 g），固定在 base 上 |
 | `taccap_eef_link` | 夹指闭合时指尖最远端顶面的中心 |
 | `taccap_camera_link` / `taccap_camera_optical_link` | 腕部相机；光学坐标系遵循 REP-103 |
 
@@ -22,7 +23,7 @@
 
 - `taccap_right_finger_joint` 为主动关节，范围 0 至 0.5047 rad（28.92°），0 为闭合。
 - `taccap_left_finger_joint` 以倍率 −1 mimic 右关节（URDF 用 `mimic`，MJCF 用关节等式约束，USD 用 PhysX mimic joint）。
-- 力矩上限 1.1 N·m：即夹指电机 RobStride EL05 的最大输出扭矩，为保证连续堵转由硬件限制。该值只在 Xacro 宏中定义一次，MJCF 执行器的 `forcerange` 和 USD drive 的 `maxForce` 均由其生成。
+- 力矩上限 1.1 N·m：即夹指电机 RobStride EL05 的最大输出扭矩，为保证连续堵转由硬件限制。该值由导入脚本 `scripts/import_slave.py` 作为本地补丁定义，MJCF 执行器的 `forcerange` 和 USD drive 的 `maxForce` 均由其生成。
 
 ## 入口文件
 
@@ -64,4 +65,7 @@ stage = Usd.Stage.Open(str(get_usd_path(with_mount=True)))
 
 ## 重新生成
 
-编辑 `urdf/taccap_g1_slave_macro.xacro` 后运行 `python scripts/generate_models.py`（URDF + MJCF）和 `python scripts/generate_usd.py`。参见[来源与声明](NOTICE.md)。
+运行 `python scripts/import_slave.py` 从锁定的上游快照生成 Xacro 与网格，再运行
+`python scripts/generate_models.py`（URDF + MJCF）和 `python scripts/generate_usd.py`。
+上游仅提供新版 URDF，MJCF/USD 是本仓库的派生格式。各命令的 `--check` 可校验结果。
+参见[来源与声明](NOTICE.md)及[上游同步流程](../../docs/UPSTREAM_SLAVE.md)。

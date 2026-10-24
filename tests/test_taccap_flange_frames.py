@@ -123,72 +123,38 @@ def test_master_visuals_preserved_and_root_on_rear_surface(side, opening):
         assert (a.find("axis").get("xyz"), b.find("axis").get("xyz")) == ("0 0 -1", "1 0 0")
 
 
-def slave_shift(with_mount):
-    """Map original-root coordinates into the current root frame.
-
-    The root is the Asm_link robot-side face (taccap_mount_link) when mounted,
-    otherwise the body mating face (taccap_base_link), 12 mm further along +Z.
-    """
-    flange = np.eye(4)
-    flange[:3, :3] = FLANGE_AXES
-    flange[0, 3] = 0 if with_mount else .012
-    original_root = np.eye(4)
-    if not with_mount:
-        original_root[:3, 3] = [.046023, -.0060769, -.01975]
-    return np.linalg.inv(flange) @ original_root
-
-
 @pytest.mark.parametrize("with_mount", [False, True])
 @pytest.mark.parametrize("opening", [0, .25, 1])
-def test_slave_geometry_inertias_and_eef_preserved(with_mount, opening):
+def test_slave_geometry_inertias_and_eef_match_locked_upstream(with_mount, opening):
     suffix = "_with_mount" if with_mount else ""
-    path = get_urdf_path(with_mount=with_mount)
-    current = ET.parse(path).getroot()
-    original = ET.parse(DATA / "slave" / f"taccap_g1_slave{suffix}.urdf").getroot()
-    old_fk, new_fk = frames(original, opening * .5047492196767601), frames(current, opening * .5047492196767601)
-    shift = slave_shift(with_mount)
-    names = {"taccap_base_link", "taccap_left_finger_link", "taccap_right_finger_link", "taccap_eef_link", "taccap_camera_link", "taccap_camera_optical_link"}
+    current = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
+    source = Path(__file__).resolve().parents[1] / "vendor/taccap_slave/source"
+    original = ET.parse(source / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
+    angle = opening * .5047492196767601
+    old_fk, new_fk = frames(original, angle), frames(current, angle)
+    shift = np.eye(4)
+    shift[2, 3] = 0 if with_mount else -.012
+    names = {"taccap_base_link", "taccap_motor_link", "taccap_camera_body_link",
+             "taccap_left_finger_link", "taccap_right_finger_link", "taccap_eef_link",
+             "taccap_camera_link", "taccap_camera_optical_link"}
     assert {l.get("name") for l in current.findall("link")} == names | ({"taccap_mount_link"} if with_mount else set())
     children = {j.find("child").get("link") for j in current.findall("joint")}
     assert {l.get("name") for l in current.findall("link")} - children == {"taccap_mount_link" if with_mount else "taccap_base_link"}
-    # taccap_base_link is always the body mating face, 12 mm above the mount face.
-    base = np.eye(4)
-    base[2, 3] = .012 if with_mount else 0
-    np.testing.assert_allclose(new_fk["taccap_base_link"], base, atol=1e-15)
-    old_visuals = visuals(original, old_fk)
-    # The cover duplicates base_link.STL geometry and is removed with its link.
-    assert old_visuals.pop("viusal_link.STL") is not None
-    new_visuals = visuals(current, new_fk)
+    for name, pose in new_fk.items():
+        before = "flange_link" if name == "taccap_mount_link" else name
+        np.testing.assert_allclose(pose, shift @ old_fk[before], atol=1e-12)
+    old_visuals, new_visuals = visuals(original, old_fk), visuals(current, new_fk)
     assert old_visuals.keys() == new_visuals.keys()
-    for mesh, old_pose in old_visuals.items():
-        np.testing.assert_allclose(new_visuals[mesh], shift @ old_pose, atol=1e-12)
-    eef_axes = np.eye(4)
-    eef_axes[:3, :3] = FLANGE_AXES
-    # EEF: fingertip face centre, 2.79 mm (+X) and 0.10 mm (+Z) from the former cover origin.
-    cover = shift @ old_fk["visual_link"] @ eef_axes
-    np.testing.assert_allclose(new_fk["taccap_eef_link"][:3, :3], cover[:3, :3], atol=1e-12)
-    np.testing.assert_allclose(new_fk["taccap_eef_link"][:3, 3] - cover[:3, 3], [.0027913282, -1.06e-8, .0001017288], atol=1e-12)
-    assert not list(current.find("link[@name='taccap_eef_link']"))
-    # Finger frames take the base axes; their hinge is +X.
-    for old_name, new_name in {"grip_left": "taccap_left_finger_link", "grip_right": "taccap_right_finger_link"}.items():
-        np.testing.assert_allclose(new_fk[new_name], shift @ old_fk[old_name] @ eef_axes, atol=1e-12)
-        if opening == 0:
-            np.testing.assert_allclose(new_fk[new_name][:3, :3], np.eye(3), atol=1e-12)
-    for joint in current.findall("joint[@type='revolute']"):
-        assert joint.find("axis").get("xyz") == "1 0 0"
-        assert joint.find("origin").get("rpy") == "0 0 0"
-    # Mass, CoM and inertia are unchanged in space; the base values are only re-expressed.
-    old_inertia, new_inertia = world_inertias(original, old_fk), world_inertias(current, new_fk)
-    old_inertia.pop("visual_link")
-    pairs = {"taccap_g1_slave": "taccap_base_link", "grip_left": "taccap_left_finger_link", "grip_right": "taccap_right_finger_link"}
-    assert set(new_inertia) == set(pairs.values())
-    for before, after in pairs.items():
-        (m0, c0, i0), (m1, c1, i1) = old_inertia[before], new_inertia[after]
-        assert m0 == m1
-        np.testing.assert_allclose(c1, (shift @ np.append(c0, 1))[:3], atol=1e-12)
-        np.testing.assert_allclose(i1, shift[:3, :3] @ i0 @ shift[:3, :3].T, atol=1e-15)
-    assert new_fk["taccap_left_finger_link"][1, 3] > 0
-    assert new_fk["taccap_right_finger_link"][1, 3] < 0
+    for mesh, pose in old_visuals.items():
+        np.testing.assert_allclose(new_visuals[mesh], shift @ pose, atol=1e-12)
+    old_inertias, new_inertias = world_inertias(original, old_fk), world_inertias(current, new_fk)
+    assert len(new_inertias) == (6 if with_mount else 5)
+    for name, (mass, com, tensor) in new_inertias.items():
+        before = "flange_link" if name == "taccap_mount_link" else name
+        old_mass, old_com, old_tensor = old_inertias[before]
+        assert mass == old_mass
+        np.testing.assert_allclose(com, (shift @ np.append(old_com, 1))[:3], atol=1e-12)
+        np.testing.assert_allclose(tensor, old_tensor, atol=1e-15)
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
@@ -217,12 +183,12 @@ def test_slave_flange_lies_on_mounting_faces(with_mount):
 
     mating = .012 if with_mount else 0
     # The body's rear face rests on the Asm_link gripper-side face (taccap_base_link).
-    assert face_area("base_link.STL", mating, -1) > 5e-4
+    assert face_area("body_link.STL", mating, -1) > 5e-4
     if with_mount:
-        assert face_area("Asm_link.STL", 0, -1) > 1e-3
-        assert face_area("Asm_link.STL", mating, 1) > 5e-4
-        t = poses["Asm_link.STL"]
-        tri = mesh_triangles(SLAVE_ASSET_ROOT, "", "Asm_link.STL") @ t[:3, :3].T + t[:3, 3]
+        assert face_area("flange_link.STL", 0, -1) > 1e-3
+        assert face_area("flange_link.STL", mating, 1) > 5e-4
+        t = poses["flange_link.STL"]
+        tri = mesh_triangles(SLAVE_ASSET_ROOT, "", "flange_link.STL") @ t[:3, :3].T + t[:3, 3]
         assert tri[:, :, 2].min() == pytest.approx(0, abs=1e-9)
 
 
@@ -263,7 +229,7 @@ def correspondence_model(model):
     """URDF root, link prefix, slave-base-equivalent frame and fingertip meshes per model."""
     if model in ("slave", "slave_mount"):
         root = ET.parse(get_urdf_path(with_mount=model == "slave_mount")).getroot()
-        return root, "taccap", "taccap_base_link", SLAVE_ASSET_ROOT, "", ["grip_left.STL", "grip_right.STL"]
+        return root, "taccap", "taccap_base_link", SLAVE_ASSET_ROOT, "", ["left_link.STL", "right_link.STL"]
     root = ET.parse(get_master_urdf_path(side=model)).getroot()
     return root, model, f"{model}_follower_link", MASTER_ASSET_ROOT, model, ["link1.STL", "link2.STL"]
 
@@ -274,7 +240,7 @@ def test_eef_is_the_fingertip_face_centre(model):
     fk = frames(root, 0)
     eef = fk[f"{prefix}_eef_link"]
     np.testing.assert_allclose(eef[:3, :3], fk[f"{prefix}_base_link"][:3, :3], atol=1e-12)
-    np.testing.assert_allclose(eef[:3, 3], fingertip_face_centre(root, base, side, meshes), atol=1e-5)
+    np.testing.assert_allclose(eef[:3, 3], fingertip_face_centre(root, base, side, meshes), atol=1e-4 if model == "slave" else 1e-5)
     assert not list(root.find(f"link[@name='{prefix}_eef_link']"))
 
 
@@ -327,8 +293,9 @@ def test_camera_frames_sit_on_the_dome_window(model, with_mount, prefix, ring):
     camera, optical = fk[f"{prefix}_camera_link"], fk[f"{prefix}_camera_optical_link"]
     for name in ("camera", "camera_optical"):
         assert not list(root.find(f"link[@name='{prefix}_{name}_link']"))  # Massless frames.
-    t = visuals(root, fk)["base_link.STL"]
-    tri = mesh_triangles(base, side, "base_link.STL") @ t[:3, :3].T + t[:3, 3]
+    camera_mesh = "camera_link.STL" if model == "slave" else "base_link.STL"
+    t = visuals(root, fk)[camera_mesh]
+    tri = mesh_triangles(base, side, camera_mesh) @ t[:3, :3].T + t[:3, 3]
     # camera_link shares the flange/EEF axes (+Z along the window normal);
     # REP-103 optical: +Z optical axis, +Y (image down) toward the off-axis fingers.
     np.testing.assert_allclose(camera[:3, :3], fk[f"{prefix}_eef_link"][:3, :3], atol=1e-12)

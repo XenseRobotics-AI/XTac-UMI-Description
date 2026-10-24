@@ -63,6 +63,22 @@ def test_slave_usd_drive_matches_the_mujoco_overlay():
     assert block["articulation"]["mimic_gearing"] == 1.0
 
 
+def test_slave_metadata_references_all_mesh_layers_and_real_camera_links():
+    import xml.etree.ElementTree as ET
+
+    document = json.loads((SLAVE_ROOT / "config/model.json").read_text())
+    declared_layers = {str(p.relative_to(SLAVE_ROOT))
+                       for p in SLAVE_ROOT.glob(document["usd"]["mesh_layers"])}
+    mesh_layers = {str(p.relative_to(SLAVE_ROOT))
+                   for p in (SLAVE_ROOT / "usd/meshes").rglob("*.usdc")}
+    assert declared_layers == mesh_layers
+    assert len(declared_layers) == 11
+    for suffix in ("", "_with_mount"):
+        root = ET.parse(SLAVE_ROOT / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
+        for name in document["urdf_frames"]["camera"]["links"]:
+            assert root.find(f"link[@name='{name}']") is not None
+
+
 @pytest.mark.parametrize("side", ("left", "right"))
 def test_master_tcp_site_sits_on_the_documented_tcp_link(side):
     tcp_link = json.loads((MASTER_ROOT / "config" / "master.json").read_text())[

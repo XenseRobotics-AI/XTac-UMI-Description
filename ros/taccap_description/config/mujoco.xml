@@ -7,19 +7,26 @@
               forcelimited="true" kp="40" kv="2"/>
   </actuator>
   <worldbody>
+    <!-- Collision geoms stay active but transparent, matching the previous viewer style. -->
     <body name="taccap_mount_link">
-      <geom name="asm_collision" rgba="0.89804 0.91765 0.92941 0"/>
+      <geom name="flange_link_collision" rgba="0.89804 0.91765 0.92941 0"/>
     </body>
     <body name="taccap_base_link">
-      <geom name="base_collision" rgba="0.75294 0.75294 0.75294 0"/>
+      <geom name="body_link_collision" rgba="0.75294 0.75294 0.75294 0"/>
+    </body>
+    <body name="taccap_motor_link">
+      <geom name="motor_link_collision" rgba="0.75294 0.75294 0.75294 0"/>
+    </body>
+    <body name="taccap_camera_body_link">
+      <geom name="camera_link_collision" rgba="0.75294 0.75294 0.75294 0"/>
     </body>
     <body name="taccap_left_finger_link">
       <joint name="taccap_left_finger_joint" armature="0.002"/>
-      <geom name="left_finger_collision" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
+      <geom name="left_link_collision" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
     </body>
     <body name="taccap_right_finger_link">
       <joint name="taccap_right_finger_joint" armature="0.002"/>
-      <geom name="right_finger_collision" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
+      <geom name="right_link_collision" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5"/>
     </body>
     <body name="taccap_eef_link">
       <site name="grip_site" size="0.01" rgba="1 0 0 0.5" type="sphere" group="1"/>
@@ -31,6 +38,9 @@
     </body>
   </worldbody>
   <contact>
+    <!-- The motor is fixed inside the body; its convex hull overlaps finger hinges. -->
+    <exclude body1="taccap_motor_link" body2="taccap_left_finger_link"/>
+    <exclude body1="taccap_motor_link" body2="taccap_right_finger_link"/>
     <exclude body1="taccap_base_link" body2="taccap_left_finger_link"/>
     <exclude body1="taccap_base_link" body2="taccap_right_finger_link"/>
     <exclude body1="taccap_left_finger_link" body2="taccap_right_finger_link"/>

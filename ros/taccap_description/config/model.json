@@ -19,17 +19,25 @@
   },
   "parameter_notes": {
     "joint_limits": "Opening limit 28.92 degrees (0.5047492196767601 rad). Both hinge axes +X in the base frame; the -Y taccap_right_finger_joint drives (positive opens) and taccap_left_finger_joint mimics with multiplier -1.",
-    "base_inertia": "0.415 kg body inertial expressed in taccap_base_link.",
-    "finger_inertia": "0.36678 kg per finger, expressed in the finger link frames.",
+    "base_inertia": "0.153 kg body; motor (0.299 kg) and physical camera (0.018 kg) have separate fixed links. Mass, COM and inertia tensors copied from the locked upstream URDF.",
+    "finger_inertia": "0.140 kg per finger; upstream COM-centred inertia tensors retained without mass rescaling.",
     "effort": "1.1 Nm: maximum output torque of the finger motor (RobStride EL05), which the hardware limits to 1.1 Nm for continuous stall. The same value is the MJCF actuator forcerange and the USD drive maxForce.",
     "velocity": "1 rad/s URDF joint velocity limit (simulation).",
-    "collision_meshes": "Visual and collision geometry share the same meshes."
+    "collision_meshes": "Simplified upstream collision meshes; camera collision uses the visual camera mesh.",
+    "physical_provenance": "Upstream measured integer masses with SW COM-centred moments; inertia is not rescaled to weighed mass. Corrected camera COM retained; measurement finger angle 0.05774812915895569 rad differs from q=0."
   },
   "mesh_sha256": {
-    "Asm_link.STL": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
-    "base_link.STL": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
-    "grip_left.STL": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
-    "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3"
+    "body_link.STL": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
+    "camera_link.STL": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+    "collision/body_link.stl": "e40866ec9a44b9209881ae053882595c1c11abbdb623a1b25fc50b85933b1cdc",
+    "collision/flange_link.stl": "4c2c3a36c4c94bf34cd939def0e989cbc764c40296132efc61f4eb5413d83da7",
+    "collision/left_link.stl": "57709f0dd3e83ad2da5d2cd2cab29d86c4f9b2f3eb2eb66f044f310cd0d6becc",
+    "collision/motor_link.stl": "904aba324248d8f12e38c41bd5227d20afb04c5e44941926a5d73a2ab904b40f",
+    "collision/right_link.stl": "ec45904d48ec00f358cc7218ebee412f79b7926c6d9f0c469829f6620502e5d5",
+    "flange_link.STL": "bfd7cdc06fada26a0e8ddb9627e44f1fb652b30b8384c59f5098d2a6e8c4f6f6",
+    "left_link.STL": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69",
+    "motor_link.STL": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
+    "right_link.STL": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53"
   },
   "joint_contract": {
     "active_joint": "taccap_right_finger_joint",
@@ -54,7 +62,7 @@
     "mass_unit": "kg",
     "angular_unit": "degree",
     "collider_approximation": "convexHull",
-    "collision_from_visuals": true,
+    "collision_from_visuals": false,
     "merge_fixed_joints": false,
     "articulation": {
       "fixed_base": true,
@@ -74,14 +82,21 @@
       "max_force_nm": 1.1,
       "status": "MuJoCo position gains converted per-radian to per-degree"
     },
-    "mesh_layers": "usd/meshes/*.usdc",
+    "mesh_layers": "usd/meshes/**/*.usdc",
     "shipped_layers_sha256": {
-      "usd/meshes/Asm_link.usdc": "0bb1f2f2fb5083890cc4280e71ec224bc07450b226a72dc2aab09bc9a26f10d6",
-      "usd/meshes/base_link.usdc": "c6e72c6d636382ae5ffb042d0c24255e51f736f2ac558c89d12e794890e86cfd",
-      "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
-      "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
-      "usd/taccap_g1_slave.usda": "2191c0349f48494a3fce03bc5a2465a1047dcc6ff12969f92d71801b00fdc797",
-      "usd/taccap_g1_slave_with_mount.usda": "1c3bed186ba35a20188b90aeeaccda6aac12ce791f2da95d106e338d9340866f"
+      "usd/meshes/body_link.usdc": "57acee730599eccd324d2ccf9dea8e82bfed16b1477c1e13c184a7ab0f2ae3c2",
+      "usd/meshes/camera_link.usdc": "1527beb11be4f3ea7db05ad199f9837706406ed67dbb6bdb85745014c7d3ef2a",
+      "usd/meshes/collision/body_link.usdc": "67d1fc7b3b6ed9b4ee951294540d67eff002d2c59cad885261b765aaf618cefd",
+      "usd/meshes/collision/flange_link.usdc": "6ea0c21e66182eb1c9e7b794bdc7fdbd602c8ba3db0b162b903db6f4b23d11b3",
+      "usd/meshes/collision/left_link.usdc": "165610d9cbc5e9f5c3ac344c02748bb8aae3573a96a89c61c399f9dd8c536727",
+      "usd/meshes/collision/motor_link.usdc": "92fb8f3b3223471a235623f8e6ad0a002e09c471d1442f8d550ed6769a139a9d",
+      "usd/meshes/collision/right_link.usdc": "75da92731f3ac944e9877ab5996787cf76ccd7f902dc39d95392c94f60502506",
+      "usd/meshes/flange_link.usdc": "849e3fec3aa282549fd4be0ae0e9d234cfeb47e78ee64dad42b18235bcd97673",
+      "usd/meshes/left_link.usdc": "f44e32fad9255f92427a4fd54d0a68120beccb3f5cf5b94ac5d37641a907491d",
+      "usd/meshes/motor_link.usdc": "5b52c8ea209126983101aa969d3e5b8a520906c684e1843b59abb97281a21b49",
+      "usd/meshes/right_link.usdc": "7bb2c53e9221f46bcfb96f264436a7c0a6cf09e0ef8488a77223ba8fba04bd17",
+      "usd/taccap_g1_slave.usda": "b1e0c9fe806ed983869645c9e0003131fa65d6aab173416a153d38b98bd3c164",
+      "usd/taccap_g1_slave_with_mount.usda": "4d840b510d2cdccf10c60fc595ba4b3a3f7766b947443d0faf5e8f0caecc0086"
     }
   },
   "urdf_frames": {
@@ -90,7 +105,7 @@
     "eef": "taccap_eef_link",
     "active_joint": "taccap_right_finger_joint",
     "mimic_joint": "taccap_left_finger_joint",
-    "base_definition": "Gripper mounting face centre (body/Asm_link mating face) in both variants; carries the body meshes and the 0.415 kg base inertial. Same convention as robotiq_85_base_link / Franka hand / xarm_gripper_base_link.",
+    "base_definition": "Gripper mounting face centre (body/adapter mating face) in both variants; carries the body mesh and 0.153 kg body inertial. Motor and physical camera have separate fixed links.",
     "axes": "+Z tool axis (native CAD +X), +Y toward the left finger (native +Y), +X toward the off-axis fingers (native -Z); taccap_eef_link has the same axes",
     "native_cad_placement": {
       "xyz_m": [
@@ -103,7 +118,7 @@
         -1.5707963267948966,
         0.0
       ],
-      "note": "Placement of the native-frame meshes (base_link, grip_left, grip_right, Asm_link uses rotation only) relative to their links; every link frame shares the base axes"
+      "note": "Native placement for body_link.STL, motor_link.STL and camera_link.STL; flange_link.STL uses rotation only. Finger meshes use the upstream closed-pose correction; see vendor/taccap_slave/source/provenance/finger_reference.json."
     },
     "base_to_eef_xyz_m": [
       0.036575,
@@ -134,12 +149,12 @@
     },
     "mount_thickness_m": 0.012,
     "mount_interface": "Asm_link: 4 x 6.5 mm through holes on 50 mm PCD at 45 deg, 26 mm centre bore; set the clocking about +Z per installation",
-    "eef_pose_policy": "Massless EEF at the centre of the closed fingertips' most distal face (vertices within 0.05 mm of the extreme); identical for master and slave within 0.01 mm",
-    "finger_frames": "Finger link frames share the base axes (joint origin rpy 0, hinge axis +X); finger meshes use rpy [0, -pi/2, 0]",
+    "eef_pose_policy": "Inherited massless EEF frame retained. New mesh distal-face centre differs by 0.075 mm along +X at q=0; master/slave feature correspondence is checked within 0.1 mm.",
+    "finger_frames": "Finger link frames share base axes (joint origin rpy 0, hinge axis +X). Finger mesh placements retain the upstream +/-0.05774812915895569 rad hinge-axis correction relative to native 0,-pi/2,0 placement; this converts the measurement pose to closed q=0.",
     "camera": {
       "links": [
-        "camera_link",
-        "camera_optical_link"
+        "taccap_camera_link",
+        "taccap_camera_optical_link"
       ],
       "source": "Wrist camera point on the dome-window axis, from the taccap_base_link origin: dX -22.75 mm, dY 0, dZ 61.25 mm; 19.95 mm behind the window ring",
       "camera_link_origin": "Camera point on the window axis",
@@ -157,5 +172,7 @@
       ]
     },
     "master_correspondence": "Master <side>_follower_link == taccap_base_link: EEF, fingertips, camera and hinge axis lines agree within 0.1 mm"
-  }
+  },
+  "model_revision": "slave-v2026.10.23",
+  "upstream": "config/upstream.json"
 }

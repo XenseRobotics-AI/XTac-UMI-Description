@@ -81,15 +81,18 @@ Plain `.urdf` files use relative mesh paths and open directly in URDF viewers.
 
 ```bash
 pip install -e '.[dev]'
+python scripts/import_slave.py             # locked upstream snapshot -> Xacro + meshes
 python scripts/generate_models.py          # slave URDF + MJCF from the Xacro
 python scripts/generate_usd.py             # slave USD
 python scripts/generate_master_models.py   # master Xacro/MJCF/USD from the URDFs
 python -m pytest -q
 ```
 
-Edit `ros/taccap_description/urdf/taccap_g1_slave_macro.xacro` (slave) or
-`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`
-(master); everything else is generated. `--check` verifies generated files.
+The slave is imported from a locked `slave-v2026.10.23` upstream snapshot;
+local adaptations live in `scripts/import_slave.py`. See the
+[upstream update workflow](docs/UPSTREAM_SLAVE.md). Edit the master URDFs in
+`ros/taccap_master_description/urdf/` for master changes. `--check` verifies
+imported and generated files.
 
 ## License and contact
 

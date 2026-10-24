@@ -1,5 +1,7 @@
 include LICENSE README.md README-zh.md
 recursive-include scripts *.py
-recursive-include tests *.py *.xml *.urdf *.xacro *.STL
+recursive-include tests *.py *.xml *.urdf *.xacro *.STL *.stl
 recursive-include docs *.md
-recursive-include ros *.json *.urdf *.xacro *.STL *.xml *.usda *.usdc *.md *.txt *.png *.rviz *.py CMakeLists.txt
+recursive-include ros *.json *.urdf *.xacro *.STL *.stl *.xml *.usda *.usdc *.md *.txt *.png *.rviz *.py CMakeLists.txt
+recursive-include vendor/taccap_slave *
+recursive-include reports/slave-v2026.10.23-audit *.json *.md
