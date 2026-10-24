@@ -71,6 +71,9 @@ def test_commit_pin_accepts_exact_snapshot_and_rejects_changed_or_missing_files(
         subprocess.run(git + ["commit", "-qm", "fixture"], check=True)
         return subprocess.check_output(git + ["rev-parse", "HEAD"], text=True).strip()
 
+    # Upstream files outside the vendored subset do not affect attribution.
+    (source / "provenance").mkdir()
+    (source / "provenance/record.md").write_text("upstream only\n")
     revision = commit()
     sandbox = tmp_path / "downstream"
     shutil.copytree(VENDOR, sandbox / "vendor/taccap_slave")
@@ -87,11 +90,11 @@ def test_commit_pin_accepts_exact_snapshot_and_rejects_changed_or_missing_files(
     accepted = pinned.read_bytes()
     assert json.loads(accepted)["revision"] == revision
     assert (sandbox / "ros/taccap_description/config/upstream.json").read_bytes() == accepted
-    (source / "README.md").write_text("changed source\n")
+    (source / "NOTICE.md").write_text("changed source\n")
     rejected = pin(commit())
     assert rejected.returncode != 0 and "differs from snapshot" in rejected.stderr
     assert pinned.read_bytes() == accepted
-    (source / "README.md").unlink()
+    (source / "NOTICE.md").unlink()
     rejected = pin(commit())
     assert rejected.returncode != 0 and "file set differs" in rejected.stderr
     assert pinned.read_bytes() == accepted

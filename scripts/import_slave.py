@@ -1,7 +1,8 @@
 """Adapt the hash-locked upstream slave URDF snapshot to this package.
 
-The source snapshot is immutable. Only root names/attachment, motor effort and
-Xacro parameterization differ locally; physical properties are copied verbatim.
+The source snapshot is an immutable subset of the upstream asset directory
+(``SNAPSHOT_PREFIXES``). Only root names/attachment, motor effort and Xacro
+parameterization differ locally; physical properties are copied verbatim.
 """
 
 import argparse
@@ -17,6 +18,8 @@ VENDOR = ROOT / "vendor/taccap_slave"
 SOURCE = VENDOR / "source"
 ASSETS = ROOT / "ros/taccap_description"
 XACRO = "http://www.ros.org/wiki/xacro"
+# Upstream authoring records, screenshots and generator configs stay upstream.
+SNAPSHOT_PREFIXES = ("LICENSES/", "NOTICE.md", "meshes/", "urdf/")
 ET.register_namespace("xacro", XACRO)
 
 
@@ -69,14 +72,16 @@ def macro_text():
 
 def pin_commit(lock, repository, revision):
     """Only attribute this snapshot to a commit containing identical bytes."""
+    prefix = f"{lock['path']}/"
     commit = subprocess.check_output(
         ["git", "-C", str(repository), "rev-parse", f"{revision}^{{commit}}"], text=True
     ).strip()
     listing = subprocess.check_output(
         ["git", "-C", str(repository), "ls-tree", "-r", "--name-only", commit, "--", lock["path"]], text=True
     ).splitlines()
-    expected = {f"{lock['path']}/{p}" for p in lock["files_sha256"]}
-    if set(listing) != expected:
+    listing = {p for p in listing if p[len(prefix):].startswith(SNAPSHOT_PREFIXES)}
+    expected = {prefix + p for p in lock["files_sha256"]}
+    if listing != expected:
         raise SystemExit("Commit file set differs from the locked snapshot")
     for relative, digest in lock["files_sha256"].items():
         data = subprocess.check_output(

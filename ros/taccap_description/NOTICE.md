@@ -5,17 +5,15 @@
 The URDF, six visual meshes, collision meshes and physical properties are
 imported from [XenseRobotics-AI/xense-description](https://github.com/XenseRobotics-AI/xense-description),
 path `assets/grippers/xense/taccap/slave-v2026.10.23`.
-[config/upstream.json](config/upstream.json) records the version, capture status,
-verified commit and SHA-256 of every upstream file. All imported files match
+[config/upstream.json](config/upstream.json) records the version, verified
+commit and SHA-256 of every imported upstream file. All imported files match
 upstream commit `b67736ce4d3bce785bedbb49f4c14011d38a7159` byte for byte.
-The original capture preceded that commit; its context HEAD is retained as
-historical capture metadata and is not the model revision.
 
-The unmodified snapshot, including original notices, measurement provenance and
-license texts, is retained in `vendor/taccap_slave/source/` in this repository.
+The unmodified imported files, including the upstream notice and license
+texts, are retained in `vendor/taccap_slave/source/` in this repository.
 See [the update workflow](../../docs/UPSTREAM_SLAVE.md).
 
-The new meshes derive from the upstream user-provided 2026.10.15 Xense STEP;
+The new meshes derive from the Xense 2026.10.15 TacCap STEP;
 model version 2026.10.23 includes the corrected camera COM. Upstream retains
 separate CAD/screenshot attribution and records redistribution permission for
 those inputs as unconfirmed. This import preserves those statements; the
