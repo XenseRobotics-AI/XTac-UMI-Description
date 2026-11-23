@@ -54,6 +54,163 @@ def face_labels(entry):
     return labels
 
 
+def clip(triangles, axis, at):
+    """Split triangles at ``x[axis] = at``.
+
+    Returns ``(below, above)`` triangle arrays. Faces that straddle the plane are
+    cut, so the boundary is a straight line instead of following the existing
+    triangulation — that is what makes a fingertip's colour edge look machined.
+    """
+    below, above = [], []
+    for triangle in triangles:
+        values = triangle[:, axis]
+        if values.max() <= at:
+            below.append(triangle)
+        elif values.min() >= at:
+            above.append(triangle)
+        else:
+            polygon = list(triangle)
+            for sign, out in ((-1, below), (1, above)):
+                piece = []
+                for index in range(3):
+                    current = polygon[index]
+                    following = polygon[(index + 1) % 3]
+                    current_in = sign * (current[axis] - at) >= 0
+                    following_in = sign * (following[axis] - at) >= 0
+                    if current_in:
+                        piece.append(current)
+                    if current_in != following_in:
+                        t = (at - current[axis]) / (following[axis] - current[axis])
+                        point = current + t * (following - current)
+                        point[axis] = at
+                        piece.append(point)
+                if len(piece) >= 3:
+                    for corner in range(1, len(piece) - 1):
+                        out.append(np.array([piece[0], piece[corner], piece[corner + 1]]))
+    return (
+        np.array(below) if below else np.zeros((0, 3, 3)),
+        np.array(above) if above else np.zeros((0, 3, 3)),
+    )
+
+
+def clip_radius(triangles, centre, radius):
+    """Split triangles by distance from the line ``x = centre`` (axis along x).
+
+    The camera window is a triangle fan, so a per-face radius test cannot make a
+    clean ring — faces straddle it. Cutting the geometry gives the ring and the
+    glass an exact circular edge.
+    """
+    inner, outer = [], []
+    for triangle in triangles:
+        distance = np.linalg.norm(triangle[:, 1:] - centre, axis=1) - radius
+        if distance.max() <= 0:
+            inner.append(triangle)
+            continue
+        if distance.min() >= 0:
+            outer.append(triangle)
+            continue
+        polygon = list(triangle)
+        for sign, out in ((-1, inner), (1, outer)):
+            piece = []
+            for index in range(3):
+                current = polygon[index]
+                following = polygon[(index + 1) % 3]
+                current_in = sign * distance[index] >= 0
+                delta = following[1:] - current[1:]
+                following_gap = np.linalg.norm(following[1:] - centre) - radius
+                following_in = sign * following_gap >= 0
+                if current_in:
+                    piece.append(current)
+                if current_in != following_in:
+                    offset = current[1:] - centre
+                    a = delta @ delta
+                    b = 2 * offset @ delta
+                    c = offset @ offset - radius * radius
+                    disc = b * b - 4 * a * c if a > 0 else -1
+                    if disc < 0:
+                        continue
+                    root = np.sqrt(disc)
+                    for t in ((-b - root) / (2 * a), (-b + root) / (2 * a)):
+                        if 0 <= t <= 1:
+                            piece.append(current + t * (following - current))
+                            break
+            if len(piece) >= 3:
+                for corner in range(1, len(piece) - 1):
+                    out.append(np.array([piece[0], piece[corner], piece[corner + 1]]))
+    return (
+        np.array(inner) if inner else np.zeros((0, 3, 3)),
+        np.array(outer) if outer else np.zeros((0, 3, 3)),
+    )
+
+
+def _rebuild(triangles, pieces):
+    out = np.zeros(len(pieces), dtype=triangles.dtype)
+    out["vertices"] = pieces.astype(np.float32)
+    normals = np.cross(pieces[:, 1] - pieces[:, 0], pieces[:, 2] - pieces[:, 0])
+    lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+    out["normal"] = np.divide(
+        normals, lengths, out=np.zeros_like(normals), where=lengths > 0
+    )
+    return out
+
+
+def cut_radius_faces(triangles, labels, spec):
+    """Give the camera glass a circular edge: inside ``at`` is ``material``."""
+    vertices = triangles["vertices"].astype(np.float64)
+    inner, outer = clip_radius(vertices, np.array(spec["centre"], dtype=float), spec["at"])
+    pieces = np.vstack([inner, outer])
+    piece_labels = np.concatenate(
+        [
+            np.full(len(inner), spec["material"], dtype=object),
+            _classify(outer, vertices, labels),
+        ]
+    )
+    return _rebuild(triangles, pieces), piece_labels
+
+
+def cut_faces(triangles, labels, spec):
+    """Re-label faces by a parting plane: the distal side takes ``material``.
+
+    Faces across the plane are cut, so the colour edge is a straight line — the
+    fingertip's rubber cap meets the black connector on a machined-looking seam
+    instead of following the CAD triangulation. Materials in ``keep`` (the gel
+    pad on the inner face) hold on both sides of the plane.
+    """
+    axis = "xyz".index(spec["axis"])
+    vertices = triangles["vertices"].astype(np.float64)
+    below, above = clip(vertices, axis, spec["at"])
+    keep = set(spec.get("keep", []))
+    below_labels = _classify(below, vertices, labels)
+    # The plane owns the colour split: nothing of the distal material may stay
+    # behind it, or the boundary follows the old triangulation again.
+    below_labels = np.where(
+        below_labels == spec["material"], spec.get("below_material", "taccap_black"), below_labels
+    )
+    above_source = _classify(above, vertices, labels)
+    above_labels = np.where(
+        np.isin(above_source, list(keep)), above_source, spec["material"]
+    )
+    pieces = np.vstack([below, above])
+    out = np.zeros(len(pieces), dtype=triangles.dtype)
+    out["vertices"] = pieces.astype(np.float32)
+    normals = np.cross(pieces[:, 1] - pieces[:, 0], pieces[:, 2] - pieces[:, 0])
+    lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+    normals = np.divide(normals, lengths, out=np.zeros_like(normals), where=lengths > 0)
+    out["normal"] = normals
+    return out, np.concatenate([below_labels, above_labels.astype(object)])
+
+
+def _classify(pieces, triangles, labels):
+    """Nearest original triangle (by centroid) keeps its label."""
+    if len(pieces) == 0:
+        return np.zeros(0, dtype=object)
+    from scipy.spatial import cKDTree
+
+    tree = cKDTree(triangles.mean(axis=1))
+    _, match = tree.query(pieces.mean(axis=1), k=1)
+    return labels[match]
+
+
 def generated():
     """``{path: bytes}`` for every split part."""
     partition = json.loads(PARTITION.read_text())["partition"]
@@ -67,6 +224,14 @@ def generated():
         source = directory / relative.split("/")[-1]
         header, triangles = read_stl(source)
         labels = np.array(face_labels(entry))
+        if "radial_cut" in entry:
+            triangles, labels = cut_radius_faces(
+                triangles, labels, entry["radial_cut"]
+            )
+        if "parting_plane" in entry:
+            triangles, labels = cut_faces(
+                triangles, labels, entry["parting_plane"]
+            )
         for material in entry["order"]:
             faces = labels == material
             if not faces.any():

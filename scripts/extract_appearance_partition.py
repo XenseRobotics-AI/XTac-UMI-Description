@@ -63,6 +63,13 @@ MASTER_FINGERS = {
     "master/right/link2.STL": (MASTER / "right/link2.STL", "slave/grip_right.STL"),
 }
 TIP_FACES = 2766
+# Where the yellow rubber cap meets the black connector on every finger.
+FINGERTIP_SEAM = {
+    "axis": "x",
+    "at": 0.1064,
+    "material": "taccap_yellow",
+    "keep": ["taccap_gel"],
+}
 
 
 def stl_triangles(path):
@@ -203,6 +210,29 @@ def entry(labels, total, order, **extra):
     }
 
 
+def camera_window_cut():
+    """Circular edge between the fisheye glass and its yellow surround.
+
+    The bench asset paints the whole window yellow and the window is a triangle
+    fan, so no per-face rule can produce the ring seen on the hardware. The
+    parts generator cuts the geometry on this cylinder instead: inside the
+    radius is the near-black lens, outside keeps the yellow surround.
+
+    Camera axis in the base mesh frame: ``^mesh = R^T (^base - t)`` with the
+    visual origin (0.01975 -0.0060769 0.034023) and ``rpy 0 -pi/2 0``.
+    """
+    rotation = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
+    origin = np.array([0.01975, -0.0060769, 0.034023])
+    camera = rotation.T @ (np.array([-0.02285, 0.0, 0.04975]) - origin)
+    # 8.5 mm: the flat ring radius recorded in docs/TACCAP_FLANGE_FRAMES.md.
+    return {
+        "axis": "x",
+        "centre": [float(camera[1]), float(camera[2])],
+        "at": 0.0085,
+        "material": "taccap_lens",
+    }
+
+
 def main():
     stage = Usd.Stage.Open(str(BENCH))
     partition = {}
@@ -220,9 +250,12 @@ def main():
             f"{count - exact} nearest-neighbour ({distance.max() * 1e3:.2f} mm max)"
         )
         order = [MATERIAL_OF[name] for name in names]
-        partition[relative] = entry(
-            labels, count, order, bench_faces=len(bench_labels), bench_source=prim_path
-        )
+        extra = {"bench_faces": len(bench_labels), "bench_source": prim_path}
+        if key == "base":
+            extra["radial_cut"] = camera_window_cut()
+        if key in ("left_finger", "right_finger"):
+            extra["parting_plane"] = FINGERTIP_SEAM
+        partition[relative] = entry(labels, count, order, **extra)
         slave_labels[relative] = (triangles, labels)
 
     for relative, (path, reference) in MASTER_FINGERS.items():
@@ -234,6 +267,7 @@ def main():
             count,
             order,
             transferred_from=reference,
+            parting_plane=FINGERTIP_SEAM,
             note="Leader finger: follower partition after a rigid fit, gel -> black.",
         )
 

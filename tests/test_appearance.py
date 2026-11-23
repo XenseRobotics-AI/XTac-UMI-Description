@@ -67,7 +67,7 @@ def test_master_fingers_are_grey_with_yellow_tips(side):
         body = [name for name in meshes if name.endswith("__cover.STL")]
         assert body, meshes
         tip_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__yellow.STL")
-        assert 0 < tip_faces < faces(MASTER_ROOT / "meshes" / side / f"{stem}.STL") * 0.05
+        assert 0 < tip_faces < faces(MASTER_ROOT / "meshes" / side / f"{stem}.STL") * 0.10
 
 
 def test_slave_fingertips_are_yellow_on_both_hands():
@@ -89,7 +89,16 @@ def test_slave_fingertips_are_yellow_on_both_hands():
         assert not (abs(rgb[0] - 0.20) < 0.01 and abs(rgb[1] - 0.83) < 0.01)
 
 
+def _area(path):
+    data = path.read_bytes()
+    dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
+    triangles = np.frombuffer(data, dtype=dtype, offset=84)["vertices"].astype(float)
+    edges = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    return float(np.linalg.norm(edges, axis=1).sum() / 2)
+
+
 def test_parts_reassemble_the_source_mesh():
+    """Parts cover the source surface exactly; parting-plane cuts add triangles."""
     partition = json.loads((ASSET_ROOT / "config" / "appearance.json").read_text())[
         "partition"
     ]
@@ -102,7 +111,8 @@ def test_parts_reassemble_the_source_mesh():
         stem = Path(relative).stem
         parts = sorted(directory.glob(f"{stem}__*.STL"))
         assert parts, relative
-        assert sum(faces(part) for part in parts) == faces(directory / f"{stem}.STL")
+        total = sum(_area(part) for part in parts)
+        assert total == pytest.approx(_area(directory / f"{stem}.STL"), rel=1e-6)
 
 
 @pytest.mark.parametrize("with_mount", [False, True])

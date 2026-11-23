@@ -229,6 +229,17 @@ then reference those parts, and all three show the same colours — in particula
 each finger is a grey body with a yellow tip, never a wholly yellow finger.
 Collision keeps using the complete mesh.
 
+Two edges are cut rather than painted per triangle, so they come out straight:
+
+- **Fingertip seam.** The yellow cap is cut on the plane `x = 106.4 mm` in the
+  finger mesh frame; everything distal is yellow (the gel pad on the inner face
+  excepted) and everything proximal stays black, giving the machined-looking
+  line where the fingertip meets the black connector.
+- **Camera window.** The fisheye is a triangle fan, so a per-face radius test
+  cannot make the ring. The window is cut on a cylinder of radius 8.5 mm about
+  the camera axis: inside is the near-black lens (`taccap_lens`), outside keeps
+  the yellow surround.
+
 The partition itself is exported from the bench asset by
 `scripts/extract_appearance_partition.py`: `base_link` matches face for face
 (69 846 triangles, zero residual), the finger meshes matched 23 468 of 23 558
