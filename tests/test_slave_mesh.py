@@ -70,11 +70,17 @@ def test_derived_base_removes_only_the_adapter():
 def test_entry_points_use_derived_base_and_optional_adapter(with_mount):
     root = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
     base = root.find("link[@name='taccap_base_link']")
-    for kind in ("visual", "collision"):
-        assert (
-            base.find(f"{kind}/geometry/mesh").get("filename")
-            == "../meshes/base_link.STL"
-        )
+    # Collision keeps the complete derived mesh; visuals are split per material.
+    assert (
+        base.find("collision/geometry/mesh").get("filename")
+        == "../meshes/base_link.STL"
+    )
+    visual_meshes = [
+        visual.find("geometry/mesh").get("filename")
+        for visual in base.findall("visual")
+    ]
+    assert visual_meshes
+    assert all(name.startswith("../meshes/base_link__") for name in visual_meshes)
     mount = root.find("link[@name='taccap_mount_link']")
     assert (mount is not None) == with_mount
     if with_mount:
@@ -82,7 +88,7 @@ def test_entry_points_use_derived_base_and_optional_adapter(with_mount):
     assert len(root.findall("joint[@name='taccap_mount_joint']")) == int(with_mount)
     mjcf = ET.parse(get_mjcf_path(with_mount=with_mount)).getroot()
     assert (
-        mjcf.find("asset/mesh[@name='taccap_base_mesh']").get("file")
-        == "../meshes/base_link.STL"
+        mjcf.find("asset/mesh[@name='base_link_silver']").get("file")
+        == "../meshes/base_link__silver.STL"
     )
-    assert len(mjcf.findall("asset/mesh[@name='taccap_asm_mesh']")) == int(with_mount)
+    assert len(mjcf.findall("asset/mesh[@name='Asm_link']")) == int(with_mount)

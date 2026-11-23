@@ -82,10 +82,25 @@ def world_inertias(root, fk):
 
 
 def mesh_triangles(base, side, filename):
-    path = base / "meshes" / side / filename if side else base / "meshes" / filename
+    """Triangles of a CAD mesh, re-assembled from its per-material parts if split."""
+    directory = base / "meshes" / side if side else base / "meshes"
+    path = directory / filename
+    if not path.is_file():
+        parts = sorted(directory.glob(f"{Path(filename).stem}__*.STL"))
+        assert parts, f"No mesh or parts for {filename}"
+        return np.vstack([mesh_triangles(base, side, part.name) for part in parts])
     data = path.read_bytes()
     dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
     return np.frombuffer(data, dtype=dtype, offset=84)["vertices"].astype(float)
+
+
+def mesh_pose(visuals, filename):
+    """Placement of a CAD mesh (any of its material parts carries the same pose)."""
+    if filename in visuals:
+        return visuals[filename]
+    parts = sorted(name for name in visuals if Path(name).stem.split("__")[0] == Path(filename).stem)
+    assert parts, f"No visual for {filename}"
+    return visuals[parts[0]]
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
@@ -96,16 +111,20 @@ def test_master_visuals_preserved_and_root_on_rear_surface(side, opening):
     angle = opening * .5047492196767601
     old_fk, new_fk = frames(original, angle), frames(current, angle)
     # The root carries the shell meshes; their native frame is the original base_link.
-    assert {l.get("name") for l in current.findall("link")} == {f"{side}_{n}_link" for n in ("base", "right", "left", "pico", "eef", "camera", "camera_optical", "follower")}
+    assert {l.get("name") for l in current.findall("link")} == {f"{side}_{n}_link" for n in ("base", "right", "left", "pico", "tracker", "eef", "camera", "camera_optical", "follower")}
     old_visuals, new_visuals = visuals(original, old_fk), visuals(current, new_fk)
-    shift = new_visuals["base_link.STL"]
+    # Each CAD mesh is shipped as one part per material (``<stem>__<material>.STL``);
+    # the parts share the original mesh's placement.
+    shift = mesh_pose(new_visuals, "base_link.STL")
     # Root on the rear outer surface: 23.5 mm ahead of the former virtual flange.
     np.testing.assert_allclose(shift[:3, 3], [.02065, 0, .024785 if side == "left" else .024779], atol=1e-15)
     np.testing.assert_allclose(shift[:3, :3], FLANGE_AXES.T, atol=1e-12)
     np.testing.assert_allclose(new_fk[f"{side}_base_link"], np.eye(4))
-    assert old_visuals.keys() == new_visuals.keys()
     for mesh, old_pose in old_visuals.items():
-        np.testing.assert_allclose(new_visuals[mesh], shift @ old_pose, atol=1e-12)
+        parts = [name for name in new_visuals if Path(name).stem.split("__")[0] == Path(mesh).stem]
+        assert parts, mesh
+        for name in parts:
+            np.testing.assert_allclose(new_visuals[name], shift @ old_pose, atol=1e-12)
     eef_axes = np.eye(4)
     eef_axes[:3, :3] = FLANGE_AXES
     # The original link4 origin is within 0.08 mm of the unified fingertip EEF.
@@ -159,9 +178,11 @@ def test_slave_geometry_inertias_and_eef_preserved(with_mount, opening):
     # The cover duplicates base_link.STL geometry and is removed with its link.
     assert old_visuals.pop("viusal_link.STL") is not None
     new_visuals = visuals(current, new_fk)
-    assert old_visuals.keys() == new_visuals.keys()
     for mesh, old_pose in old_visuals.items():
-        np.testing.assert_allclose(new_visuals[mesh], shift @ old_pose, atol=1e-12)
+        parts = [name for name in new_visuals if Path(name).stem.split("__")[0] == Path(mesh).stem]
+        assert parts, mesh
+        for name in parts:
+            np.testing.assert_allclose(new_visuals[name], shift @ old_pose, atol=1e-12)
     eef_axes = np.eye(4)
     eef_axes[:3, :3] = FLANGE_AXES
     # EEF: fingertip face centre, 2.79 mm (+X) and 0.10 mm (+Z) from the former cover origin.
@@ -209,7 +230,7 @@ def test_slave_flange_lies_on_mounting_faces(with_mount):
     poses = visuals(root, frames(root, 0))
 
     def face_area(mesh, z, normal_sign):
-        t = poses[mesh]
+        t = mesh_pose(poses, mesh)
         tri = mesh_triangles(SLAVE_ASSET_ROOT, "", mesh) @ t[:3, :3].T + t[:3, 3]
         normal = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
         flat = (np.ptp(tri[:, :, 2], axis=1) < 1e-7) & (abs(tri[:, :, 2].mean(1) - z) < 1e-7)
@@ -230,7 +251,7 @@ def test_slave_flange_lies_on_mounting_faces(with_mount):
 def test_master_flange_matches_rear_and_holding_plane_datums(side):
     root = ET.parse(get_master_urdf_path(side=side)).getroot()
     poses = visuals(root, frames(root, 0))
-    transform = poses["base_link.STL"]
+    transform = mesh_pose(poses, "base_link.STL")
     tri = mesh_triangles(MASTER_ASSET_ROOT, side, "base_link.STL") @ transform[:3, :3].T + transform[:3, 3]
     areas = np.linalg.norm(np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]), axis=1) / 2
     # The root lies on the body rear plane (outer surface), which contains the axis point.
@@ -244,7 +265,7 @@ def test_master_flange_matches_rear_and_holding_plane_datums(side):
     assert tri[near_axis][:, :, 2].min() > -1e-7
     # Fingertip holding planes lie 23.5 mm (and 23.65 mm) toward +X.
     for mesh, offset in [("link1.STL", .0235), ("link2.STL", .02365)]:
-        t = poses[mesh]
+        t = mesh_pose(poses, mesh)
         tri = mesh_triangles(MASTER_ASSET_ROOT, side, mesh) @ t[:3, :3].T + t[:3, 3]
         areas = np.linalg.norm(np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]), axis=1) / 2
         mask = (np.ptp(tri[:, :, 0], axis=1) < 1e-7) & (abs(tri[:, :, 0].mean(1) - offset) < 1e-7) & (tri[:, :, 2].min(1) > .1265)
@@ -254,7 +275,7 @@ def test_master_flange_matches_rear_and_holding_plane_datums(side):
 def fingertip_face_centre(root, base, side, meshes, angle=0):
     """Centre of the most distal fingertip face (vertices within 0.05 mm of the extreme)."""
     poses = visuals(root, frames(root, angle))
-    points = np.vstack([mesh_triangles(base, side, m).reshape(-1, 3) @ poses[m][:3, :3].T + poses[m][:3, 3] for m in meshes])
+    points = np.vstack([mesh_triangles(base, side, m).reshape(-1, 3) @ mesh_pose(poses, m)[:3, :3].T + mesh_pose(poses, m)[:3, 3] for m in meshes])
     top = points[points[:, 2] > points[:, 2].max() - 5e-5]
     return np.array([(top[:, 0].min() + top[:, 0].max()) / 2, (top[:, 1].min() + top[:, 1].max()) / 2, points[:, 2].max()])
 
@@ -327,7 +348,7 @@ def test_camera_frames_sit_on_the_dome_window(model, with_mount, prefix, ring):
     camera, optical = fk[f"{prefix}_camera_link"], fk[f"{prefix}_camera_optical_link"]
     for name in ("camera", "camera_optical"):
         assert not list(root.find(f"link[@name='{prefix}_{name}_link']"))  # Massless frames.
-    t = visuals(root, fk)["base_link.STL"]
+    t = mesh_pose(visuals(root, fk), "base_link.STL")
     tri = mesh_triangles(base, side, "base_link.STL") @ t[:3, :3].T + t[:3, 3]
     # camera_link shares the flange/EEF axes (+Z along the window normal);
     # REP-103 optical: +Z optical axis, +Y (image down) toward the off-axis fingers.

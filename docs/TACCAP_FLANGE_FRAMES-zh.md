@@ -61,11 +61,26 @@ link。网格保持原生 CAD 坐标，通过 visual/collision/inertial 的 orig
 
 | | 左主夹爪 | 右主夹爪 |
 | --- | --- | --- |
-| PICO 追踪器（`<side>_pico_link`，相对 `<side>_base_link` 的 xyz，单位 m） | `-0.032054 -0.023651 0.014053`（−Y 侧） | `-0.032782 0.024077 0.013155`（+Y 侧） |
+| PICO 圆饼网格（`<side>_pico_link`，相对 `<side>_base_link` 的 xyz，单位 m） | `-0.032054 -0.023651 0.014053`（−Y 侧） | `-0.032782 0.024077 0.013155`（+Y 侧） |
+| PICO 追踪器基准（`<side>_tracker_link`，xyz，单位 m） | `-0.035075794 -0.029203296 0.010155299` | `-0.035075794 0.029203296 0.010155299` |
 | 网格 | `meshes/left/` | `meshes/right/`（镜像件） |
-| 夹指显示颜色 | 青色 | 粉色 |
 
-PICO 追踪器装在壳体的相反两侧，因此追踪器到 EEF 的变换左右不同，请使用对应一侧 URDF 中的数值。
+两侧外观一致：银色结构、黑色框架、黄色指尖，与实物相同。
+
+### PICO 追踪器坐标系
+
+描述追踪器的两个坐标系**不能互换**：
+
+- `<side>_pico_link` 是 PICO 圆饼网格（`link3.STL`）的 CAD **零件**坐标系，属于导出副产品：两个主夹爪的同一零件朝向不同，从夹爪又是另一套，因此它不代表任何物理量。
+- `<side>_tracker_link` 是**器件**坐标系——TacCap-Gripper 记录位姿并据其内置 `tracker → EE` 外参换算的那一个。遥操作、标定以及任何需要与录制数据一致的场合都应使用它。
+
+两者由代码中的外参联系起来。以该外参为锚点时往返严格成立：
+
+```
+^eef T_tracker = T(Ry(-90°)) · inverse(^tracker T_EE)
+```
+
+`Ry(-90°)` 是代码 EE 轴与 `<side>_eef_link` 之间的重新标记；两者原点相同（闭合指尖端面中心），但轴向不同。两侧追踪器到 EEF 的直线距离均为 195.2514 mm，即 CAD 装配中 `Tracker frame` 与 `EE frame` 的实测值。推导见 `scripts/_frames.py`，由 `tests/test_tracker_frame.py` 锁定，URDF 与代码不会悄悄漂移。两者位置相差 7.4 mm（左）/ 6.4 mm（右），因为 CAD 里手画的 `Tracker frame` 与零件原点并不重合。
 
 左/右主夹爪与左/右夹指不是一回事：每个主夹爪都有左夹指（+Y，`<side>_left_link`）和右夹指（−Y，`<side>_right_link`）。
 
@@ -88,7 +103,8 @@ PICO 追踪器装在壳体的相反两侧，因此追踪器到 EEF 的变换左�
 | `<side>_base_link` | — | 根，壳体后外表面，带壳体网格 |
 | `<side>_right_link` | `<side>_right_joint` | 右夹指（−Y），主动关节，正角度打开 |
 | `<side>_left_link` | `<side>_left_joint` | 左夹指（+Y），mimic 右夹指，倍率 −1 |
-| `<side>_pico_link` | `<side>_pico_joint`（fixed） | PICO 追踪器，CAD 部件坐标系 |
+| `<side>_pico_link` | `<side>_pico_joint`（fixed） | PICO 圆饼网格，CAD 零件坐标系（非器件基准） |
+| `<side>_tracker_link` | `<side>_tracker_joint`（fixed） | PICO 追踪器基准，与 TacCap-Gripper 外参一致 |
 | `<side>_eef_link` | `<side>_eef_joint`（fixed） | 末端执行器 |
 | `<side>_camera_link` | `<side>_camera_joint`（fixed） | 腕部相机 |
 | `<side>_camera_optical_link` | `<side>_camera_optical_joint`（fixed） | 相机光学坐标系（REP-103） |
@@ -134,6 +150,23 @@ EEF 定义为夹指闭合时指尖最远端顶面的中心，轴向与 base link
 
 相机原点位于窗口轴线上、窗口平环后方 19.95 mm。在 `<side>_follower_link` 坐标系下，主从夹爪相机位置差小于
 0.1 mm。每台设备的鱼眼内参存储于夹爪固件中，可通过 TacCap-Gripper SDK 获取。
+
+## 外观
+
+颜色以实物为准：银色结构、浅灰指盖、黑色框架**与从爪黑色电机**、深色胶面、深色镜片，**黄色只出现在指尖和镜头外圈**。数值取自 xensim-bench 的 TacCap 资产（`Looks/TacCap/*`）；从爪电机实物为黑色（CAD 渲染图显示为灰色），主爪指尖与从爪指尖是同一零件。
+
+| 材质 | sRGB `rgba` | metallic | roughness | 用于 |
+| --- | --- | --- | --- | --- |
+| `taccap_silver` | `0.58 0.60 0.62 1` | 0.50 | 0.35 | 本体、铰链块、转接件 |
+| `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | 指盖 |
+| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | 框架、从爪电机、螺钉 |
+| `taccap_yellow` | `0.95 0.75 0.012 1` | 0.00 | 0.48 | 指尖（各 281 面）、镜头外圈 |
+| `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | 触觉胶面 |
+| `taccap_lens` | `0.004 0.004 0.004 1` | 0.10 | 0.12 | 相机镜片 |
+
+各格式每个 visual 只能带一种材质，因此 `ros/taccap_description/config/appearance.json` 里的按面分区被拆成独立网格 `<stem>__<材质>.STL`（例如 `grip_left__yellow.STL`），由 `scripts/generate_appearance_parts.py` 生成。URDF、MJCF、USD 都引用这些零件，三种格式颜色完全一致——每根手指都是灰色本体加黄色指尖，不会整根变黄。碰撞仍使用完整网格。
+
+分区本身由 `scripts/extract_appearance_partition.py` 从 bench 资产导出：本体网格逐面完全一致（69 846 面、零残差），手指网格 23 558 面中 23 468 面精确匹配，其余取最近邻材质。主爪指尖与从爪指尖是同一实体零件、仅刚体摆放不同（配准零残差），因此主爪手指的指尖沿用从爪标注、胶面映射为黑色；主爪手指其余部分属于不同版本，按机械分组各给一种材质。
 
 ## 格式与生成
 

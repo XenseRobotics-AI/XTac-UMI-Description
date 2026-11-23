@@ -78,10 +78,24 @@
     "shipped_layers_sha256": {
       "usd/meshes/Asm_link.usdc": "0bb1f2f2fb5083890cc4280e71ec224bc07450b226a72dc2aab09bc9a26f10d6",
       "usd/meshes/base_link.usdc": "c6e72c6d636382ae5ffb042d0c24255e51f736f2ac558c89d12e794890e86cfd",
+      "usd/meshes/base_link__black.usdc": "664b4eb3424b74d49fd6c6a67e235990f529bddf8263dd1a03122d490caa89d8",
+      "usd/meshes/base_link__lens.usdc": "733a617c22a686a20b2298e054a207302007fa3293ec48c1b5bcd8ce93589c02",
+      "usd/meshes/base_link__silver.usdc": "bba9efab8a1d1ff5eb7aea73d2b78019f85cd80cd50818859b29eaa59e6062aa",
+      "usd/meshes/base_link__yellow.usdc": "addb8bef284c96e5311307fdca69006041d69c8a8a424333b73130f19f92a25a",
       "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
+      "usd/meshes/grip_left__black.usdc": "b7f6710f644b9c1544374aed4a300ad99a9bf497d490c0e1b7044b7fa0323466",
+      "usd/meshes/grip_left__cover.usdc": "4f06e9cec5ebd8de1c1176ad88d21648ab4f470a583113f8f02cd00b983c5ec7",
+      "usd/meshes/grip_left__gel.usdc": "239b3bef4efd599276adfe9c508d081d90f856b1d8d0cb0d4346f84c20dbc1b3",
+      "usd/meshes/grip_left__silver.usdc": "812215340716aea7a703dc32c1fada49152b67e646f8c33361508d7ea6099c48",
+      "usd/meshes/grip_left__yellow.usdc": "ed99d7ebe93e0d51042768b22863e788fbfd8769f5fcde3dc4ed8cb62e66906b",
       "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
-      "usd/taccap_g1_slave.usda": "2191c0349f48494a3fce03bc5a2465a1047dcc6ff12969f92d71801b00fdc797",
-      "usd/taccap_g1_slave_with_mount.usda": "1c3bed186ba35a20188b90aeeaccda6aac12ce791f2da95d106e338d9340866f"
+      "usd/meshes/grip_right__black.usdc": "e14889e9c76cad93e1cbe009fbf1deefae1ab31327537800997cc5c8f6cb16ae",
+      "usd/meshes/grip_right__cover.usdc": "a980c0993ac8b4286aaefd34ee1309b2c88815ec2db8c9c5c7f3c3411838571e",
+      "usd/meshes/grip_right__gel.usdc": "f87684e7fc0c4321bf3486932160975e516b0f6c70c354f73af8d2f4aa42b6ca",
+      "usd/meshes/grip_right__silver.usdc": "d7ca28dddda38f820c60561e33ee37570d3e88eb6b641b7232e110d9aa3ef146",
+      "usd/meshes/grip_right__yellow.usdc": "74efccf734c0b4afcf5568c29d5f60b53264d197a0fd1115e844de148abc2459",
+      "usd/taccap_g1_slave.usda": "84c663fe3e4b4b2d652cde3b20ca7fe814084c4e0346908fd9fdb98a67f8fbf6",
+      "usd/taccap_g1_slave_with_mount.usda": "27374cf91727f94fda986439c28ee3840e6be0d275bfdc1b3024738b44c4c130"
     }
   },
   "urdf_frames": {

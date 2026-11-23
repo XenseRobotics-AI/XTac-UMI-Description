@@ -3,12 +3,20 @@
   <compiler angle="radian" fusestatic="false" discardvisual="false" />
   <option gravity="0 0 0" />
   <asset>
-    <material name="right_shell" rgba="0.58 0.64 0.72 1" />
-    <material name="right_finger" rgba="0.96 0.45 0.71 1" />
+    <material name="right_silver" rgba="0.58 0.6 0.62 1" />
+    <material name="right_cover" rgba="0.65 0.7 0.71 1" />
+    <material name="right_black" rgba="0.018 0.02 0.022 1" />
+    <material name="right_yellow" rgba="0.95 0.75 0.012 1" />
     <mesh name="base_link" file="../meshes/right/base_link.STL" />
     <mesh name="link4" file="../meshes/right/link4.STL" />
-    <mesh name="link1" file="../meshes/right/link1.STL" />
-    <mesh name="link2" file="../meshes/right/link2.STL" />
+    <mesh name="link1__cover" file="../meshes/right/link1__cover.STL" />
+    <mesh name="link1__black" file="../meshes/right/link1__black.STL" />
+    <mesh name="link1__silver" file="../meshes/right/link1__silver.STL" />
+    <mesh name="link1__yellow" file="../meshes/right/link1__yellow.STL" />
+    <mesh name="link2__cover" file="../meshes/right/link2__cover.STL" />
+    <mesh name="link2__black" file="../meshes/right/link2__black.STL" />
+    <mesh name="link2__silver" file="../meshes/right/link2__silver.STL" />
+    <mesh name="link2__yellow" file="../meshes/right/link2__yellow.STL" />
     <mesh name="link3" file="../meshes/right/link3.STL" />
   </asset>
   <custom>
@@ -18,18 +26,25 @@
   </custom>
   <worldbody>
     <body name="right_base_link" mocap="true" pos="0 0 0" quat="1 0 0 0">
-      <geom name="right_body_visual" type="mesh" mesh="base_link" material="right_shell" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
-      <geom name="right_body_aux_visual" type="mesh" mesh="link4" material="right_shell" mass="0" contype="0" conaffinity="0" group="1" pos="0.03664997155194 0 0.189422038155223" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual" type="mesh" mesh="base_link" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_aux_visual" type="mesh" mesh="link4" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0.03664997155194 0 0.189422038155223" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="right_right_link" mocap="true" pos="0.01465 -0.019955 0.037" quat="1 0 0 0">
-      <geom name="right_right_link_visual" type="mesh" mesh="link1" material="right_finger" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_right_link_visual_cover" type="mesh" mesh="link1__cover" material="right_cover" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_right_link_visual_black" type="mesh" mesh="link1__black" material="right_black" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_right_link_visual_silver" type="mesh" mesh="link1__silver" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_right_link_visual_yellow" type="mesh" mesh="link1__yellow" material="right_yellow" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="right_left_link" mocap="true" pos="0.01465 0.019945 0.037" quat="1 0 0 0">
-      <geom name="right_left_link_visual" type="mesh" mesh="link2" material="right_finger" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_left_link_visual_cover" type="mesh" mesh="link2__cover" material="right_cover" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_left_link_visual_black" type="mesh" mesh="link2__black" material="right_black" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_left_link_visual_silver" type="mesh" mesh="link2__silver" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_left_link_visual_yellow" type="mesh" mesh="link2__yellow" material="right_yellow" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="right_pico_link" mocap="true" pos="-0.032782 0.024077 0.013155" quat="0.5920368308641785 0.3948686031487396 -0.1828547525076062 0.6783327477227128">
-      <geom name="right_pico_link_visual" type="mesh" mesh="link3" material="right_shell" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="1 0 0 0" />
+      <geom name="right_pico_link_visual" type="mesh" mesh="link3" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="1 0 0 0" />
     </body>
+    <body name="right_tracker_link" mocap="true" pos="-0.035075794 0.029203296 0.010155299" quat="0.5493153547491009 0.2275270040108961 0.7428349893910979 0.3077016119863897" />
     <body name="right_eef_link" mocap="true" pos="0.036575 0 0.1894217" quat="1 0 0 0">
       <site name="tcp" pos="0 0 0" size="0.004" type="sphere" rgba="1 0.35 0 0.8" group="3" />
     </body>
@@ -38,6 +53,6 @@
     <body name="right_follower_link" mocap="true" pos="0 0 -0.0115" quat="1 0 0 0" />
   </worldbody>
   <keyframe>
-    <key name="open" mpos="0 0 0 0.01465 -0.019955 0.037 0.01465 0.019945 0.037 -0.032782 0.024077 0.013155 0.036575 0 0.1894217 -0.02285 0 0.04975 -0.02285 0 0.04975 0 0 -0.0115" mquat="1 0 0 0 0.9683222026502856 0.2497040485344586 0 0 0.9683222026502856 -0.2497040485344586 0 0 0.5920368308641785 0.3948686031487396 -0.1828547525076062 0.6783327477227128 1 0 0 0 1 0 0 0 0.7071067811865476 0 0 -0.7071067811865475 1 0 0 0" />
+    <key name="open" mpos="0 0 0 0.01465 -0.019955 0.037 0.01465 0.019945 0.037 -0.032782 0.024077 0.013155 -0.035075794 0.029203296 0.010155299 0.036575 0 0.1894217 -0.02285 0 0.04975 -0.02285 0 0.04975 0 0 -0.0115" mquat="1 0 0 0 0.9683222026502856 0.2497040485344586 0 0 0.9683222026502856 -0.2497040485344586 0 0 0.5920368308641785 0.3948686031487396 -0.1828547525076062 0.6783327477227128 0.5493153547491009 0.2275270040108961 0.7428349893910979 0.3077016119863897 1 0 0 0 1 0 0 0 0.7071067811865476 0 0 -0.7071067811865475 1 0 0 0" />
   </keyframe>
 </mujoco>

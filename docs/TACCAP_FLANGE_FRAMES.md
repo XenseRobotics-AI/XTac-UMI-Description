@@ -86,13 +86,41 @@ Different between the sides:
 
 | | Left master | Right master |
 | --- | --- | --- |
-| PICO tracker (`<side>_pico_link`, xyz in m from `<side>_base_link`) | `-0.032054 -0.023651 0.014053` (−Y side) | `-0.032782 0.024077 0.013155` (+Y side) |
+| PICO puck mesh (`<side>_pico_link`, xyz in m from `<side>_base_link`) | `-0.032054 -0.023651 0.014053` (−Y side) | `-0.032782 0.024077 0.013155` (+Y side) |
+| PICO tracker datum (`<side>_tracker_link`, xyz in m) | `-0.035075794 -0.029203296 0.010155299` | `-0.035075794 0.029203296 0.010155299` |
 | Meshes | `meshes/left/` | `meshes/right/` (mirrored parts) |
-| Finger display colour | cyan | pink |
 
-The PICO tracker is mounted on opposite sides of the shell, so the
-tracker-to-EEF transform differs between the two masters; take it from the
-URDF of the side in use.
+Both masters look the same: silver structure, black frame and yellow
+fingertips, matching the physical gripper.
+
+### PICO tracker frame
+
+Two frames describe the tracker and they are **not** interchangeable:
+
+- `<side>_pico_link` is the CAD **part** frame of the puck mesh (`link3.STL`).
+  It is an export artefact: the two masters store the same part with different
+  orientations, and the slave stores it differently again, so it carries no
+  physical meaning.
+- `<side>_tracker_link` is the **device** frame — the pose TacCap-Gripper records
+  and applies its built-in `tracker → EE` extrinsic to. Use this one for
+  teleoperation, calibration and anything that has to agree with recorded data.
+
+The two are related by the code's own extrinsic. Anchoring the tracker frame on
+it makes the round trip exact:
+
+```
+^eef T_tracker = T(Ry(-90°)) · inverse(^tracker T_EE)
+```
+
+`Ry(-90°)` is the relabel between the code's EE axes and `<side>_eef_link`; both
+frames share their origin (the closed-fingertip face centre) but not their axes.
+The straight-line distance from the tracker to the EEF is 195.2514 mm on both
+sides — the value measured in the CAD assembly between its `Tracker frame` and
+`EE frame`. `scripts/_frames.py` holds the derivation and
+`tests/test_tracker_frame.py` pins it, so the URDF and the code cannot drift
+apart silently. The two frames sit 7.4 mm (left) and 6.4 mm (right) apart in
+position because the hand-drawn CAD `Tracker frame` is offset from the puck
+part origin.
 
 Left/right master is not the same as left/right finger: each master has a left
 finger (+Y, `<side>_left_link`) and a right finger (−Y, `<side>_right_link`).
@@ -116,7 +144,8 @@ Placement of the body mesh (native CAD frame) in the base link:
 | `<side>_base_link` | — | Root, shell rear outer surface, shell mesh |
 | `<side>_right_link` | `<side>_right_joint` | Right finger (−Y), driven; positive angle opens |
 | `<side>_left_link` | `<side>_left_joint` | Left finger (+Y), mimics the right finger with multiplier −1 |
-| `<side>_pico_link` | `<side>_pico_joint` (fixed) | PICO tracker, CAD part frame |
+| `<side>_pico_link` | `<side>_pico_joint` (fixed) | PICO puck mesh, CAD part frame (not the device datum) |
+| `<side>_tracker_link` | `<side>_tracker_joint` (fixed) | PICO tracker datum, matches TacCap-Gripper's extrinsic |
 | `<side>_eef_link` | `<side>_eef_joint` (fixed) | End effector |
 | `<side>_camera_link` | `<side>_camera_joint` (fixed) | Wrist camera |
 | `<side>_camera_optical_link` | `<side>_camera_optical_joint` (fixed) | Camera optical frame (REP-103) |
@@ -173,6 +202,41 @@ The camera origin lies on the window axis, 19.95 mm behind the window ring. In
 the `<side>_follower_link` frame, the master and slave camera positions agree within
 0.1 mm. Per-device fisheye intrinsics are stored in the gripper firmware and
 are available through the TacCap-Gripper SDK.
+
+## Appearance
+
+The gripper's colours follow the physical unit: silver structure, light-grey
+finger covers, black frame **and black follower motor**, a dark gel pad, a dark
+lens, and yellow **only on the fingertips and the ring around the lens**. Values
+come from the xensim-bench TacCap asset (`Looks/TacCap/*`); the follower motor is
+black on the hardware even though the CAD render shows it grey, and the leaders'
+fingertips are the follower's tip solid.
+
+| Material | sRGB `rgba` | metallic | roughness | Applied to |
+| --- | --- | --- | --- | --- |
+| `taccap_silver` | `0.58 0.60 0.62 1` | 0.50 | 0.35 | shell, hinge blocks, adapter |
+| `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | finger covers |
+| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws |
+| `taccap_yellow` | `0.95 0.75 0.012 1` | 0.00 | 0.48 | fingertips (281 faces each), lens ring |
+| `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | tactile pad |
+| `taccap_lens` | `0.004 0.004 0.004 1` | 0.10 | 0.12 | camera lens |
+
+Every format carries one material per visual, so the face partition in
+`ros/taccap_description/config/appearance.json` is shipped as separate meshes:
+`<stem>__<material>.STL` (for example `grip_left__yellow.STL`), generated by
+`scripts/generate_appearance_parts.py` from the partition. The URDF, MJCF and USD
+then reference those parts, and all three show the same colours — in particular
+each finger is a grey body with a yellow tip, never a wholly yellow finger.
+Collision keeps using the complete mesh.
+
+The partition itself is exported from the bench asset by
+`scripts/extract_appearance_partition.py`: `base_link` matches face for face
+(69 846 triangles, zero residual), the finger meshes matched 23 468 of 23 558
+faces with the remainder taking their nearest neighbour's material. The leaders'
+fingertips are the follower's tip solid rigidly placed in another frame (zero fit
+residual), so each leader finger takes the follower's tip labels with the gel
+mapped to black; the rest of the leader finger is a different revision and gets
+one material per mechanical group.
 
 ## Formats and generation
 

@@ -30,13 +30,13 @@ def test_master_portability_and_kinematic_contract(tmp_path, side):
     path = destination / get_master_urdf_path(side=side).relative_to(ASSET_ROOT)
     root = ET.parse(path).getroot()
     links = {link.get("name") for link in root.findall("link")}
-    assert links == {f"{side}_{suffix}_link" for suffix in ("base", "pico", "left", "right", "eef", "camera", "camera_optical", "follower")}
+    assert links == {f"{side}_{suffix}_link" for suffix in ("base", "pico", "tracker", "left", "right", "eef", "camera", "camera_optical", "follower")}
     assert not root.findall(".//inertial") and not root.findall(".//collision")
     for mesh in root.findall(".//mesh"):
         resolved = (path.parent / mesh.get("filename")).resolve()
         assert resolved.is_relative_to(destination) and resolved.is_file()
     joints = {joint.get("name"): joint for joint in root.findall("joint")}
-    assert len(joints) == 7
+    assert len(joints) == 8
     for suffix, limits in (
         ("right", (0, 0.5047492196767601)),
         ("left", (-0.5047492196767601, 0)),

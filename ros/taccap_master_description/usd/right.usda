@@ -8,6 +8,99 @@
 
 def Xform "Master"
 {
+    def Scope "Looks"
+    {
+        def Material "taccap_silver"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_silver/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.58, 0.6, 0.62)
+                float inputs:metallic = 0.5
+                float inputs:opacity = 1
+                float inputs:roughness = 0.35
+                token outputs:surface
+            }
+        }
+
+        def Material "taccap_cover"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_cover/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.65, 0.7, 0.71)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+
+        def Material "taccap_black"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_black/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.018, 0.02, 0.022)
+                float inputs:metallic = 0.05
+                float inputs:opacity = 1
+                float inputs:roughness = 0.7
+                token outputs:surface
+            }
+        }
+
+        def Material "taccap_yellow"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_yellow/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.95, 0.75, 0.012)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.48
+                token outputs:surface
+            }
+        }
+
+        def Material "taccap_gel"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_gel/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.055, 0.055, 0.055)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+        }
+
+        def Material "taccap_lens"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_lens/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.004, 0.004, 0.004)
+                float inputs:metallic = 0.1
+                float inputs:opacity = 1
+                float inputs:roughness = 0.12
+                token outputs:surface
+            }
+        }
+    }
+
     def Xform "right_base_link"
     {
         quatf xformOp:orient = (1, 0, 0, 0)
@@ -15,20 +108,24 @@ def Xform "Master"
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
 
         def Mesh "right_body_visual" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
             prepend references = @./meshes/right/base_link.usdc@</Master/Mesh>
         )
         {
-            color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+            rel material:binding = </Master/Looks/taccap_silver>
+            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
             quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
             double3 xformOp:translate = (0.02065, 0, 0.024779)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
         }
 
         def Mesh "right_body_aux_visual" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
             prepend references = @./meshes/right/link4.usdc@</Master/Mesh>
         )
         {
-            color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+            rel material:binding = </Master/Looks/taccap_silver>
+            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
             quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
             double3 xformOp:translate = (0.03664997155194, 0, 0.189422038155223)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -41,11 +138,49 @@ def Xform "Master"
             double3 xformOp:translate = (0.01465, -0.019955, 0.037)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:rotateX:opening"]
 
-            def Mesh "visual" (
-                prepend references = @./meshes/right/link1.usdc@</Master/Mesh>
+            def Mesh "right_right_link_visual_cover" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link1__cover.usdc@</Master/Mesh>
             )
             {
-                color3f[] primvars:displayColor = [(0.96, 0.45, 0.71)]
+                rel material:binding = </Master/Looks/taccap_cover>
+                color3f[] primvars:displayColor = [(0.65, 0.7, 0.71)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_right_link_visual_black" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link1__black.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_black>
+                color3f[] primvars:displayColor = [(0.018, 0.02, 0.022)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_right_link_visual_silver" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link1__silver.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_silver>
+                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_right_link_visual_yellow" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link1__yellow.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_yellow>
+                color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -59,11 +194,49 @@ def Xform "Master"
             double3 xformOp:translate = (0.01465, 0.019945, 0.037)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:rotateX:opening"]
 
-            def Mesh "visual" (
-                prepend references = @./meshes/right/link2.usdc@</Master/Mesh>
+            def Mesh "right_left_link_visual_cover" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link2__cover.usdc@</Master/Mesh>
             )
             {
-                color3f[] primvars:displayColor = [(0.96, 0.45, 0.71)]
+                rel material:binding = </Master/Looks/taccap_cover>
+                color3f[] primvars:displayColor = [(0.65, 0.7, 0.71)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_left_link_visual_black" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link2__black.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_black>
+                color3f[] primvars:displayColor = [(0.018, 0.02, 0.022)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_left_link_visual_silver" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link2__silver.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_silver>
+                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_left_link_visual_yellow" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link2__yellow.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_yellow>
+                color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -77,14 +250,23 @@ def Xform "Master"
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
 
             def Mesh "visual" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
                 prepend references = @./meshes/right/link3.usdc@</Master/Mesh>
             )
             {
-                color3f[] primvars:displayColor = [(0.58, 0.64, 0.72)]
+                rel material:binding = </Master/Looks/taccap_silver>
+                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
                 quatf xformOp:orient = (1, 0, 0, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
+        }
+
+        def Xform "right_tracker_link"
+        {
+            quatf xformOp:orient = (0.54931533, 0.22752701, 0.742835, 0.30770162)
+            double3 xformOp:translate = (-0.035075794, 0.029203296, 0.010155299)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
         }
 
         def Xform "right_eef_link"

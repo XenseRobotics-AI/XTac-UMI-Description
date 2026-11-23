@@ -1,11 +1,21 @@
 <?xml version="1.0"?>
 <robot name="taccap_g1_master_left">
   <!-- Root on the shell rear outer surface (centre on the tool axis), 23.5 mm above the higher fingertip holding plane; +Z tool axis, +Y left finger. All link frames share these axes; meshes keep their native CAD frame via visual origins (finger hinges along +X). EEF: centre of the closed fingertips' most distal face (mesh-derived, shared with the slave). -->
-  <material name="left_shell">
-    <color rgba="0.58 0.64 0.72 1" />
+  <!-- Appearance follows the physical gripper (xensim-bench `Looks/TacCap/*`): silver shell,
+       light-grey finger bodies, black frame strip and screws, yellow only on the fingertips.
+       One material per visual, so the face partition in config/appearance.json is shipped as
+       separate mesh parts. -->
+  <material name="left_silver">
+    <color rgba="0.58 0.6 0.62 1" />
   </material>
-  <material name="left_finger">
-    <color rgba="0.20 0.83 0.94 1" />
+  <material name="left_cover">
+    <color rgba="0.65 0.7 0.71 1" />
+  </material>
+  <material name="left_black">
+    <color rgba="0.018 0.02 0.022 1" />
+  </material>
+  <material name="left_yellow">
+    <color rgba="0.95 0.75 0.012 1" />
   </material>
   <link name="left_base_link">
     <visual name="left_body_visual">
@@ -13,23 +23,44 @@
       <geometry>
         <mesh filename="../meshes/left/base_link.STL" />
       </geometry>
-      <material name="left_shell" />
+      <material name="left_silver" />
     </visual>
     <visual name="left_body_aux_visual">
       <origin xyz="0.0364999715519367 0 0.189421788170065" rpy="1.5707963267948966 0 -1.5707963267948966" />
       <geometry>
         <mesh filename="../meshes/left/link4.STL" />
       </geometry>
-      <material name="left_shell" />
+      <material name="left_silver" />
     </visual>
   </link>
   <link name="left_right_link">
-    <visual>
+    <visual name="left_right_link_visual_cover">
       <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
       <geometry>
-        <mesh filename="../meshes/left/link1.STL" />
+        <mesh filename="../meshes/left/link1__cover.STL" />
       </geometry>
-      <material name="left_finger" />
+      <material name="left_cover" />
+    </visual>
+    <visual name="left_right_link_visual_black">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link1__black.STL" />
+      </geometry>
+      <material name="left_black" />
+    </visual>
+    <visual name="left_right_link_visual_silver">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link1__silver.STL" />
+      </geometry>
+      <material name="left_silver" />
+    </visual>
+    <visual name="left_right_link_visual_yellow">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link1__yellow.STL" />
+      </geometry>
+      <material name="left_yellow" />
     </visual>
   </link>
   <joint name="left_right_joint" type="revolute">
@@ -40,12 +71,33 @@
     <limit lower="0" upper="0.5047492196767601" effort="1" velocity="1" />
   </joint>
   <link name="left_left_link">
-    <visual>
+    <visual name="left_left_link_visual_cover">
       <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
       <geometry>
-        <mesh filename="../meshes/left/link2.STL" />
+        <mesh filename="../meshes/left/link2__cover.STL" />
       </geometry>
-      <material name="left_finger" />
+      <material name="left_cover" />
+    </visual>
+    <visual name="left_left_link_visual_black">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link2__black.STL" />
+      </geometry>
+      <material name="left_black" />
+    </visual>
+    <visual name="left_left_link_visual_silver">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link2__silver.STL" />
+      </geometry>
+      <material name="left_silver" />
+    </visual>
+    <visual name="left_left_link_visual_yellow">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/left/link2__yellow.STL" />
+      </geometry>
+      <material name="left_yellow" />
     </visual>
   </link>
   <joint name="left_left_joint" type="revolute">
@@ -57,17 +109,31 @@
     <mimic joint="left_right_joint" multiplier="-1" offset="0" />
   </joint>
   <link name="left_pico_link">
+    <!-- The PICO puck mesh, kept in its own CAD part frame (export artefact). -->
     <visual>
       <geometry>
         <mesh filename="../meshes/left/link3.STL" />
       </geometry>
-      <material name="left_shell" />
+      <material name="left_silver" />
     </visual>
   </link>
   <joint name="left_pico_joint" type="fixed">
     <origin xyz="-0.032054 -0.023651 0.014053" rpy="2.8750023051296245 0.8599287316238766 -1.9703474638774119" />
     <parent link="left_base_link" />
     <child link="left_pico_link" />
+  </joint>
+  <!-- PICO tracker datum: what TacCap-Gripper records as the tracker pose. This is
+       NOT left_pico_link, which is the puck mesh's CAD part frame (an export
+       artefact, unrelated to the device axes). Anchored on the code's built-in
+       tracker->EE extrinsic, which this frame must reproduce exactly:
+         ^eef T_tracker = T(Ry(-90 deg)) * inverse(^tracker T_eef)
+       See scripts/_frames.py and tests/test_tracker_frame.py.
+       Teleoperation: take this frame from the URDF of the side in use. -->
+  <link name="left_tracker_link" />
+  <joint name="left_tracker_joint" type="fixed">
+    <origin xyz="-0.035075794 -0.029203296 0.010155299" rpy="-1.855768178207 0.742430111242 -1.979704154721" />
+    <parent link="left_base_link" />
+    <child link="left_tracker_link" />
   </joint>
   <link name="left_eef_link" />
   <joint name="left_eef_joint" type="fixed">

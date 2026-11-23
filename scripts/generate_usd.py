@@ -14,8 +14,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
+from _appearance import define_materials, urdf_material
 from _metadata import hash_tree, update_config
-from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, Vt
+from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
 ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
@@ -119,6 +120,7 @@ def generate_model(output, with_mount):
         for name, link in links.items()
     }
     stage = new_stage(output / f"{MODEL}{suffix}.usda")
+    materials = define_materials(stage, ROOT)
     colors = {
         mat.get("name"): vector(mat.find("color").get("rgba"))[:3]
         for mat in urdf.findall("material")
@@ -161,8 +163,10 @@ def generate_model(output, with_mount):
                     Gf.Matrix4d(transform(geometry.find("origin")).T.tolist())
                 )
                 if kind == "visual":
-                    mesh.CreateDisplayColorAttr(
-                        [Gf.Vec3f(*colors[geometry.find("material").get("name")])]
+                    material = geometry.find("material").get("name")
+                    mesh.CreateDisplayColorAttr([Gf.Vec3f(*colors[material])])
+                    UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(
+                        materials[urdf_material(material)]
                     )
                 else:
                     mesh.CreatePurposeAttr(UsdGeom.Tokens.guide)

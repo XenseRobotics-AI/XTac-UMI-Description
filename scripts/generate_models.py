@@ -14,12 +14,11 @@ import xacro
 from scipy.spatial.transform import Rotation
 
 ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
-MESH_NAMES = {
-    "base_link.STL": "taccap_base_mesh",
-    "grip_left.STL": "taccap_left_mesh",
-    "grip_right.STL": "taccap_right_mesh",
-    "Asm_link.STL": "taccap_asm_mesh",
-}
+
+
+def mesh_name(filename):
+    """MuJoCo asset name for a shipped STL (``base_link__silver.STL`` -> ``base_link_silver``)."""
+    return Path(filename).stem.replace("__", "_")
 
 
 def pose(origin):
@@ -49,9 +48,10 @@ def make_mjcf(urdf):
     referenced_meshes = {
         Path(mesh.get("filename")).name for mesh in urdf.findall(".//mesh")
     }
-    for filename, name in MESH_NAMES.items():
-        if filename in referenced_meshes:
-            ET.SubElement(assets, "mesh", name=name, file=f"../meshes/{filename}")
+    for filename in sorted(referenced_meshes):
+        ET.SubElement(
+            assets, "mesh", name=mesh_name(filename), file=f"../meshes/{filename}"
+        )
 
     links = {link.get("name"): link for link in urdf.findall("link")}
     children = {}
@@ -119,7 +119,7 @@ def make_mjcf(urdf):
                 "name": geometry.get("name"),
                 "type": "mesh",
                 "mass": "0",
-                "mesh": MESH_NAMES[Path(mesh.get("filename")).name],
+                "mesh": mesh_name(mesh.get("filename")),
             }
             attributes.update(pose(geometry.find("origin")))
             if geometry.tag == "visual":

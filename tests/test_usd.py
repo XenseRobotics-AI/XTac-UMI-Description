@@ -23,19 +23,20 @@ def frame(position, rotation):
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
-def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount):
+def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount, usd_compliance):
     destination = tmp_path / "relocated assets"
     shutil.copytree(ASSET_ROOT / "usd", destination)
     path = destination / get_usd_path(with_mount=with_mount).name
-    checker = UsdUtils.ComplianceChecker()
-    checker.CheckCompliance(str(path))
-    assert not checker.GetErrors()
-    assert not checker.GetFailedChecks()
-    assert not checker.GetWarnings()
+    usd_compliance(path)
     layers, assets, unresolved = UsdUtils.ComputeAllDependencies(str(path))
     assert not assets  # All dependencies are USD layers, no external textures.
     assert not unresolved
-    assert len(layers) == (5 if with_mount else 4)
+    # One layer per shipped mesh (visuals and collisions share) plus the entry layer.
+    urdf = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
+    meshes = {
+        mesh.get("filename").split("/")[-1] for mesh in urdf.findall(".//mesh")
+    }
+    assert len(layers) == len(meshes) + 1
     assert all(str(destination) in layer.realPath for layer in layers)
     stage = Usd.Stage.CreateInMemory()
     for instance in ("/World/Left", "/World/Right"):
