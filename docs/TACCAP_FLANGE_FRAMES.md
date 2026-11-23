@@ -216,7 +216,7 @@ fingertips are the follower's tip solid.
 | --- | --- | --- | --- | --- |
 | `taccap_silver` | `0.58 0.60 0.62 1` | 0.50 | 0.35 | shell, hinge blocks, adapter |
 | `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | finger covers |
-| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws |
+| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws, fingertip inner silicone |
 | `taccap_yellow` | `0.95 0.75 0.012 1` | 0.00 | 0.48 | fingertips (281 faces each), lens ring |
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | tactile pad |
 | `taccap_lens` | `0.004 0.004 0.004 1` | 0.10 | 0.12 | camera lens |
@@ -237,8 +237,11 @@ Two edges are cut rather than painted per triangle, so they come out straight:
   line where the fingertip meets the black connector.
 - **Camera window.** The fisheye is a triangle fan, so a per-face radius test
   cannot make the ring. The window is cut on a cylinder of radius 8.5 mm about
-  the camera axis: inside is the near-black lens (`taccap_lens`), outside keeps
-  the yellow surround.
+  the camera axis: inside is the near-black lens (`taccap_lens`) and the whole
+  surround out to the window rim is yellow.
+- **Leader side groups.** The round buttons on both outer sides of each leader
+  are yellow and the plates they sit in are white (`taccap_cover`); they are
+  identified per connected component by height in the body mesh.
 
 The partition itself is exported from the bench asset by
 `scripts/extract_appearance_partition.py`: `base_link` matches face for face

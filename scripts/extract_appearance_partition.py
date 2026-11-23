@@ -68,7 +68,9 @@ FINGERTIP_SEAM = {
     "axis": "x",
     "at": 0.1064,
     "material": "taccap_yellow",
-    "keep": ["taccap_gel"],
+    # The inner face is silicone/TPU rubber on both designs and stays dark: the
+    # follower's gel pad and the leader's bare rubber pad and frame.
+    "keep": ["taccap_gel", "taccap_black"],
 }
 
 
@@ -169,8 +171,12 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
         centre = triangles[faces].mean(axis=(0, 1)) * 1e3
         if abs(centre[0]) < 25 and sizes[component] > 3000:
             labels[faces] = "taccap_silver"      # hinge block
+        elif sizes[component] < 200:
+            labels[faces] = "taccap_yellow"      # side button on the sensor plate
+        elif 800 <= sizes[component] <= 1000:
+            labels[faces] = "taccap_cover"       # white plate carrying the button
         else:
-            labels[faces] = "taccap_black"       # screws, clip pins, sensor block
+            labels[faces] = "taccap_black"       # screws and clip pins
     labels[target_components == body] = "taccap_cover"
     print(
         f"{target_path.name}: fingertips transferred from the follower "
@@ -233,6 +239,50 @@ def camera_window_cut():
     }
 
 
+def fix_camera_ring(triangles, labels):
+    """Paint the window surround yellow; the glass inside 8.5 mm is cut separately."""
+    rotation = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
+    origin = np.array([0.01975, -0.0060769, 0.034023])
+    camera = np.array([-0.02285, 0.0, 0.04975])
+    centroids = triangles.mean(axis=1) @ rotation.T + origin
+    radius = np.linalg.norm(centroids[:, 1:] - camera[1:], axis=1) * 1e3
+    height = centroids[:, 2] - camera[2]
+    ring = (radius >= 8.5) & (radius < 14.0) & (height > -0.014)
+    labels = labels.copy()
+    labels[ring] = "taccap_yellow"
+    print(f"  camera ring: {int(ring.sum())} faces -> yellow")
+    return labels
+
+
+def leader_body_partition(triangles):
+    """Side buttons and their plates on the leaders, by connected component.
+
+    The bench asset only covers the follower and the leader body is a different
+    shape, so the groups are identified geometrically: on each side of the shell
+    a round button sits at z ~8 mm with its plate directly above at z ~14 mm
+    (mesh frame). The button is yellow on the hardware, the plate white.
+    """
+    components = component_labels(triangles)
+    labels = np.full(len(triangles), "taccap_silver", dtype=object)
+    groups = []
+    for component in np.unique(components):
+        faces = components == component
+        if faces.sum() < 4000:
+            continue
+        points = triangles[faces].reshape(-1, 3) * 1e3
+        centre = points.mean(axis=0)
+        if abs(centre[1]) < 15.0:
+            continue
+        if 4.0 < centre[2] < 10.5:
+            labels[faces] = "taccap_yellow"
+            groups.append(("button", int(faces.sum()), np.round(centre, 1).tolist()))
+        elif 12.0 < centre[2] < 17.0:
+            labels[faces] = "taccap_cover"
+            groups.append(("plate", int(faces.sum()), np.round(centre, 1).tolist()))
+    print(f"  leader body: {groups}")
+    return labels
+
+
 def main():
     stage = Usd.Stage.Open(str(BENCH))
     partition = {}
@@ -252,6 +302,7 @@ def main():
         order = [MATERIAL_OF[name] for name in names]
         extra = {"bench_faces": len(bench_labels), "bench_source": prim_path}
         if key == "base":
+            labels = fix_camera_ring(triangles, labels)
             extra["radial_cut"] = camera_window_cut()
         if key in ("left_finger", "right_finger"):
             extra["parting_plane"] = FINGERTIP_SEAM
@@ -269,6 +320,19 @@ def main():
             transferred_from=reference,
             parting_plane=FINGERTIP_SEAM,
             note="Leader finger: follower partition after a rigid fit, gel -> black.",
+        )
+
+    for side in ("left", "right"):
+        relative = f"master/{side}/base_link.STL"
+        path = MASTER / side / "base_link.STL"
+        triangles, count = stl_triangles(path)
+        labels = leader_body_partition(triangles)
+        order = ["taccap_silver", "taccap_cover", "taccap_yellow"]
+        partition[relative] = entry(
+            labels,
+            count,
+            order,
+            note="Leader body: side buttons yellow, their plates white, rest silver.",
         )
 
     destination = ROOT / "ros/taccap_description/config/appearance.json"
