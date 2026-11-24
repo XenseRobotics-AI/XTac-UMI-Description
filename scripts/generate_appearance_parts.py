@@ -228,6 +228,11 @@ def cut_faces(triangles, labels, spec):
     above_labels[distal] = spec["material"]
     proximal = below_labels == spec["material"]
     below_labels[proximal] = spec.get("below_material", "taccap_black")
+    # Intermediate labels that only steer the cut (``keep``) and ship as another
+    # material, e.g. the leader's rubber pad: gel for the cut, black on output.
+    for source, target in spec.get("rename", {}).items():
+        below_labels[below_labels == source] = target
+        above_labels[above_labels == source] = target
     return (
         _rebuild(triangles, np.vstack([below, above, vertices[other_index]])),
         np.concatenate([below_labels, above_labels, labels[other_index].astype(object)]),

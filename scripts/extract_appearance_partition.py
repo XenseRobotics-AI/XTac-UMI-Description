@@ -76,6 +76,10 @@ FINGERTIP_SEAM = {
     "keep": ["taccap_gel"],
 }
 
+# The leader has the same fingertip solid with a bare rubber pad: cut like the
+# follower, then the former gel faces ship black.
+LEADER_SEAM = {**FINGERTIP_SEAM, "rename": {"taccap_gel": "taccap_black"}}
+
 
 def stl_triangles(path):
     data = path.read_bytes()
@@ -181,9 +185,10 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
     # ``kabsch`` maps reference -> target, so invert it to bring target faces back.
     in_reference = (triangles[tip_faces].mean(axis=1) - translation) @ rotation
     distance, match = tree.query(in_reference, k=1)
-    tip_labels = reference_labels[reference_components == reference_tip][match]
-    tip_labels[tip_labels == "taccap_gel"] = "taccap_black"
-    labels[tip_faces] = tip_labels
+    # The follower's gel stays ``taccap_gel`` here so the parting-plane cut
+    # keeps it dark, exactly as on the follower; the cut then renames it to
+    # black (``LEADER_SEAM``) — the leader's silicone/TPU pad has no sensor.
+    labels[tip_faces] = reference_labels[reference_components == reference_tip][match]
     if distance.max() > 1e-6:
         raise ValueError(f"{target_path.name}: fingertip fit residual {distance.max() * 1e3:.3f} mm")
 
@@ -495,14 +500,15 @@ def main():
     for relative, (path, reference) in MASTER_FINGERS.items():
         triangles, labels = slave_labels[reference]
         target_labels, count = transfer_finger(triangles, labels, path)
-        order = [name for name in ("taccap_cover", "taccap_silver", "taccap_black", "taccap_yellow")]
+        # ``taccap_gel`` is only an intermediate label; LEADER_SEAM renames it.
+        order = ["taccap_cover", "taccap_silver", "taccap_black", "taccap_yellow", "taccap_gel"]
         partition[relative] = entry(
             target_labels,
             count,
             order,
             transferred_from=reference,
-            parting_plane=FINGERTIP_SEAM,
-            note="Leader finger: follower partition after a rigid fit, gel -> black.",
+            parting_plane=LEADER_SEAM,
+            note="Leader finger: follower partition after a rigid fit; gel ships black after the cut.",
         )
 
     for side in ("left", "right"):

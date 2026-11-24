@@ -306,6 +306,27 @@ def test_shipped_finger_screws_are_black(package, side, stem):
         assert materials == {"black"}, (stem, materials)
 
 
+def _triangles_area(triangles):
+    edges = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    return float(np.linalg.norm(edges, axis=1).sum() / 2)
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+@pytest.mark.parametrize("stem", ["link1", "link2"])
+def test_shipped_master_fingertip_yellow_matches_the_follower(side, stem):
+    """The leader fingertip is the follower's solid: only the same cap ships
+    yellow; its silicone/TPU pad (gel on the follower) ships black, never yellow."""
+    directory = MASTER_ROOT / "meshes" / side
+    tip = lambda triangles: triangles[triangles.mean(axis=1)[:, 0] > 0.1]  # past the button
+    leader = tip(_read(directory / f"{stem}__yellow.STL"))
+    # Each leader's fingers were transferred from one follower finger
+    # (MASTER_FINGERS in extract_appearance_partition.py): left <- grip_left.
+    follower = tip(_read(ASSET_ROOT / "meshes" / f"grip_{side}__yellow.STL"))
+    assert len(leader) == len(follower)
+    assert _triangles_area(leader) == pytest.approx(_triangles_area(follower), rel=1e-6)
+    assert not list(directory.glob(f"{stem}__gel.STL"))
+
+
 @pytest.mark.parametrize("side", ["left", "right"])
 def test_shipped_master_sync_button_is_yellow(side):
     """The time-sync button (1862-face solid) ships yellow on one finger per hand."""
