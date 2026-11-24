@@ -200,7 +200,11 @@
         "component_faces": 2766,
         "keep": [
           "taccap_gel"
-        ]
+        ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        }
       }
     },
     "slave/grip_right.STL": {
@@ -372,7 +376,11 @@
         "component_faces": 2766,
         "keep": [
           "taccap_gel"
-        ]
+        ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        }
       },
       "note": "Mirrored from the left finger so both hands match the hardware."
     },
@@ -545,6 +553,10 @@
         "keep": [
           "taccap_gel"
         ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        },
         "rename": {
           "taccap_gel": "taccap_black"
         }
@@ -720,6 +732,10 @@
         "keep": [
           "taccap_gel"
         ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        },
         "rename": {
           "taccap_gel": "taccap_black"
         }
@@ -911,6 +927,10 @@
         "keep": [
           "taccap_gel"
         ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        },
         "rename": {
           "taccap_gel": "taccap_black"
         }
@@ -1098,6 +1118,10 @@
         "keep": [
           "taccap_gel"
         ],
+        "nub": {
+          "from": 0.146,
+          "material": "taccap_black"
+        },
         "rename": {
           "taccap_gel": "taccap_black"
         }

@@ -341,6 +341,27 @@ def test_shipped_master_screw_seat_is_black_like_the_follower(side, stem):
     assert _triangles_area(leader) >= _triangles_area(follower)
 
 
+@pytest.mark.parametrize(
+    "directory, stem",
+    [
+        ("slave", "grip_left"),
+        ("slave", "grip_right"),
+        ("left", "link1"),
+        ("left", "link2"),
+        ("right", "link1"),
+        ("right", "link2"),
+    ],
+)
+def test_shipped_fingertip_nub_is_black(directory, stem):
+    """The small TPU nub at the very end of every fingertip (x > 146 mm) ships
+    black on all sides: nothing yellow reaches it, and it is still present."""
+    root = ASSET_ROOT / "meshes" if directory == "slave" else MASTER_ROOT / "meshes" / directory
+    yellow = _read(root / f"{stem}__yellow.STL")
+    assert yellow.mean(axis=1)[:, 0].max() < 0.146
+    black = _read(root / f"{stem}__black.STL")
+    assert (black.mean(axis=1)[:, 0] > 0.146).sum() > 50
+
+
 @pytest.mark.parametrize("side", ["left", "right"])
 def test_shipped_master_sync_button_is_yellow(side):
     """The time-sync button (1862-face solid) ships yellow on one finger per hand."""

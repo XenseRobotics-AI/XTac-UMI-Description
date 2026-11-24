@@ -233,6 +233,12 @@ def cut_faces(triangles, labels, spec):
     for source, target in spec.get("rename", {}).items():
         below_labels[below_labels == source] = target
         above_labels[above_labels == source] = target
+    # Past ``nub.from`` only the TPU nub remains; its cap-coloured outer faces
+    # take ``nub.material`` (the pad side keeps its own material).
+    nub = spec.get("nub")
+    if nub:
+        beyond = above[:, :, axis].mean(axis=1) > nub["from"]
+        above_labels[beyond & (above_labels == spec["material"])] = nub["material"]
     return (
         _rebuild(triangles, np.vstack([below, above, vertices[other_index]])),
         np.concatenate([below_labels, above_labels, labels[other_index].astype(object)]),

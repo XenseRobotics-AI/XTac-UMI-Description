@@ -74,6 +74,9 @@ FINGERTIP_SEAM = {
     # The inner face is silicone/TPU rubber on both designs and stays dark: the
     # follower's gel pad and the leader's bare rubber pad and frame.
     "keep": ["taccap_gel"],
+    # The small TPU nub at the very end of the tip (x 148-152.4 mm; nothing of
+    # the cap lies between 144 and 148 mm) is black on its outer side too.
+    "nub": {"from": 0.146, "material": "taccap_black"},
 }
 
 # The leader has the same fingertip solid with a bare rubber pad: cut like the

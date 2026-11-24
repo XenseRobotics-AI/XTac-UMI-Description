@@ -31,7 +31,8 @@ writes the parts from it.
 - **Fingertip.** The yellow cap ends on the plane `x = 106.4 mm` (finger mesh
   frame). Only the fingertip solid is cut, so screws and plates that cross the
   plane keep their colour, and the seam is a straight line. The slave's gel pad
-  stays dark; the master has black rubber instead.
+  stays dark; the master has black rubber instead. The small TPU nub at the
+  very end (x > 146 mm) is black on all sides on both.
 - **Camera window** (same on slave and master). Two CAD solids: the lens module
   (glass dome, then a black stepped barrel) and the yellow collar around it.
 - **Slave right finger.** Labelled from the mirrored left finger, solid by solid,
