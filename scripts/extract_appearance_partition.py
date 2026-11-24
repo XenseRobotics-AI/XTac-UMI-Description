@@ -155,15 +155,30 @@ def kabsch(source, target):
     return rotation, target_centre - source_centre @ rotation.T
 
 
-def transfer_finger(reference_triangles, reference_labels, target_path):
+def _fit_tip(reference_triangles, triangles, name):
+    """Rigid transform (reference -> target) from the shared fingertip solid."""
+    reference_components = component_labels(reference_triangles)
+    target_components = component_labels(triangles)
+    points_reference = reference_triangles[reference_components == _tip_component(reference_triangles)].reshape(-1, 3)
+    points_target = triangles[target_components == _tip_component(triangles)].reshape(-1, 3)
+    if len(points_reference) != len(points_target):
+        raise ValueError(f"{name}: fingertip vertex count differs")
+    return kabsch(points_reference, points_target)
+
+
+SHELL_MATCH = 1e-4  # m; shell faces this close to the follower's are the same surface
+
+
+def transfer_finger(reference_triangles, reference_labels, target_path, shell_reference):
     """Face labels for a leader finger mesh.
 
     The fingertip is the *same solid* as the follower's (identical vertex order,
     zero residual after a rigid fit), so those faces take the follower's labels
-    with the gel mapped to black — the leader has no tactile pad. The rest of the
-    finger is a different revision (several millimetres apart in places), so
-    labelling it face by face would invent detail; its mechanical groups get one
-    material each instead.
+    with the gel mapped to black — the leader has no tactile pad. The shell is
+    mostly the same surface as the follower finger on the same side
+    (``shell_reference``): faces within ``SHELL_MATCH`` of it take its colour,
+    so the black connector and screw seats match; the revised remainder stays
+    white. Other mechanical groups get one material each.
     """
     from scipy.spatial import cKDTree
 
@@ -212,6 +227,15 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
             labels[faces] = "taccap_black"       # screws and clip pins
     body_faces = np.nonzero(target_components == body)[0]
     labels[body_faces] = "taccap_cover"
+    shell_triangles, shell_labels = shell_reference
+    shell_rotation, shell_translation = _fit_tip(shell_triangles, triangles, target_path.name)
+    reference_body = component_labels(shell_triangles)
+    reference_body = reference_body == int(np.argmax(np.bincount(reference_body)))
+    shell_distance, shell_match = cKDTree(shell_triangles[reference_body].mean(axis=1)).query(
+        (triangles[body_faces].mean(axis=1) - shell_translation) @ shell_rotation, k=1
+    )
+    same = shell_distance < SHELL_MATCH
+    labels[body_faces[same]] = shell_labels[reference_body][shell_match[same]]
     # Screws welded onto the shell at a single vertex are part of ``body`` by
     # vertex connectivity; every solid but the shell itself is a black screw.
     solids = edge_components(triangles[body_faces])
@@ -499,7 +523,9 @@ def main():
 
     for relative, (path, reference) in MASTER_FINGERS.items():
         triangles, labels = slave_labels[reference]
-        target_labels, count = transfer_finger(triangles, labels, path)
+        # link1 is the -Y finger (follower grip_right), link2 the +Y one.
+        shell = slave_labels["slave/grip_right.STL" if path.stem == "link1" else "slave/grip_left.STL"]
+        target_labels, count = transfer_finger(triangles, labels, path, shell)
         # ``taccap_gel`` is only an intermediate label; LEADER_SEAM renames it.
         order = ["taccap_cover", "taccap_silver", "taccap_black", "taccap_yellow", "taccap_gel"]
         partition[relative] = entry(

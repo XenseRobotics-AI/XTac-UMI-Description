@@ -37,7 +37,11 @@ writes the parts from it.
 - **Slave right finger.** Labelled from the mirrored left finger, solid by solid,
   so both hands match.
 - **Master body and fingers.** The time-sync button and the side buttons are
-  yellow; the plates they sit in are white.
+  yellow; the plates they sit in are white. The finger shell takes the slave
+  finger's colours wherever the two surfaces coincide (within 0.1 mm): the black
+  connector, screw seats and inner frame match the slave, and the revised rest
+  is white. All finger screws are black, including two that the CAD export
+  welds onto the right-finger shell.
 - **Slave internals.** Parts hidden inside the shell carry no yellow.
 
 `tests/test_appearance.py` reads the shipped parts and checks these rules per

@@ -328,6 +328,20 @@ def test_shipped_master_fingertip_yellow_matches_the_follower(side, stem):
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
+@pytest.mark.parametrize("stem", ["link1", "link2"])
+def test_shipped_master_screw_seat_is_black_like_the_follower(side, stem):
+    """Between the screws and the fingertip seam (x 88-106.4 mm) the leader shell
+    is the follower's black connector. The leader also ships its rubber pad
+    black there (gel on the follower), so its black area is at least the
+    follower's; a white connector would leave it far below."""
+    band = lambda t: t[(t.mean(axis=1)[:, 0] > 0.088) & (t.mean(axis=1)[:, 0] < 0.1064)]
+    leader = band(_read(MASTER_ROOT / "meshes" / side / f"{stem}__black.STL"))
+    finger = "grip_right" if stem == "link1" else "grip_left"
+    follower = band(_read(ASSET_ROOT / "meshes" / f"{finger}__black.STL"))
+    assert _triangles_area(leader) >= _triangles_area(follower)
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
 def test_shipped_master_sync_button_is_yellow(side):
     """The time-sync button (1862-face solid) ships yellow on one finger per hand."""
     directory = MASTER_ROOT / "meshes" / side
