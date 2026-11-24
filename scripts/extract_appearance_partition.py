@@ -190,23 +190,54 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
     return labels, count
 
 
-def mirror_finger(labels, left, right):
-    """Label the right finger from the mirrored left one.
+def mirror_finger(labels, left, right, right_bench_labels):
+    """Label the right finger from the mirrored left one, solid by solid.
 
-    The two fingers are mirror parts and the bench asset labels them
-    asymmetrically (the small outer plate on the right came out black), so the
-    left finger's partition is mirrored onto the right.
+    The fingers are mirror parts, but the two meshes are not exact mirrors, so a
+    global nearest-face lookup lets faces cross into a neighbouring solid (grey
+    cover landing on the black body, gel leaking off the pad). Each right solid
+    is therefore paired with the mirrored left solid of the same face count and
+    nearest centre, and faces are matched only inside that pair. A right solid
+    with no left counterpart (the extra outer plate) keeps the bench labels.
     """
     from scipy.spatial import cKDTree
 
     mirror = np.array([1.0, -1.0, 1.0])
-    tree = cKDTree(left.mean(axis=1) * mirror)
-    distance, match = tree.query(right.mean(axis=1), k=1)
-    print(
-        f"  right finger from mirrored left: median {np.median(distance) * 1e6:.0f} um, "
-        f"p99 {np.percentile(distance, 99) * 1e6:.0f} um"
-    )
-    return labels[match]
+    left_solids = component_labels(left)
+    right_solids = component_labels(right)
+    left_centres = {
+        int(s): (left[left_solids == s].reshape(-1, 3) * mirror).mean(axis=0)
+        for s in np.unique(left_solids)
+    }
+    left_sizes = np.bincount(left_solids)
+    result = right_bench_labels.copy()
+    paired = 0
+    for solid in np.unique(right_solids):
+        faces = right_solids == solid
+        centre = right[faces].reshape(-1, 3).mean(axis=0)
+        size = int(faces.sum())
+        # Same solid: similar size (the exports differ by a few percent) and
+        # the closest mirrored centre.
+        candidates = [
+            s for s in left_centres
+            if abs(left_sizes[s] - size) <= max(0.25 * size, 50)
+        ]
+        if not candidates:
+            # No mirror partner: the small outer plate on this hand only.
+            # It is white on the hardware.
+            if 800 <= size <= 1000:
+                result[faces] = "taccap_cover"
+            continue
+        best = min(candidates, key=lambda s: np.linalg.norm(left_centres[s] - centre))
+        if np.linalg.norm(left_centres[best] - centre) > 0.005:
+            continue
+        source = left[left_solids == best] * mirror
+        tree = cKDTree(source.mean(axis=1))
+        _, match = tree.query(right[faces].mean(axis=1), k=1)
+        result[faces] = labels[left_solids == best][match]
+        paired += 1
+    print(f"  right finger mirrored solid by solid: {paired} solids paired")
+    return result
 
 
 def _tip_component(triangles):
@@ -384,7 +415,8 @@ def main():
     # Symmetric fingers: mirror the left partition onto the right.
     left_triangles, left_labels = slave_labels["slave/grip_left.STL"]
     right_triangles, _ = slave_labels["slave/grip_right.STL"]
-    mirrored = mirror_finger(left_labels, left_triangles, right_triangles)
+    right_bench = slave_labels["slave/grip_right.STL"][1]
+    mirrored = mirror_finger(left_labels, left_triangles, right_triangles, right_bench)
     right_entry = partition["slave/grip_right.STL"]
     partition["slave/grip_right.STL"] = entry(
         mirrored,

@@ -266,3 +266,26 @@ def test_shipped_slave_light_window_is_translucent():
     lights = [m for m in capsules if "light" in m]
     assert len(lights) == 1
     assert set(lights[0]) == {"light"}, capsules
+
+
+@pytest.mark.parametrize("stem", ["grip_left", "grip_right"])
+def test_shipped_slave_fingertip_has_no_grey(stem):
+    """The fingertip solid ships only yellow cap, dark gel and black rubber."""
+    tips = _solid_materials(ASSET_ROOT / "meshes", stem, 2766)
+    assert len(tips) == 1
+    assert set(tips[0]) <= {"yellow", "gel", "black"}, tips[0]
+
+
+def test_shipped_slave_fingers_match_each_other():
+    """Both slave hands ship the same materials on their common solids."""
+    left = sorted(
+        (faces, tuple(sorted(m)))
+        for faces in (100, 1246, 2766)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "grip_left", faces)
+    )
+    right = sorted(
+        (faces, tuple(sorted(m)))
+        for faces in (100, 1246, 2766)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "grip_right", faces)
+    )
+    assert {r[1] for r in right} <= {l[1] for l in left}, (left, right)
