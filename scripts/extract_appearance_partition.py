@@ -68,6 +68,9 @@ FINGERTIP_SEAM = {
     "axis": "x",
     "at": 0.1064,
     "material": "taccap_yellow",
+    # Only the fingertip solid (the 2766-face cap) is recoloured. Screws, pins
+    # and plates that cross the plane are separate solids and keep their colour.
+    "component_faces": 2766,
     # The inner face is silicone/TPU rubber on both designs and stays dark: the
     # follower's gel pad and the leader's bare rubber pad and frame.
     "keep": ["taccap_gel"],
@@ -276,18 +279,26 @@ def camera_window_cut(model):
     }
 
 
-# Status-LED window on the slave body: a 10 mm disc, base frame centre below.
-LIGHT_CENTRE_M = np.array([0.0248, -0.0025, 0.0255])
-LIGHT_RADIUS_M = 0.0052
+# Status-LED window on the slave body: the 6.7 x 13.6 mm capsule on top of the
+# shell (base frame centre about (-44.3, 0.1, 60.2) mm). Identified as a whole
+# solid so its rim and lens are both translucent.
+LIGHT_CENTRE_M = np.array([-0.0443, 0.0001, 0.0602])
 
 
 def fix_light_window(triangles, labels, model, origin):
-    """Make the indicator window translucent instead of shell-coloured."""
+    """Make the indicator capsule translucent instead of yellow."""
+    components = component_labels(triangles)
     centroids = triangles.mean(axis=1) @ BODY_ROTATION.T + origin
-    near = np.linalg.norm(centroids - LIGHT_CENTRE_M, axis=1) < LIGHT_RADIUS_M
+    light = np.zeros(len(triangles), dtype=bool)
+    for component in np.unique(components):
+        faces = components == component
+        if faces.sum() > 2000:
+            continue
+        if np.linalg.norm(centroids[faces].mean(axis=0) - LIGHT_CENTRE_M) < 0.004:
+            light |= faces
     labels = labels.copy()
-    labels[near] = "taccap_light"
-    print(f"  light window ({model}): {int(near.sum())} faces")
+    labels[light] = "taccap_light"
+    print(f"  light window ({model}): {int(light.sum())} faces")
     return labels
 
 

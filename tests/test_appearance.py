@@ -68,8 +68,11 @@ def test_master_fingers_are_grey_with_yellow_tips(side):
         assert f"{stem}__yellow.STL" in meshes
         body = [name for name in meshes if name.endswith("__cover.STL")]
         assert body, meshes
-        tip_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__yellow.STL")
-        assert 0 < tip_faces < faces(MASTER_ROOT / "meshes" / side / f"{stem}.STL") * 0.10
+        # Yellow is the fingertip cap plus, on one finger per hand, the
+        # time-sync button: a small share of the finger, never its body.
+        yellow_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__yellow.STL")
+        cover_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__cover.STL")
+        assert 0 < yellow_faces < cover_faces / 3
 
 
 def test_slave_fingertips_are_yellow_on_both_hands():
@@ -178,3 +181,88 @@ def test_master_usd_binds_yellow_fingers_only_at_the_tip(side):
     assert set(expected) <= set(yellow)
     assert len(yellow) == len(expected)
     assert not any(name.endswith("_visual") for name in yellow)
+
+
+def _solids(triangles):
+    """Per-face connected-solid id for a triangle soup."""
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(triangles.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    rows = np.concatenate([faces[:, 0], faces[:, 1], faces[:, 2]])
+    cols = np.concatenate([faces[:, 1], faces[:, 2], faces[:, 0]])
+    graph = coo_matrix((np.ones(len(rows)), (rows, cols)), shape=(len(faces),) * 2).tocsr()
+    return connected_components(graph, directed=False)[1][faces[:, 0]]
+
+
+def _read(path):
+    data = path.read_bytes()
+    dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
+    return np.frombuffer(data, dtype=dtype, offset=84)["vertices"].astype(float)
+
+
+def _solid_materials(directory, stem, faces_count):
+    """For every source solid with ``faces_count`` faces, the materials its
+    surface ships with.
+
+    A shipped part face belongs to the solid if all three of its vertices lie on
+    that solid's vertex set (welded to 1 um), so neighbouring parts that merely
+    touch it are not counted. Reads the delivered ``<stem>__<material>.STL``
+    files, i.e. exactly what URDF, MJCF and USD reference.
+    """
+    source = _read(directory / f"{stem}.STL")
+    solids = _solids(source)
+    keys = np.round(source.reshape(-1, 3) * 1e6).astype(np.int64)
+    vertex_solid = {}
+    for key, solid in zip(map(tuple, keys), np.repeat(solids, 3)):
+        vertex_solid.setdefault(key, set()).add(int(solid))
+    targets = {int(s) for s in np.unique(solids) if (solids == s).sum() == faces_count}
+    result = {t: {} for t in targets}
+    for part in sorted(directory.glob(f"{stem}__*.STL")):
+        material = part.stem.split("__")[1]
+        for triangle in np.round(_read(part) * 1e6).astype(np.int64):
+            owners = [vertex_solid.get(tuple(v), set()) for v in triangle]
+            common = set.intersection(*owners) if all(owners) else set()
+            for solid in common & targets:
+                result[solid][material] = result[solid].get(material, 0) + 1
+    return list(result.values())
+
+
+@pytest.mark.parametrize(
+    "package, side, stem",
+    [
+        ("slave", "", "grip_left"),
+        ("slave", "", "grip_right"),
+        ("master", "left", "link1"),
+        ("master", "left", "link2"),
+        ("master", "right", "link1"),
+        ("master", "right", "link2"),
+    ],
+)
+def test_shipped_screw_heads_are_black(package, side, stem):
+    """Every fingertip screw head (100-face solid) ships black in the parts."""
+    root = ASSET_ROOT if package == "slave" else MASTER_ROOT
+    directory = root / "meshes" / side if side else root / "meshes"
+    screws = _solid_materials(directory, stem, 100)
+    assert screws
+    for materials in screws:
+        assert set(materials) == {"black"}, (stem, materials)
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_shipped_master_sync_button_is_yellow(side):
+    """The time-sync button (1862-face solid) ships yellow on one finger per hand."""
+    directory = MASTER_ROOT / "meshes" / side
+    buttons = [m for stem in ("link1", "link2") for m in _solid_materials(directory, stem, 1862)]
+    assert len(buttons) == 1
+    assert set(buttons[0]) == {"yellow"}, buttons
+
+
+def test_shipped_slave_light_window_is_translucent():
+    """The status-LED capsule on top of the slave ships as the light material."""
+    capsules = _solid_materials(ASSET_ROOT / "meshes", "base_link", 764)
+    lights = [m for m in capsules if "light" in m]
+    assert len(lights) == 1
+    assert set(lights[0]) == {"light"}, capsules

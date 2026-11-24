@@ -57,20 +57,21 @@ def face_labels(entry):
 def clip(triangles, axis, at):
     """Split triangles at ``x[axis] = at``.
 
-    Returns ``(below, above)`` triangle arrays. Faces that straddle the plane are
-    cut, so the boundary is a straight line instead of following the existing
-    triangulation — that is what makes a fingertip's colour edge look machined.
+    Returns ``(below, below_source, above, above_source)``: the pieces on each
+    side and, for every piece, the index of the triangle it was cut from. The
+    source index is what carries the colour; re-matching a piece by its centroid
+    can land on a neighbouring part and steal that part's material.
     """
-    below, above = [], []
-    for triangle in triangles:
+    below, below_source, above, above_source = [], [], [], []
+    for index_triangle, triangle in enumerate(triangles):
         values = triangle[:, axis]
         if values.max() <= at:
-            below.append(triangle)
+            below.append(triangle); below_source.append(index_triangle)
         elif values.min() >= at:
-            above.append(triangle)
+            above.append(triangle); above_source.append(index_triangle)
         else:
             polygon = list(triangle)
-            for sign, out in ((-1, below), (1, above)):
+            for sign, out, source in ((-1, below, below_source), (1, above, above_source)):
                 piece = []
                 for index in range(3):
                     current = polygon[index]
@@ -87,61 +88,66 @@ def clip(triangles, axis, at):
                 if len(piece) >= 3:
                     for corner in range(1, len(piece) - 1):
                         out.append(np.array([piece[0], piece[corner], piece[corner + 1]]))
+                        source.append(index_triangle)
+    empty = np.zeros((0, 3, 3))
     return (
-        np.array(below) if below else np.zeros((0, 3, 3)),
-        np.array(above) if above else np.zeros((0, 3, 3)),
+        np.array(below) if below else empty,
+        np.array(below_source, dtype=np.int64),
+        np.array(above) if above else empty,
+        np.array(above_source, dtype=np.int64),
     )
 
 
 def clip_radius(triangles, centre, radius):
     """Split triangles by distance from the line ``x = centre`` (axis along x).
 
+    Returns ``(inner, inner_source, outer, outer_source)`` like :func:`clip`.
     The camera window is a triangle fan, so a per-face radius test cannot make a
-    clean ring — faces straddle it. Cutting the geometry gives the ring and the
-    glass an exact circular edge.
+    clean ring; cutting the geometry gives an exact circular edge.
     """
-    inner, outer = [], []
-    for triangle in triangles:
+    inner, inner_source, outer, outer_source = [], [], [], []
+    for index_triangle, triangle in enumerate(triangles):
         distance = np.linalg.norm(triangle[:, 1:] - centre, axis=1) - radius
         if distance.max() <= 0:
-            inner.append(triangle)
+            inner.append(triangle); inner_source.append(index_triangle)
             continue
         if distance.min() >= 0:
-            outer.append(triangle)
+            outer.append(triangle); outer_source.append(index_triangle)
             continue
         polygon = list(triangle)
-        for sign, out in ((-1, inner), (1, outer)):
+        for sign, out, source in ((-1, inner, inner_source), (1, outer, outer_source)):
             piece = []
             for index in range(3):
                 current = polygon[index]
                 following = polygon[(index + 1) % 3]
                 current_in = sign * distance[index] >= 0
-                delta = following[1:] - current[1:]
-                following_gap = np.linalg.norm(following[1:] - centre) - radius
-                following_in = sign * following_gap >= 0
+                following_in = sign * distance[(index + 1) % 3] >= 0
                 if current_in:
                     piece.append(current)
                 if current_in != following_in:
                     offset = current[1:] - centre
-                    a = delta @ delta
-                    b = 2 * offset @ delta
-                    c = offset @ offset - radius * radius
-                    disc = b * b - 4 * a * c if a > 0 else -1
+                    delta = following[1:] - current[1:]
+                    qa = delta @ delta
+                    qb = 2 * offset @ delta
+                    qc = offset @ offset - radius * radius
+                    disc = qb * qb - 4 * qa * qc if qa > 0 else -1
                     if disc < 0:
                         continue
                     root = np.sqrt(disc)
-                    # Both roots can lie on the segment when it passes through
-                    # the circle with both endpoints outside; keep every one, or
-                    # the piece loses the arc it crossed.
-                    for t in ((-b - root) / (2 * a), (-b + root) / (2 * a)):
+                    for t in sorted(((-qb - root) / (2 * qa), (-qb + root) / (2 * qa))):
                         if -1e-12 <= t <= 1 + 1e-12:
                             piece.append(current + t * (following - current))
+                            break
             if len(piece) >= 3:
                 for corner in range(1, len(piece) - 1):
                     out.append(np.array([piece[0], piece[corner], piece[corner + 1]]))
+                    source.append(index_triangle)
+    empty = np.zeros((0, 3, 3))
     return (
-        np.array(inner) if inner else np.zeros((0, 3, 3)),
-        np.array(outer) if outer else np.zeros((0, 3, 3)),
+        np.array(inner) if inner else empty,
+        np.array(inner_source, dtype=np.int64),
+        np.array(outer) if outer else empty,
+        np.array(outer_source, dtype=np.int64),
     )
 
 
@@ -161,66 +167,87 @@ def cut_radius_faces(triangles, labels, spec):
 
     Only faces inside ``range`` along the axis take part: the cylinder is
     infinite, so without the bound the same cut also lands on the body behind
-    the window and paints a dark disc on the rear shell.
-
-    ``at`` is the glass radius and ``material`` its colour; ``bezel`` adds a
-    second, larger radius whose band takes ``bezel["material"]``.
+    the window. ``at`` is the glass radius; ``bezel`` adds a second radius whose
+    band takes ``bezel["material"]``. Everything else keeps the label of the
+    triangle it was cut from.
     """
     vertices = triangles["vertices"].astype(np.float64)
     centre = np.array(spec["centre"], dtype=float)
-    window, rest = vertices, np.zeros((0, 3, 3))
+    selected = np.arange(len(vertices))
     if spec.get("range"):
         low, high = spec["range"]
         along = vertices[:, :, 0]
-        inside = (along.max(axis=1) >= low) & (along.min(axis=1) <= high)
-        window, rest = vertices[inside], vertices[~inside]
+        selected = np.nonzero((along.max(axis=1) >= low) & (along.min(axis=1) <= high))[0]
+    untouched = np.setdiff1d(np.arange(len(vertices)), selected)
 
-    inner, outer = clip_radius(window, centre, spec["at"])
+    inner, inner_src, outer, outer_src = clip_radius(vertices[selected], centre, spec["at"])
     pieces = [inner]
     piece_labels = [np.full(len(inner), spec["material"], dtype=object)]
+    outer_src = selected[outer_src]
     bezel = spec.get("bezel")
     if bezel:
-        middle, outer = clip_radius(outer, centre, bezel["at"])
+        middle, middle_src, outer, rest_src = clip_radius(outer, centre, bezel["at"])
         pieces.append(middle)
         piece_labels.append(np.full(len(middle), bezel["material"], dtype=object))
+        outer_src = outer_src[rest_src]
     pieces.append(outer)
-    piece_labels.append(_classify(outer, vertices, labels))
-    if len(rest):
-        pieces.append(rest)
-        piece_labels.append(_classify(rest, vertices, labels))
+    piece_labels.append(labels[outer_src])
+    pieces.append(vertices[untouched])
+    piece_labels.append(labels[untouched])
     return _rebuild(triangles, np.vstack(pieces)), np.concatenate(piece_labels)
 
 
 def cut_faces(triangles, labels, spec):
     """Re-label faces by a parting plane: the distal side takes ``material``.
 
-    Faces across the plane are cut, so the colour edge is a straight line — the
-    fingertip's rubber cap meets the black connector on a machined-looking seam
-    instead of following the CAD triangulation. Materials in ``keep`` (the gel
-    pad on the inner face) hold on both sides of the plane.
+    Faces across the plane are cut, so the colour edge is a straight line.
+    Only faces already carrying a ``from`` material are recoloured: the plane
+    must not repaint the screws, pins and pad that sit across it. ``keep``
+    materials hold on both sides.
     """
     axis = "xyz".index(spec["axis"])
     vertices = triangles["vertices"].astype(np.float64)
-    below, above = clip(vertices, axis, spec["at"])
+    # Restrict the cut to one solid (the fingertip) when asked, so nothing that
+    # merely crosses the plane — screws, pins, plates — is repainted.
+    cap = np.ones(len(vertices), dtype=bool)
+    if spec.get("component_faces"):
+        components = component_labels(vertices)
+        sizes = np.bincount(components)
+        matches = np.nonzero(sizes == spec["component_faces"])[0]
+        if len(matches) != 1:
+            raise ValueError(f"expected one {spec['component_faces']}-face solid, found {len(matches)}")
+        cap = components == matches[0]
+    cap_index = np.nonzero(cap)[0]
+    other_index = np.nonzero(~cap)[0]
+
+    below, below_src, above, above_src = clip(vertices[cap_index], axis, spec["at"])
+    below_labels = labels[cap_index[below_src]].astype(object)
+    above_labels = labels[cap_index[above_src]].astype(object)
     keep = set(spec.get("keep", []))
-    below_labels = _classify(below, vertices, labels)
-    # The plane owns the colour split: nothing of the distal material may stay
-    # behind it, or the boundary follows the old triangulation again.
-    below_labels = np.where(
-        below_labels == spec["material"], spec.get("below_material", "taccap_black"), below_labels
+    distal = np.array([m not in keep for m in above_labels], dtype=bool)
+    above_labels[distal] = spec["material"]
+    proximal = below_labels == spec["material"]
+    below_labels[proximal] = spec.get("below_material", "taccap_black")
+    return (
+        _rebuild(triangles, np.vstack([below, above, vertices[other_index]])),
+        np.concatenate([below_labels, above_labels, labels[other_index].astype(object)]),
     )
-    above_source = _classify(above, vertices, labels)
-    above_labels = np.where(
-        np.isin(above_source, list(keep)), above_source, spec["material"]
-    )
-    pieces = np.vstack([below, above])
-    out = np.zeros(len(pieces), dtype=triangles.dtype)
-    out["vertices"] = pieces.astype(np.float32)
-    normals = np.cross(pieces[:, 1] - pieces[:, 0], pieces[:, 2] - pieces[:, 0])
-    lengths = np.linalg.norm(normals, axis=1, keepdims=True)
-    normals = np.divide(normals, lengths, out=np.zeros_like(normals), where=lengths > 0)
-    out["normal"] = normals
-    return out, np.concatenate([below_labels, above_labels.astype(object)])
+
+
+def component_labels(vertices):
+    """Per-face connected-component id (faces sharing a welded vertex)."""
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(vertices.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    count = len(faces)
+    rows = np.concatenate([faces[:, 0], faces[:, 1], faces[:, 2]])
+    columns = np.concatenate([faces[:, 1], faces[:, 2], faces[:, 0]])
+    graph = coo_matrix((np.ones(len(rows)), (rows, columns)), shape=(count, count)).tocsr()
+    _, labels = connected_components(graph, directed=False)
+    return labels[faces[:, 0]]
 
 
 def _classify(pieces, triangles, labels):
