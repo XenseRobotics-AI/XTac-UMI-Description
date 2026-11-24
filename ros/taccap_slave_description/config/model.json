@@ -43,9 +43,9 @@
     "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
     "grip_right__black.STL": "e162fa4032a4519ed9b568ee642b2bb074d4ee50488d7af74da6a6cf96527a54",
     "grip_right__cover.STL": "5aae11795ace0c5463d1913e9b47f3eed936e8d9efbf1fb558721b612653acb2",
-    "grip_right__gel.STL": "89739738a60ce6b02c9e0b66b505f8561f3ef4f6f3844ef4a829b93c4d2f5df5",
+    "grip_right__gel.STL": "197e22e0888591647eb7b5eaa862e562deb83e2bfb695650a2ca3708a4fe46fa",
     "grip_right__silver.STL": "1fd6575828472092ce48f7d592e07e6b77a1c48ea61b62724eb058bdbf79362f",
-    "grip_right__yellow.STL": "3ec64d71374686ae5009ee479e62fde13b0bed9d10c900220505ffac2b867722",
+    "grip_right__yellow.STL": "db7fe15e11e8e5de174895170594a92002c28d8cd7d95f89bd7bcc9769ff822c",
     "grip_right_silkscreen.STL": "94544843fe25582ef7f502f23467e999ba66b2552ac8d2a5d480e2bfe46720e4"
   },
   "joint_contract": {
@@ -110,9 +110,9 @@
       "usd/meshes/grip_right.usdc": "c9764c1327735e4ae496358ea72c49a29fbb01bb1cc1c0eacb265fe89ac55ab1",
       "usd/meshes/grip_right__black.usdc": "c2abf17f4b06cc58d31dc91c9e480b683d519617bcbb0bcc11dcf469493a500f",
       "usd/meshes/grip_right__cover.usdc": "b6f8c9dcbc050b06da4ef533a5e460ff758f574049a10982a44b4fcdf072fc44",
-      "usd/meshes/grip_right__gel.usdc": "bc8b97f7a6d65ce019def480406ad4f22f2b9441d6ab6ad3ffd8b7cbe9c601b9",
+      "usd/meshes/grip_right__gel.usdc": "8530ec5e90b9e342eee5f8ddd04422a51a6aa2572a09906558f1e427b4822492",
       "usd/meshes/grip_right__silver.usdc": "e4b10420556b316c1f008218871b456d825b4411f1a7296a27670b6ed3785270",
-      "usd/meshes/grip_right__yellow.usdc": "927b427225b9d7768f890d44b850124446df2cc4bb9cd97d41fe03b8519f386d",
+      "usd/meshes/grip_right__yellow.usdc": "1b5c5079688c348e5a4ba6d8881a8b424a2c0a4ec87d800c602d65fa4f9ca60d",
       "usd/meshes/grip_right_silkscreen.usdc": "8b2e5137d900baed90fa18c5d721827fb3f0e6e055e13b0561bb33687c84a782",
       "usd/taccap_g1_slave.usda": "7802a4bed6aafe14c954c0d80f45cd0f71a39b1a646b9fc9dcddb7ba09a4709a",
       "usd/taccap_g1_slave_with_mount.usda": "d16578b43a62dced04b248d3a3cc18217234d9fa92a1cb12deef3a3a28836c48"

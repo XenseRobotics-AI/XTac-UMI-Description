@@ -377,6 +377,22 @@ def _finger_dir(directory):
 
 
 @pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_shipped_pad_plane_has_no_yellow(directory, stem):
+    """The fingertip's inner pad plane (x > 100 mm, |n_y| > 0.99, |y| > 12 mm) carries no
+    yellow on any finger: gel on the follower, black rubber on the leader."""
+    yellow = _read(_finger_dir(directory) / f"{stem}__yellow.STL")
+    normals = np.cross(yellow[:, 1] - yellow[:, 0], yellow[:, 2] - yellow[:, 0])
+    normals /= np.linalg.norm(normals, axis=1, keepdims=True)
+    centres = yellow.mean(axis=1)
+    on_pad_plane = (
+        (centres[:, 0] > 0.1)  # the fingertip, not the leader's sync button
+        & (np.abs(normals[:, 1]) > 0.99)
+        & (np.abs(centres[:, 1]) > 0.012)
+    )
+    assert not on_pad_plane.any(), yellow.mean(axis=1)[on_pad_plane] * 1e3
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
 def test_silkscreen_sits_on_the_cap_outer_facet(directory, stem):
     """The "XENSE" print lies just outside the cap's large outer facet (0.02 to
     0.07 mm off it), within the facet, on the side away from the gel pad, and

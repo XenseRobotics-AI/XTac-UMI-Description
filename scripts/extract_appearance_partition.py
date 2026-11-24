@@ -251,6 +251,28 @@ def transfer_finger(reference_triangles, reference_labels, target_path, shell_re
     return labels, count
 
 
+def pad_plane_is_gel(triangles, labels):
+    """No yellow on the fingertip's pad plane (the inner face around the gel).
+
+    The right tip is not an exact mirror of the left (its triangulation
+    differs), so the mirrored lookup can drop a cap label onto a sliver of the
+    pad plane, which the seam cut then keeps yellow. On the left finger that
+    plane is gel throughout; enforce the same on any finger.
+    """
+    labels = labels.copy()
+    tip = component_labels(triangles) == _tip_component(triangles)
+    gel = tip & (labels == "taccap_gel")
+    pad_side = np.sign(triangles[gel].mean(axis=(0, 1))[1])
+    normals = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    normals /= np.linalg.norm(normals, axis=1, keepdims=True)
+    on_pad_plane = tip & (normals[:, 1] * pad_side > 0.99) & (np.abs(triangles.mean(axis=1)[:, 1]) > 0.012)
+    stray = on_pad_plane & (labels == "taccap_yellow")
+    labels[stray] = "taccap_gel"
+    if stray.any():
+        print(f"  pad plane: {int(stray.sum())} yellow face(s) set to gel")
+    return labels
+
+
 def mirror_finger(labels, left, right, right_bench_labels):
     """Label the right finger from the mirrored left one, solid by solid.
 
@@ -512,6 +534,7 @@ def main():
     right_triangles, _ = slave_labels["slave/grip_right.STL"]
     right_bench = slave_labels["slave/grip_right.STL"][1]
     mirrored = mirror_finger(left_labels, left_triangles, right_triangles, right_bench)
+    mirrored = pad_plane_is_gel(right_triangles, mirrored)
     right_entry = partition["slave/grip_right.STL"]
     partition["slave/grip_right.STL"] = entry(
         mirrored,
