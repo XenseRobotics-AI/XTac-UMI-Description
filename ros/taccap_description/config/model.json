@@ -78,10 +78,10 @@
     "shipped_layers_sha256": {
       "usd/meshes/Asm_link.usdc": "0bb1f2f2fb5083890cc4280e71ec224bc07450b226a72dc2aab09bc9a26f10d6",
       "usd/meshes/base_link.usdc": "c6e72c6d636382ae5ffb042d0c24255e51f736f2ac558c89d12e794890e86cfd",
-      "usd/meshes/base_link__black.usdc": "2b4e784499115e31399d1527523436cc4977da363b92e748cd9ad7d3c89bedbf",
-      "usd/meshes/base_link__lens.usdc": "172bd942c378ccf3d2ad01d21438f5ae2240b482d33cdd9efdcd5bc4fef2ad89",
-      "usd/meshes/base_link__silver.usdc": "44ea63cb62f52c6d21cc763da3f5b827e8ffe2bae591108fdc59e11bf98c1a97",
-      "usd/meshes/base_link__yellow.usdc": "74a49a32ac676e8d54081c9f5113d189e0ecd21944c136d136413ea159a93409",
+      "usd/meshes/base_link__black.usdc": "3589e207e9b4a4d5bfa596945117f8185e2ae78ec474ed0839367162abf8b79c",
+      "usd/meshes/base_link__lens.usdc": "d8707558a4fbe9700397f88dd64746e1bbab8852b5d33217629a3c7e4928121d",
+      "usd/meshes/base_link__silver.usdc": "88918364c89031674f96771e5a26921672ea447fd8d4854221afa377411a4f6b",
+      "usd/meshes/base_link__yellow.usdc": "a81a23da4781996b7be84ca2aab2866928a47ab51cdc003ab984d855b54d7fa2",
       "usd/meshes/grip_left.usdc": "467d5c40e60d4a4ca7c96734a3d7e6c61fb0483eb068fa6c02d90ba2fd0aff59",
       "usd/meshes/grip_left__black.usdc": "2745ccc1ae0c69c67116b49c2388a6fecc870be568c8a4595bc0ed5f148f215a",
       "usd/meshes/grip_left__cover.usdc": "38ceca1473fd934e73dcf468d3aa67d302e049fe8198d49c6f93b247b33eff24",
@@ -94,8 +94,8 @@
       "usd/meshes/grip_right__gel.usdc": "e719bd90b1ca0dd50b0e5ca82d40ed153dc4126257993cae1f7fa1cc83318c04",
       "usd/meshes/grip_right__silver.usdc": "e4b10420556b316c1f008218871b456d825b4411f1a7296a27670b6ed3785270",
       "usd/meshes/grip_right__yellow.usdc": "25b63b13240ec6cfcd709c38696a23e40996557b9c6a1fa341c98d824143f26a",
-      "usd/taccap_g1_slave.usda": "84c663fe3e4b4b2d652cde3b20ca7fe814084c4e0346908fd9fdb98a67f8fbf6",
-      "usd/taccap_g1_slave_with_mount.usda": "27374cf91727f94fda986439c28ee3840e6be0d275bfdc1b3024738b44c4c130"
+      "usd/taccap_g1_slave.usda": "8ce4f9c02d05b3c7b52c87edd8d8c09ba7ab3168cdee7cd6138dc14a30602c00",
+      "usd/taccap_g1_slave_with_mount.usda": "4e3e2b5fb3baded49a4676e673c7310c5b6afb781f7472574243d18d89b148be"
     }
   },
   "urdf_frames": {

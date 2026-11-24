@@ -17,10 +17,10 @@ def Xform "Master"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.58, 0.6, 0.62)
-                float inputs:metallic = 0.5
+                color3f inputs:diffuseColor = (0.82, 0.81, 0.79)
+                float inputs:metallic = 0
                 float inputs:opacity = 1
-                float inputs:roughness = 0.35
+                float inputs:roughness = 0.45
                 token outputs:surface
             }
         }
@@ -62,7 +62,7 @@ def Xform "Master"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.95, 0.75, 0.012)
+                color3f inputs:diffuseColor = (0.95, 0.72, 0.07)
                 float inputs:metallic = 0
                 float inputs:opacity = 1
                 float inputs:roughness = 0.48
@@ -92,7 +92,7 @@ def Xform "Master"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.004, 0.004, 0.004)
+                color3f inputs:diffuseColor = (0.03, 0.03, 0.03)
                 float inputs:metallic = 0.1
                 float inputs:opacity = 1
                 float inputs:roughness = 0.12
@@ -113,7 +113,7 @@ def Xform "Master"
         )
         {
             rel material:binding = </Master/Looks/taccap_silver>
-            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+            color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
             quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
             double3 xformOp:translate = (0.02065, 0, 0.024785)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -125,7 +125,7 @@ def Xform "Master"
         )
         {
             rel material:binding = </Master/Looks/taccap_silver>
-            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+            color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
             quatf xformOp:orient = (0.5, 0.5, -0.5, -0.5)
             double3 xformOp:translate = (0.0364999715519367, 0, 0.189421788170065)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -168,7 +168,7 @@ def Xform "Master"
             )
             {
                 rel material:binding = </Master/Looks/taccap_silver>
-                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+                color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -180,7 +180,7 @@ def Xform "Master"
             )
             {
                 rel material:binding = </Master/Looks/taccap_yellow>
-                color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
+                color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -224,7 +224,7 @@ def Xform "Master"
             )
             {
                 rel material:binding = </Master/Looks/taccap_silver>
-                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+                color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -236,7 +236,7 @@ def Xform "Master"
             )
             {
                 rel material:binding = </Master/Looks/taccap_yellow>
-                color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
+                color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
@@ -255,7 +255,7 @@ def Xform "Master"
             )
             {
                 rel material:binding = </Master/Looks/taccap_silver>
-                color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+                color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
                 quatf xformOp:orient = (1, 0, 0, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]

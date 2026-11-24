@@ -240,17 +240,32 @@ def camera_window_cut():
 
 
 def fix_camera_ring(triangles, labels):
-    """Paint the window surround yellow; the glass inside 8.5 mm is cut separately."""
+    """Yellow surround ring, glass cut separately at 8.5 mm.
+
+    The hardware photo (2026-11-24) shows the yellow ring ending about 1.45
+    times the black lens radius, with plain shell outside it; the bench asset
+    instead runs the yellow out to the window rim.
+    """
     rotation = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
     origin = np.array([0.01975, -0.0060769, 0.034023])
     camera = np.array([-0.02285, 0.0, 0.04975])
     centroids = triangles.mean(axis=1) @ rotation.T + origin
-    radius = np.linalg.norm(centroids[:, 1:] - camera[1:], axis=1) * 1e3
+    # The camera looks along +Z of the base frame (camera_link has rpy 0), so the
+    # radius is measured in the XY plane and the height runs along Z.
+    radius = np.hypot(centroids[:, 0] - camera[0], centroids[:, 1] - camera[1]) * 1e3
     height = centroids[:, 2] - camera[2]
-    ring = (radius >= 8.5) & (radius < 14.0) & (height > -0.014)
+    window = (radius < 14.0) & (height > -0.014)
+    ring = window & (radius >= 8.5) & (radius < 12.3)
+    # The window opening is a recessed barrel: some of it sits behind the rim, so
+    # the shell repaint ignores height and covers the whole annulus out to 16 mm.
+    outside = (radius >= 12.3) & (radius < 16.0)
     labels = labels.copy()
     labels[ring] = "taccap_yellow"
-    print(f"  camera ring: {int(ring.sum())} faces -> yellow")
+    labels[outside] = "taccap_silver"
+    print(
+        f"  camera: {int(ring.sum())} faces -> yellow ring (8.5-12.3 mm), "
+        f"{int(outside.sum())} -> shell (12.3-14 mm)"
+    )
     return labels
 
 

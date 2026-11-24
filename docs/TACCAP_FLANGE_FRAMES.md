@@ -205,7 +205,9 @@ are available through the TacCap-Gripper SDK.
 
 ## Appearance
 
-The gripper's colours follow the physical unit: silver structure, light-grey
+Colours follow the hardware photo of 2026-11-24 (the shell reads as a light warm
+grey plastic, not metal) for the shell, yellow and lens; the remaining values
+come from the bench asset. The gripper's colours follow the physical unit: silver structure, light-grey
 finger covers, black frame **and black follower motor**, a dark gel pad, a dark
 lens, and yellow **only on the fingertips and the ring around the lens**. Values
 come from the xensim-bench TacCap asset (`Looks/TacCap/*`); the follower motor is
@@ -214,12 +216,12 @@ fingertips are the follower's tip solid.
 
 | Material | sRGB `rgba` | metallic | roughness | Applied to |
 | --- | --- | --- | --- | --- |
-| `taccap_silver` | `0.58 0.60 0.62 1` | 0.50 | 0.35 | shell, hinge blocks, adapter |
+| `taccap_silver` | `0.82 0.81 0.79 1` | 0.00 | 0.45 | moulded shell, hinge blocks, adapter |
 | `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | finger covers |
 | `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws, fingertip inner silicone |
-| `taccap_yellow` | `0.95 0.75 0.012 1` | 0.00 | 0.48 | fingertips (281 faces each), lens ring |
+| `taccap_yellow` | `0.95 0.72 0.07 1` | 0.00 | 0.48 | fingertips, camera ring, side buttons |
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | tactile pad |
-| `taccap_lens` | `0.004 0.004 0.004 1` | 0.10 | 0.12 | camera lens |
+| `taccap_lens` | `0.03 0.03 0.03 1` | 0.10 | 0.12 | camera lens |
 
 Every format carries one material per visual, so the face partition in
 `ros/taccap_description/config/appearance.json` is shipped as separate meshes:
@@ -237,8 +239,9 @@ Two edges are cut rather than painted per triangle, so they come out straight:
   line where the fingertip meets the black connector.
 - **Camera window.** The fisheye is a triangle fan, so a per-face radius test
   cannot make the ring. The window is cut on a cylinder of radius 8.5 mm about
-  the camera axis: inside is the near-black lens (`taccap_lens`) and the whole
-  surround out to the window rim is yellow.
+  the camera axis (base +Z): inside is the near-black lens (`taccap_lens`),
+  8.5-12.3 mm is the yellow ring and beyond that the shell colour resumes,
+  matching the hardware photo where the ring is about 1.45x the lens radius.
 - **Leader side groups.** The round buttons on both outer sides of each leader
   are yellow and the plates they sit in are white (`taccap_cover`); they are
   identified per connected component by height in the body mesh.

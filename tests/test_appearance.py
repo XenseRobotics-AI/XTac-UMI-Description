@@ -23,14 +23,15 @@ from taccap_master_description import (
     get_master_usd_path,
 )
 
-# xensim-bench `Looks/TacCap/*`: (diffuseColor, metallic, roughness)
+# Shell and yellow follow the hardware photo of 2026-11-24; the bench values
+# stay for the materials the photo does not contradict. (diffuse, metal, rough)
 EXPECTED = {
-    "taccap_silver": ((0.58, 0.60, 0.62), 0.50, 0.35),
+    "taccap_silver": ((0.82, 0.81, 0.79), 0.00, 0.45),
     "taccap_cover": ((0.65, 0.70, 0.71), 0.00, 0.60),
     "taccap_black": ((0.018, 0.020, 0.022), 0.05, 0.70),
-    "taccap_yellow": ((0.95, 0.75, 0.012), 0.00, 0.48),
+    "taccap_yellow": ((0.95, 0.72, 0.07), 0.00, 0.48),
     "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
-    "taccap_lens": ((0.004, 0.004, 0.004), 0.10, 0.12),
+    "taccap_lens": ((0.03, 0.03, 0.03), 0.10, 0.12),
 }
 
 

@@ -14,12 +14,12 @@
     <torque name="torque_ee" site="ft_frame" />
   </sensor>
   <asset>
-    <material name="taccap_silver" rgba="0.58 0.6 0.62 1" />
+    <material name="taccap_silver" rgba="0.82 0.81 0.79 1" />
     <material name="taccap_cover" rgba="0.65 0.7 0.71 1" />
     <material name="taccap_black" rgba="0.018 0.02 0.022 1" />
-    <material name="taccap_yellow" rgba="0.95 0.75 0.012 1" />
+    <material name="taccap_yellow" rgba="0.95 0.72 0.07 1" />
     <material name="taccap_gel" rgba="0.055 0.055 0.055 1" />
-    <material name="taccap_lens" rgba="0.004 0.004 0.004 1" />
+    <material name="taccap_lens" rgba="0.03 0.03 0.03 1" />
     <mesh name="base_link" file="../meshes/base_link.STL" />
     <mesh name="base_link_black" file="../meshes/base_link__black.STL" />
     <mesh name="base_link_lens" file="../meshes/base_link__lens.STL" />

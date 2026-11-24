@@ -18,10 +18,10 @@ def Xform "TacCap"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.58, 0.6, 0.62)
-                float inputs:metallic = 0.5
+                color3f inputs:diffuseColor = (0.82, 0.81, 0.79)
+                float inputs:metallic = 0
                 float inputs:opacity = 1
-                float inputs:roughness = 0.35
+                float inputs:roughness = 0.45
                 token outputs:surface
             }
         }
@@ -63,7 +63,7 @@ def Xform "TacCap"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.95, 0.75, 0.012)
+                color3f inputs:diffuseColor = (0.95, 0.72, 0.07)
                 float inputs:metallic = 0
                 float inputs:opacity = 1
                 float inputs:roughness = 0.48
@@ -93,7 +93,7 @@ def Xform "TacCap"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.004, 0.004, 0.004)
+                color3f inputs:diffuseColor = (0.03, 0.03, 0.03)
                 float inputs:metallic = 0.1
                 float inputs:opacity = 1
                 float inputs:roughness = 0.12
@@ -123,7 +123,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_silver>
-            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+            color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -145,7 +145,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_yellow>
-            color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
+            color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -156,7 +156,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_lens>
-            color3f[] primvars:displayColor = [(0.004, 0.004, 0.004)]
+            color3f[] primvars:displayColor = [(0.03, 0.03, 0.03)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -231,7 +231,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_silver>
-            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+            color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -253,7 +253,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_yellow>
-            color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
+            color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -309,7 +309,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_silver>
-            color3f[] primvars:displayColor = [(0.58, 0.6, 0.62)]
+            color3f[] primvars:displayColor = [(0.82, 0.81, 0.79)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -331,7 +331,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_yellow>
-            color3f[] primvars:displayColor = [(0.95, 0.75, 0.012)]
+            color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }

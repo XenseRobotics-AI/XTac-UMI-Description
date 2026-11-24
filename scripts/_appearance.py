@@ -20,12 +20,14 @@ from pxr import Gf, Sdf, UsdGeom, UsdShade, Vt
 
 # ``rgba`` is the URDF/sRGB value; ``metallic``/``roughness`` the PBR pair.
 MATERIALS = {
-    "taccap_silver": dict(rgba=(0.58, 0.60, 0.62, 1.0), metallic=0.50, roughness=0.35),
+    # Moulded shell: light warm grey, not metal. Matched to the hardware photo
+    # (2026-11-24): the body reads near-white under normal light.
+    "taccap_silver": dict(rgba=(0.82, 0.81, 0.79, 1.0), metallic=0.00, roughness=0.45),
     "taccap_cover": dict(rgba=(0.65, 0.70, 0.71, 1.0), metallic=0.00, roughness=0.60),
     "taccap_black": dict(rgba=(0.018, 0.020, 0.022, 1.0), metallic=0.05, roughness=0.70),
-    "taccap_yellow": dict(rgba=(0.95, 0.75, 0.012, 1.0), metallic=0.00, roughness=0.48),
+    "taccap_yellow": dict(rgba=(0.95, 0.72, 0.07, 1.0), metallic=0.00, roughness=0.48),
     "taccap_gel": dict(rgba=(0.055, 0.055, 0.055, 1.0), metallic=0.00, roughness=0.85),
-    "taccap_lens": dict(rgba=(0.004, 0.004, 0.004, 1.0), metallic=0.10, roughness=0.12),
+    "taccap_lens": dict(rgba=(0.03, 0.03, 0.03, 1.0), metallic=0.10, roughness=0.12),
 }
 
 PARTITION = Path(__file__).resolve().parents[1] / "ros/taccap_description/config/appearance.json"
