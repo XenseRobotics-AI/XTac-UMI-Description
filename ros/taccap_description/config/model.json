@@ -110,8 +110,8 @@
       "usd/meshes/grip_right__gel.usdc": "d9b79d3c137054d834bf56e8888410492249037dda0e228bee372d54bd3d26ac",
       "usd/meshes/grip_right__silver.usdc": "05f322c4076aa280ce267075d961acb874947e1aaed30d8a2486ef5adb2780a1",
       "usd/meshes/grip_right__yellow.usdc": "634c5dc4a63a755c4dad09c399e66b65fa16e15fde62630157c72da6e6a07a71",
-      "usd/taccap_g1_slave.usda": "77b00bc2db30007a7922c3bdadd3b8d74c50688e41b5b1b0b2327e22d2e7e42e",
-      "usd/taccap_g1_slave_with_mount.usda": "6f9c332b0a733d834de29faaead7aef4f4fdadcfa35aaa456675f4fef81bc086"
+      "usd/taccap_g1_slave.usda": "474f993efe222de32a6c87565aa6d37fa0888c3b0863af0b8271c227d106d049",
+      "usd/taccap_g1_slave_with_mount.usda": "1e149c0997fc99c561501c1ae1fa85291135e1bceb349657291b6f403f4de959"
     }
   },
   "urdf_frames": {

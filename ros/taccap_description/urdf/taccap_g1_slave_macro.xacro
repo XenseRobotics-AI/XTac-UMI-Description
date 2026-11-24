@@ -6,15 +6,15 @@
   <xacro:property name="taccap_finger_effort" value="1.1"/>
   <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_description/meshes'">
     <!-- Appearance follows the physical gripper (xensim-bench `Looks/TacCap/*`): silver
-         structure, light-grey finger covers, black frame and motor, a dark gel pad, a dark lens
-         and yellow only on the fingertips and around the lens. One material per visual, so the
+         structure, light-grey finger covers, black frame and motor, a dark gel pad, a dark mirror
+         cover glass and yellow only on the fingertips and around the lens. One material per visual, so the
          face partition in config/appearance.json is shipped as separate mesh parts. -->
     <material name="${prefix}taccap_silver"><color rgba="0.82 0.81 0.79 1"/></material>
     <material name="${prefix}taccap_cover"><color rgba="0.65 0.7 0.71 1"/></material>
     <material name="${prefix}taccap_black"><color rgba="0.018 0.02 0.022 1"/></material>
     <material name="${prefix}taccap_yellow"><color rgba="0.95 0.72 0.07 1"/></material>
     <material name="${prefix}taccap_gel"><color rgba="0.055 0.055 0.055 1"/></material>
-    <material name="${prefix}taccap_lens"><color rgba="0.03 0.03 0.03 1"/></material>
+    <material name="${prefix}taccap_lens"><color rgba="0.05 0.055 0.06 0.62"/></material>
     <!-- Translucent indicator window over the status LED. -->
     <material name="${prefix}taccap_light"><color rgba="0.85 0.9 0.95 0.35"/></material>
     <!-- taccap_base_link: gripper mounting face (body/Asm_link mating face). +Z along the tool

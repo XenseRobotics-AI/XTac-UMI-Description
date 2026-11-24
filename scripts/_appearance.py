@@ -27,7 +27,9 @@ MATERIALS = {
     "taccap_black": dict(rgba=(0.018, 0.020, 0.022, 1.0), metallic=0.05, roughness=0.70),
     "taccap_yellow": dict(rgba=(0.95, 0.72, 0.07, 1.0), metallic=0.00, roughness=0.48),
     "taccap_gel": dict(rgba=(0.055, 0.055, 0.055, 1.0), metallic=0.00, roughness=0.85),
-    "taccap_lens": dict(rgba=(0.03, 0.03, 0.03, 1.0), metallic=0.10, roughness=0.12),
+    # Fisheye cover glass: a dark mirror, slightly transparent so the barrel
+    # behind it shows through instead of reading as a solid black disc.
+    "taccap_lens": dict(rgba=(0.05, 0.055, 0.06, 0.62), metallic=0.85, roughness=0.06),
     # Indicator window: translucent cover over the status LED.
     "taccap_light": dict(rgba=(0.85, 0.90, 0.95, 0.35), metallic=0.00, roughness=0.15),
 }

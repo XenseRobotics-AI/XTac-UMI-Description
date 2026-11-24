@@ -218,10 +218,11 @@ fingertips are the follower's tip solid.
 | --- | --- | --- | --- | --- |
 | `taccap_silver` | `0.82 0.81 0.79 1` | 0.00 | 0.45 | moulded shell, hinge blocks, adapter |
 | `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | finger covers |
-| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws, fingertip inner silicone |
+| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | frame, follower motor, screws, camera bezel, fingertip inner silicone |
 | `taccap_yellow` | `0.95 0.72 0.07 1` | 0.00 | 0.48 | fingertips, camera ring, side buttons |
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | tactile pad |
-| `taccap_lens` | `0.03 0.03 0.03 1` | 0.10 | 0.12 | camera lens |
+| `taccap_light` | `0.85 0.90 0.95 0.35` | 0.00 | 0.15 | status-LED window (translucent) |
+| `taccap_lens` | `0.05 0.055 0.06 0.62` | 0.85 | 0.06 | fisheye cover glass: dark mirror, 62% opaque |
 
 Every format carries one material per visual, so the face partition in
 `ros/taccap_description/config/appearance.json` is shipped as separate meshes:

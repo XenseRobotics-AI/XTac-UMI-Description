@@ -55,9 +55,18 @@ def test_master_portability_and_kinematic_contract(tmp_path, side):
     # The shell meshes sit on the root; only the left link4 visual keeps its
     # source -90 degree Z correction relative to the shell.
     base = root.find(f"link[@name='{side}_base_link']")
+    # The body is shipped as one part per material, all on the same origin.
+    def origin_of(name):
+        return base.find(f"visual[@name='{name}']/origin")
+
+    body = next(
+        visual
+        for visual in base.findall("visual")
+        if visual.get("name").startswith(f"{side}_body_visual")
+    )
     shell, auxiliary = (
-        Rotation.from_euler("xyz", [float(v) for v in base.find(f"visual[@name='{side}_body_{name}']/origin").get("rpy").split()])
-        for name in ("visual", "aux_visual")
+        Rotation.from_euler("xyz", [float(v) for v in origin.get("rpy").split()])
+        for origin in (origin_of(body.get("name")), origin_of(f"{side}_body_aux_visual"))
     )
     np.testing.assert_allclose(
         (shell.inv() * auxiliary).as_rotvec(), [0, 0, -np.pi / 2 if side == "left" else 0], atol=1e-12

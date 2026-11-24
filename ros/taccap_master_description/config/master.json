@@ -79,7 +79,7 @@
     },
     "mesh_conversion": "Binary .usdc converted from each side's source STL without changing vertices; both entry points share one mesh layer set",
     "shipped_layers_sha256": {
-      "usd/left.usda": "3979a90db66b3a909fd0601ba619726fe1012168a6b99384aa7dbb3eb8878385",
+      "usd/left.usda": "bd952bd0178ca089dbe1941fd23c90100bfe70b03f5204f1f5d03ff33593d825",
       "usd/left_open_close.usda": "210dd25382792505ec8c1f6a3cf418379d70a6a6024fff6c3d053e4f3c762781",
       "usd/meshes/left/base_link.usdc": "8a134b3a5905e2cf04fc6f22a83fe9162cbb49808fc4f521555bab5cb8f961a2",
       "usd/meshes/left/base_link__black.usdc": "8bd22df9016544f1fe7c49b0175c06896036fb6909ba55614eddfdc756d883ef",
@@ -117,7 +117,7 @@
       "usd/meshes/right/link2__yellow.usdc": "ef3c76d74adf67712e1f288d65844ca8aa71998763c246fe5898853cb4cdde86",
       "usd/meshes/right/link3.usdc": "46cddba308df7daaaafff2ef7c585d164a2bbafef879b3afcb6695b30cc4a3ff",
       "usd/meshes/right/link4.usdc": "dd38453a2368f73a4851d248ab688b077530f5d0ade50e933b4f39d24dcb26ca",
-      "usd/right.usda": "d08452a57f970259f110a1c4c6662291e2657102c4f66bba8b9642f0b19da9bf",
+      "usd/right.usda": "94e7f08c2e323bb43c862537cde2bba8c370b6e692a686fe02e51ae1db6cb23c",
       "usd/right_open_close.usda": "25f667c0b523b212cde08dc71799b28445d9eddbf348e7dc6870ce26401fa6f9"
     }
   },

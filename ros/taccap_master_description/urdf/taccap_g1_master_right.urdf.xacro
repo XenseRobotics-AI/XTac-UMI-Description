@@ -13,13 +13,44 @@
     <material name="${prefix}right_yellow">
       <color rgba="0.95 0.72 0.07 1" />
     </material>
+    <material name="${prefix}right_lens">
+      <color rgba="0.05 0.055 0.06 0.62" />
+    </material>
     <link name="${prefix}right_base_link">
-      <visual name="${prefix}right_body_visual">
+      <visual name="${prefix}right_body_visual_silver">
         <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
         <geometry>
-          <mesh filename="${mesh_root}/right/base_link.STL" />
+          <mesh filename="${mesh_root}/right/base_link__silver.STL" />
         </geometry>
         <material name="${prefix}right_silver" />
+      </visual>
+      <visual name="${prefix}right_body_visual_cover">
+        <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+        <geometry>
+          <mesh filename="${mesh_root}/right/base_link__cover.STL" />
+        </geometry>
+        <material name="${prefix}right_cover" />
+      </visual>
+      <visual name="${prefix}right_body_visual_black">
+        <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+        <geometry>
+          <mesh filename="${mesh_root}/right/base_link__black.STL" />
+        </geometry>
+        <material name="${prefix}right_black" />
+      </visual>
+      <visual name="${prefix}right_body_visual_yellow">
+        <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+        <geometry>
+          <mesh filename="${mesh_root}/right/base_link__yellow.STL" />
+        </geometry>
+        <material name="${prefix}right_yellow" />
+      </visual>
+      <visual name="${prefix}right_body_visual_lens">
+        <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+        <geometry>
+          <mesh filename="${mesh_root}/right/base_link__lens.STL" />
+        </geometry>
+        <material name="${prefix}right_lens" />
       </visual>
       <visual name="${prefix}right_body_aux_visual">
         <origin xyz="0.03664997155194 0 0.189422038155223" rpy="0 -1.5707963267948966 0" />

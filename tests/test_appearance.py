@@ -31,7 +31,7 @@ EXPECTED = {
     "taccap_black": ((0.018, 0.020, 0.022), 0.05, 0.70),
     "taccap_yellow": ((0.95, 0.72, 0.07), 0.00, 0.48),
     "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
-    "taccap_lens": ((0.03, 0.03, 0.03), 0.10, 0.12),
+    "taccap_lens": ((0.05, 0.055, 0.06), 0.85, 0.06),
     "taccap_light": ((0.85, 0.90, 0.95), 0.00, 0.15),
 }
 
@@ -173,6 +173,8 @@ def test_master_usd_binds_yellow_fingers_only_at_the_tip(side):
         binding = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterialPath()
         if binding and binding.name == "taccap_yellow":
             yellow.append(prim.GetPath().name)
-    # The finger bodies are grey; only their tips carry the yellow material.
-    assert sorted(yellow) == sorted(expected)
-    assert len(yellow) == 2
+    # Finger tips and the body's side buttons and camera ring are yellow; the
+    # finger bodies themselves are grey.
+    assert set(expected) <= set(yellow)
+    assert len(yellow) == len(expected)
+    assert not any(name.endswith("_visual") for name in yellow)

@@ -7,7 +7,12 @@
     <material name="right_cover" rgba="0.65 0.7 0.71 1" />
     <material name="right_black" rgba="0.018 0.02 0.022 1" />
     <material name="right_yellow" rgba="0.95 0.72 0.07 1" />
-    <mesh name="base_link" file="../meshes/right/base_link.STL" />
+    <material name="right_lens" rgba="0.05 0.055 0.06 0.62" />
+    <mesh name="base_link__silver" file="../meshes/right/base_link__silver.STL" />
+    <mesh name="base_link__cover" file="../meshes/right/base_link__cover.STL" />
+    <mesh name="base_link__black" file="../meshes/right/base_link__black.STL" />
+    <mesh name="base_link__yellow" file="../meshes/right/base_link__yellow.STL" />
+    <mesh name="base_link__lens" file="../meshes/right/base_link__lens.STL" />
     <mesh name="link4" file="../meshes/right/link4.STL" />
     <mesh name="link1__cover" file="../meshes/right/link1__cover.STL" />
     <mesh name="link1__black" file="../meshes/right/link1__black.STL" />
@@ -26,7 +31,11 @@
   </custom>
   <worldbody>
     <body name="right_base_link" mocap="true" pos="0 0 0" quat="1 0 0 0">
-      <geom name="right_body_visual" type="mesh" mesh="base_link" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual_silver" type="mesh" mesh="base_link__silver" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual_cover" type="mesh" mesh="base_link__cover" material="right_cover" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual_black" type="mesh" mesh="base_link__black" material="right_black" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual_yellow" type="mesh" mesh="base_link__yellow" material="right_yellow" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="right_body_visual_lens" type="mesh" mesh="base_link__lens" material="right_lens" mass="0" contype="0" conaffinity="0" group="1" pos="0.02065 0 0.024779" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="right_body_aux_visual" type="mesh" mesh="link4" material="right_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0.03664997155194 0 0.189422038155223" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="right_right_link" mocap="true" pos="0.01465 -0.019955 0.037" quat="1 0 0 0">

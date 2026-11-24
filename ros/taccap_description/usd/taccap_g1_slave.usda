@@ -93,10 +93,10 @@ def Xform "TacCap"
             def Shader "Shader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.03, 0.03, 0.03)
-                float inputs:metallic = 0.1
-                float inputs:opacity = 1
-                float inputs:roughness = 0.12
+                color3f inputs:diffuseColor = (0.05, 0.055, 0.06)
+                float inputs:metallic = 0.85
+                float inputs:opacity = 0.62
+                float inputs:roughness = 0.06
                 token outputs:surface
             }
         }
@@ -171,7 +171,7 @@ def Xform "TacCap"
         )
         {
             rel material:binding = </TacCap/Looks/taccap_lens>
-            color3f[] primvars:displayColor = [(0.03, 0.03, 0.03)]
+            color3f[] primvars:displayColor = [(0.05, 0.055, 0.06)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0.01975, -0.0060769, 0.034023, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
