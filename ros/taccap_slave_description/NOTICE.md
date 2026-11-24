@@ -23,4 +23,6 @@ releases these descriptions and meshes under this repository's MIT license.
 - Joint limits and coupling: 28.92-degree opening, right finger drives, left
   mimics with -1; finger torque limit 1.1 Nm (RobStride EL05).
 - Added the `taccap_eef_link` and wrist camera frames.
+- Visual meshes split per material, with colours matching the hardware, and
+  the XENSE fingertip silkscreen added.
 - MJCF and USD are generated from the URDF.

@@ -2,57 +2,32 @@
 
 [中文](APPEARANCE-zh.md)
 
-Colours follow the physical gripper (hardware photo, 2026-11-24) and the
-xensim-bench TacCap asset (`Looks/TacCap/*`).
+The models are coloured like the physical gripper. URDF, MJCF and USD show the
+same colours.
 
 | Material | sRGB `rgba` | metallic | roughness | Used on |
 | --- | --- | --- | --- | --- |
-| `taccap_silver` | `0.82 0.81 0.79 1` | 0.00 | 0.45 | Moulded shell, hinge blocks, adapter |
+| `taccap_silver` | `0.82 0.81 0.79 1` | 0.00 | 0.45 | Shell, hinge blocks, adapter |
 | `taccap_cover` | `0.65 0.70 0.71 1` | 0.00 | 0.60 | Finger covers, side plates |
-| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | Frame, slave motor, screws, lens barrel, fingertip inner rubber |
+| `taccap_black` | `0.018 0.020 0.022 1` | 0.05 | 0.70 | Frame and connector, slave motor, screws, lens barrel, master fingertip rubber, fingertip nub, silkscreen |
 | `taccap_yellow` | `0.95 0.72 0.07 1` | 0.00 | 0.48 | Fingertip caps, camera collar, master buttons |
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | Slave tactile pad |
-| `taccap_lens` | `0.05 0.055 0.06 0.62` | 0.85 | 0.06 | Fisheye cover glass (dark mirror) |
-| `taccap_light` | `0.92 0.94 0.96 0.85` | 0.00 | 0.55 | Slave status-LED window (frosted) |
+| `taccap_lens` | `0.05 0.055 0.06 0.62` | 0.85 | 0.06 | Fisheye cover glass |
+| `taccap_light` | `0.92 0.94 0.96 0.85` | 0.00 | 0.55 | Slave status-LED window |
 
-## How it is shipped
+URDF `<color>` has no metallic or roughness; those two apply to USD.
 
-URDF, MJCF and USD each give a visual one material, so a CAD mesh is shipped as
-one part per material: `<stem>__<material>.STL` (for example
-`grip_left__yellow.STL`). All three formats reference the same parts and show
-the same colours. Collision keeps the complete mesh.
+## Mesh parts
 
-The face-to-material table is `ros/taccap_slave_description/config/appearance.json`.
-`scripts/extract_appearance_partition.py` builds it; `scripts/generate_appearance_parts.py`
-writes the parts from it.
+A visual carries one material, so each CAD mesh ships as one part per material,
+`<stem>__<material>.STL` (for example `grip_left__yellow.STL`). Collision uses
+the complete mesh.
 
-## Rules
+Each fingertip cap also carries the XENSE silkscreen as its own visual,
+`<stem>_silkscreen.STL`, a thin black print just off the cap's outer face. It
+is geometry, not a texture, so it renders in every format.
 
-- **Fingertip.** The yellow cap ends on the plane `x = 106.4 mm` (finger mesh
-  frame). Only the fingertip solid is cut, so screws and plates that cross the
-  plane keep their colour, and the seam is a straight line. The slave's gel pad
-  stays dark; the master has black rubber instead. The small TPU nub at the
-  very end (x > 146 mm) is black on all sides on both.
-- **Camera window** (same on slave and master). Two CAD solids: the lens module
-  (glass dome, then a black stepped barrel) and the yellow collar around it.
-- **Slave right finger.** Labelled from the mirrored left finger, solid by solid,
-  so both hands match.
-- **Master body and fingers.** The time-sync button and the side buttons are
-  yellow; the plates they sit in are white. The finger shell takes the slave
-  finger's colours wherever the two surfaces coincide (within 0.1 mm): the black
-  connector, screw seats and inner frame match the slave, and the revised rest
-  is white. All finger screws are black, including two that the CAD export
-  welds onto the right-finger shell.
-- **Slave internals.** Parts hidden inside the shell carry no yellow.
-- **Silkscreen.** The XENSE wordmark in `taccap_black` on the large outer facet
-  of every fingertip cap (slave and master), 13.5 mm long, centred across the
-  finger, 3 mm from the facet edge next to the black connector; letter tops
-  point to the connector. Shipped as `<stem>_silkscreen.STL` (thin prisms
-  0.02 mm off the facet), not a texture, so URDF, MJCF and USD show it alike.
-  Outlines: `config/silkscreen.json`, vectorised from the brand artwork by
-  `scripts/extract_silkscreen_outline.py`; placement: `scripts/_silkscreen.py`.
-
-`tests/test_appearance.py` reads the shipped parts and checks these rules per
-CAD solid: every screw head black, the sync button yellow, the camera lens
-module only glass and black, the collar only yellow, the LED window only
-`taccap_light`.
+The parts are generated from two data files in
+`ros/taccap_slave_description/config/`: `appearance.json` (the material of
+every mesh face) and `silkscreen.json` (the wordmark outline). Regenerate with
+`python scripts/generate_appearance_parts.py`.

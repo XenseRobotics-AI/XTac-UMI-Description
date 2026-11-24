@@ -1,15 +1,10 @@
 """Visual appearance shared by the slave and master USD generators.
 
-The reference is the xensim-bench TacCap asset (``Looks/TacCap/*``), which
-matches the physical gripper: silver structure, light-grey finger covers, black
-frame, **yellow fingertips and lens cap**, a dark gel pad and a darker lens.
-
-URDF ``<color>`` carries one flat colour per visual and no PBR parameters, so the
-materials are defined once here and both generators author them as
-``UsdPreviewSurface`` shaders. The finer per-face split (yellow fingertips, lens
-cap and gel on meshes that are mostly silver or black) comes from
-``ros/taccap_slave_description/config/appearance.json``, produced by
-``scripts/extract_appearance_partition.py``.
+The colours match the physical gripper. URDF ``<color>`` carries one flat colour
+per visual and no PBR parameters, so the materials are defined once here and
+both generators author them as ``UsdPreviewSurface`` shaders. Which face of each
+mesh gets which material is the face partition in
+``ros/taccap_slave_description/config/appearance.json`` (checked-in data).
 """
 
 import json
@@ -20,8 +15,7 @@ from pxr import Gf, Sdf, UsdGeom, UsdShade, Vt
 
 # ``rgba`` is the URDF/sRGB value; ``metallic``/``roughness`` the PBR pair.
 MATERIALS = {
-    # Moulded shell: light warm grey, not metal. Matched to the hardware photo
-    # (2026-11-24): the body reads near-white under normal light.
+    # Moulded shell: light warm grey, not metal.
     "taccap_silver": dict(rgba=(0.82, 0.81, 0.79, 1.0), metallic=0.00, roughness=0.45),
     "taccap_cover": dict(rgba=(0.65, 0.70, 0.71, 1.0), metallic=0.00, roughness=0.60),
     "taccap_black": dict(rgba=(0.018, 0.020, 0.022, 1.0), metallic=0.05, roughness=0.70),

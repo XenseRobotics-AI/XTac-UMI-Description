@@ -16,7 +16,7 @@ ros/taccap_slave_description/    ROS 2 包：从爪资产（URDF、Xacro、MJCF�
 ros/taccap_master_description/   ROS 2 包：主爪资产，左右手
 python/taccap_description/       Python 包：基于上面两个 ROS 包的路径接口
 scripts/                         生成脚本，所有派生文件都由它们生成
-docs/                            坐标系规范与外观说明
+docs/                            坐标系规范与外观
 ```
 
 资产只放在 `ros/` 下。Python 包本身不含数据：它的 wheel 把两个 ROS 包目录装成
@@ -83,13 +83,14 @@ pip install -e '.[dev]'
 python scripts/generate_models.py           # 从 Xacro 生成从爪 URDF + MJCF
 python scripts/generate_usd.py              # 从爪 USD
 python scripts/generate_master_models.py    # 从主爪 URDF 生成 Xacro、MJCF、USD
-python scripts/generate_appearance_parts.py # 按材质拆分的网格零件
+python scripts/generate_appearance_parts.py # 按材质拆分的网格零件、丝印
 python -m pytest -q
 ```
 
-需要手工编辑的源文件是从爪 Xacro（`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`）、
-主爪 URDF（`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`）和外观分区，
-其余文件都是生成的。所有生成器都支持 `--check`，CI 用它拒绝过期文件。
+只需手工编辑从爪 Xacro（`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`）和
+主爪 URDF（`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`）；颜色来自
+[外观](docs/APPEARANCE-zh.md)中说明的数据文件。其余文件都是生成的。所有生成器都支持 `--check`，
+CI 用它拒绝过期文件。
 
 ## 相关链接
 

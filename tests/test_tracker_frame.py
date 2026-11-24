@@ -1,11 +1,11 @@
-"""The tracker datum must reproduce the code's built-in tracker->EE extrinsic.
+"""The tracker datum must reproduce the SDK's built-in tracker->EE extrinsic.
 
-TacCap-Gripper (``taccap-core``, ``taccap-mcap``) records poses against a tracker
+The TacCap-Gripper SDK records poses against a tracker
 frame whose offset to the EEF is a fixed constant. The URDF's ``<side>_pico_link``
 is the *CAD part* frame of the puck mesh and is unrelated to it, so this module
 pins the real datum: ``<side>_tracker_link``.
 
-The constants below are copied verbatim from ``built_in_tracker_to_ee`` and are
+The constants below are the SDK's built-in extrinsic, copied verbatim, and are
 deliberately not imported from the generator, so a typo in either place shows up
 as a failure rather than agreeing with itself.
 """
@@ -19,7 +19,7 @@ from taccap_description import master
 get_master_urdf_path = master.get_urdf_path
 
 
-# taccap-core/crates/taccap-mcap/src/lib.rs `BUILT_IN_TRACKER_TO_EE_*`
+# TacCap-Gripper SDK built-in tracker -> EE extrinsic.
 CODE_POSITION_M = {
     "right": (-0.161933698, 0.106110099, 0.025322636),
     "left": (-0.161933698, -0.106110099, 0.025322636),
@@ -68,7 +68,7 @@ def model_frames(side):
 
 
 @pytest.mark.parametrize("side", SIDES)
-def test_tracker_link_reproduces_the_code_extrinsic(side):
+def test_tracker_link_reproduces_the_sdk_extrinsic(side):
     root, joints, world = model_frames(side)
     assert root.find(f"link[@name='{side}_tracker_link']") is not None
     tracker = world(f"{side}_tracker_link")
@@ -79,7 +79,7 @@ def test_tracker_link_reproduces_the_code_extrinsic(side):
     quaternion = np.array(CODE_QUAT_WXYZ[side])
     quaternion /= np.linalg.norm(quaternion)
 
-    # The code's EE axes are <side>_eef_link's rotated by Ry(-90 deg): the two
+    # The SDK's EE axes are <side>_eef_link's rotated by Ry(-90 deg): the two
     # frames share their origin but not their axes, so the tracker -> eef_link
     # transform only matches the recorded extrinsic once that relabel is applied.
     relabel = np.eye(4)

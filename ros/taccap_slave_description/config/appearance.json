@@ -1,6 +1,5 @@
 {
-  "source": "xensim-bench rebot_taccap.usd Looks/TacCap/*",
-  "note": "Face-level material partition. Regenerate with scripts/extract_appearance_partition.py.",
+  "note": "Face-level material partition of the shipped meshes: run-length encoded material indices into each entry's order.",
   "partition": {
     "slave/base_link.STL": {
       "faces": 69846,
@@ -49,9 +48,7 @@
         4,
         1388,
         0
-      ],
-      "bench_faces": 69846,
-      "bench_source": "/ReBot/right_gripper_taccap_g1_slave/base_visual"
+      ]
     },
     "slave/grip_left.STL": {
       "faces": 23558,
@@ -191,8 +188,6 @@
         5112,
         3
       ],
-      "bench_faces": 23738,
-      "bench_source": "/ReBot/right_gripper_grip_left/left_finger_visual",
       "parting_plane": {
         "axis": "x",
         "at": 0.1064,
@@ -359,8 +354,6 @@
         922,
         1
       ],
-      "bench_faces": 23700,
-      "bench_source": "/ReBot/right_gripper_grip_right/right_finger_visual",
       "parting_plane": {
         "axis": "x",
         "at": 0.1064,

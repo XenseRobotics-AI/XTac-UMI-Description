@@ -17,7 +17,7 @@ ros/taccap_slave_description/    ROS 2 package: slave assets (URDF, Xacro, MJCF,
 ros/taccap_master_description/   ROS 2 package: master assets, left and right
 python/taccap_description/       Python package: path helpers over the two ROS packages
 scripts/                         Generators; all derived files are produced from these
-docs/                            Frame specification and appearance notes
+docs/                            Frame specification and appearance
 ```
 
 The assets live only under `ros/`. The Python package holds no data of its own:
@@ -86,15 +86,16 @@ pip install -e '.[dev]'
 python scripts/generate_models.py           # slave URDF + MJCF from the Xacro
 python scripts/generate_usd.py              # slave USD
 python scripts/generate_master_models.py    # master Xacro, MJCF, USD from the URDFs
-python scripts/generate_appearance_parts.py # per-material mesh parts
+python scripts/generate_appearance_parts.py # per-material mesh parts, silkscreen
 python -m pytest -q
 ```
 
-Hand-edited sources are the slave Xacro
-(`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`), the master
-URDFs (`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`)
-and the appearance partition; everything else is generated. Every generator
-accepts `--check`, which CI runs to reject stale files.
+Edit only the slave Xacro
+(`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`) and the master
+URDFs (`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`);
+colours come from the data files described in [appearance](docs/APPEARANCE.md).
+Everything else is generated. Every generator accepts `--check`, which CI runs
+to reject stale files.
 
 ## Related
 

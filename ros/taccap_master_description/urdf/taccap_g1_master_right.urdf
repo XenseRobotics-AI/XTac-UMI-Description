@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="taccap_g1_master_right">
   <!-- Root on the shell rear outer surface (centre on the tool axis), 23.5 mm above the higher fingertip holding plane; +Z tool axis, +Y left finger. All link frames share these axes; meshes keep their native CAD frame via visual origins (finger hinges along +X). EEF: centre of the closed fingertips' most distal face (mesh-derived, shared with the slave). -->
-  <!-- Appearance follows the physical gripper (xensim-bench `Looks/TacCap/*`): silver shell,
+  <!-- Appearance follows the physical gripper: light shell,
        light-grey finger bodies, black frame strip and screws, yellow only on the fingertips.
        One material per visual, so the face partition in config/appearance.json is shipped as
        separate mesh parts. -->

@@ -4,15 +4,15 @@ The print is shipped as its own thin mesh, ``<stem>_silkscreen.STL``, rather
 than as a texture: URDF has no portable texture support and the meshes carry no
 UVs, while a separate visual renders identically in URDF, MJCF and USD.
 
-Placement follows the photo of the hardware (2026-11-24): black letters on the
-large flat outer facet of the yellow cap, centred across the finger, next to the
-edge of that facet closest to the black connector. The letter tops point towards
-the connector and the text reads across the finger.
+Placement matches the hardware: black letters on the large flat outer facet of
+the yellow cap, centred across the finger, next to the edge of that facet
+closest to the black connector. The letter tops point towards the connector and
+the text reads across the finger.
 
-The glyphs are the brand wordmark, vectorised from the artwork into
-``config/silkscreen.json`` by ``scripts/extract_silkscreen_outline.py``. Each
-outline is extruded into a thin prism standing just off the facet, so it neither
-z-fights with the cap nor hides inside it.
+The glyphs are the XENSE wordmark outlines in ``config/silkscreen.json``
+(checked-in data, unit letter height). Each outline is extruded into a thin
+prism standing just off the facet, so it neither z-fights with the cap nor
+hides inside it.
 """
 
 import json
@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 OUTLINE = Path(__file__).resolve().parents[1] / "ros/taccap_slave_description/config/silkscreen.json"
-LENGTH = 13.52e-3  # m, overall text length (measured on the hardware photo)
+LENGTH = 13.52e-3  # m, overall text length, as on the hardware
 FROM_EDGE = 3.0e-3  # m, text centre to the facet's connector-side edge
 LIFT = 0.02e-3  # m, gap between the facet and the print
 THICKNESS = 0.05e-3  # m, print thickness

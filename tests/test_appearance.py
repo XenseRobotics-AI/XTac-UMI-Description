@@ -1,8 +1,8 @@
 """Appearance: the gripper must look like the physical unit, not like a placeholder.
 
-Reference: the xensim-bench TacCap asset (``Looks/TacCap/*``) and the G1 renders.
-Silver structure, light-grey finger covers, black frame and motor, a dark gel
-pad, a dark lens and **yellow only on the fingertips and around the lens**.
+Reference: the physical gripper. Light shell, grey finger covers, black frame
+and motor, a dark gel pad, a dark lens and **yellow only on the fingertips and
+around the lens**.
 URDF carries one material per visual, so the face partition is shipped as
 separate mesh parts; these tests pin both the split and the colours.
 """
@@ -24,8 +24,7 @@ get_urdf_path = slave.get_urdf_path
 get_usd_path = slave.get_usd_path
 
 
-# Shell and yellow follow the hardware photo of 2026-11-24; the bench values
-# stay for the materials the photo does not contradict. (diffuse, metal, rough)
+# (diffuse sRGB, metallic, roughness), as in docs/APPEARANCE.md.
 EXPECTED = {
     "taccap_silver": ((0.82, 0.81, 0.79), 0.00, 0.45),
     "taccap_cover": ((0.65, 0.70, 0.71), 0.00, 0.60),
@@ -122,7 +121,7 @@ def test_parts_reassemble_the_source_mesh():
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
-def test_slave_usd_carries_bench_materials(with_mount):
+def test_slave_usd_carries_the_materials(with_mount):
     stage = Usd.Stage.Open(str(get_usd_path(with_mount=with_mount)))
     materials = {
         prim.GetName(): prim
@@ -320,7 +319,7 @@ def test_shipped_master_fingertip_yellow_matches_the_follower(side, stem):
     tip = lambda triangles: triangles[triangles.mean(axis=1)[:, 0] > 0.1]  # past the button
     leader = tip(_read(directory / f"{stem}__yellow.STL"))
     # Each leader's fingers were transferred from one follower finger
-    # (MASTER_FINGERS in extract_appearance_partition.py): left <- grip_left.
+    # (the same fingertip solid): left <- grip_left, right <- grip_right.
     follower = tip(_read(ASSET_ROOT / "meshes" / f"grip_{side}__yellow.STL"))
     assert len(leader) == len(follower)
     assert _triangles_area(leader) == pytest.approx(_triangles_area(follower), rel=1e-6)
@@ -502,7 +501,7 @@ def test_shipped_slave_fingers_match_each_other():
     "root, side",
     [("slave", ""), ("master", "left"), ("master", "right")],
 )
-def test_shipped_camera_window_matches_the_photo(root, side):
+def test_shipped_camera_window_matches_the_hardware(root, side):
     """Lens module: glass + black barrel/second step. Collar: yellow only."""
     base = ASSET_ROOT if root == "slave" else MASTER_ROOT
     directory = base / "meshes" / side if side else base / "meshes"

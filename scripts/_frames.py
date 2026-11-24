@@ -1,35 +1,29 @@
-"""Tracker frame offsets and the visual material set, shared by both generators.
+"""PICO tracker frame offsets for the master generator.
 
-Two things both packages must agree on:
+``tracker_offsets`` / ``TRACKER_EE_RELABEL`` give the PICO tracker's real datum.
+The URDF ``<side>_pico_link`` / ``taccap_pico_link`` frames are the CAD *part*
+frames of the puck mesh (``link3.STL``), which are export artefacts: on the two
+masters they are not even the same rotation, so they cannot be used as the
+device frame. The device frame is the one the TacCap-Gripper SDK records
+against (its built-in tracker -> EE extrinsic), and it is anchored here by
+*requiring* the extrinsic it implies to reproduce that SDK value exactly::
 
-* ``tracker_offsets`` / ``TRACKER_EE_RELABEL`` — the PICO tracker's real datum.
-  The URDF ``<side>_pico_link`` / ``taccap_pico_link`` frames are the CAD *part*
-  frames of the puck mesh (``link3.STL``), which are export artefacts: on the two
-  masters they are not even the same rotation, so they cannot be used as the
-  device frame. The device frame is the one the TacCap-Gripper code records
-  against (``taccap-core`` ``built_in_tracker_to_ee``), and it is anchored here by
-  *requiring* the extrinsic it implies to reproduce that code value exactly::
+    ^eef T_tracker  =  T(Q) @ X^-1        (X = SDK ^tracker T_ee)
 
-      ^eef T_tracker  =  T(Q) @ X^-1        (X = code ^tracker T_ee)
-
-  where ``Q = Ry(-90 deg)`` maps the code's EE axes onto ``<side>_eef_link``.
-  The code EE frame and our ``eef_link`` share their origin (both are the closed
-  fingertip face centre) but not their axes; ``-90`` about +Y is the only
-  relabelling that lands the tracker on the puck.
-
-* ``MATERIALS`` — the gripper's appearance, taken from the xensim-bench TacCap
-  asset (``Looks/TacCap/*``), which matches the physical unit. URDF ``<color>``
-  has no metallic/roughness, so those live here for the USD generators.
+where ``Q = Ry(-90 deg)`` maps the SDK's EE axes onto ``<side>_eef_link``.
+The SDK EE frame and our ``eef_link`` share their origin (both are the closed
+fingertip face centre) but not their axes; ``-90`` about +Y is the only
+relabelling that lands the tracker on the puck.
 """
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-# Code EE axes expressed in <side>_eef_link axes.
+# SDK EE axes expressed in <side>_eef_link axes.
 TRACKER_EE_RELABEL = Rotation.from_euler("y", -90, degrees=True).as_matrix()
 
-# Code extrinsic constants (metres, quaternion scalar-first), copied from
-# taccap-core/crates/taccap-mcap/src/lib.rs `BUILT_IN_TRACKER_TO_EE_*`.
+# TacCap-Gripper SDK built-in tracker -> EE extrinsic (metres, quaternion
+# scalar-first).
 _TRACKER_TO_EE_POS_M = {
     "right": (-0.161933698, 0.106110099, 0.025322636),
     "left": (-0.161933698, -0.106110099, 0.025322636),
@@ -38,20 +32,8 @@ _TRACKER_TO_EE_QUAT_WXYZ = {
     "right": (0.136839046, 0.378463784, 0.913688271, 0.056692009),
     "left": (0.136839046, -0.378463784, 0.913688271, -0.056692009),
 }
-# |tracker -> EE|; identity extrinsics the code treats as "unset".
+# |tracker -> EE|.
 TRACKER_TO_EE_DISTANCE_M = 0.19525140999999998
-
-# Appearance, from xensim-bench `Looks/TacCap/*` (the asset that matches the
-# physical gripper). `rgba` is the URDF/sRGB value, (metallic, roughness) the
-# PBR pair the USD generators author.
-MATERIALS = {
-    "taccap_silver": dict(rgba=(0.58, 0.60, 0.62, 1.0), metallic=0.50, roughness=0.35),
-    "taccap_cover": dict(rgba=(0.65, 0.70, 0.71, 1.0), metallic=0.00, roughness=0.60),
-    "taccap_black": dict(rgba=(0.018, 0.020, 0.022, 1.0), metallic=0.05, roughness=0.70),
-    "taccap_yellow": dict(rgba=(0.95, 0.75, 0.012, 1.0), metallic=0.00, roughness=0.48),
-    "taccap_gel": dict(rgba=(0.055, 0.055, 0.055, 1.0), metallic=0.00, roughness=0.85),
-    "taccap_lens": dict(rgba=(0.004, 0.004, 0.004, 1.0), metallic=0.10, roughness=0.12),
-}
 
 
 def tracker_offsets(eef_position, role="master"):
@@ -85,10 +67,10 @@ def tracker_offsets(eef_position, role="master"):
 
 
 def verify_tracker(extrinsic_position, extrinsic_rotation, eef_position, side, atol=1e-12):
-    """Round-trip the authored frame back to the code's ``^tracker T_EE``.
+    """Round-trip the authored frame back to the SDK's ``^tracker T_EE``.
 
     The URDF frame is only correct if ``^eef T_tracker^-1 @ ^eef T_ee`` returns
-    exactly the code's extrinsic; this is what the regression test asserts.
+    exactly the SDK's extrinsic; this is what the regression test asserts.
     """
     eef = np.zeros(4)
     eef[:3] = np.asarray(eef_position, dtype=np.float64)
