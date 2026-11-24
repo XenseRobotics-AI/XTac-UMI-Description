@@ -115,21 +115,6 @@ def Xform "TacCap"
                 token outputs:surface
             }
         }
-
-        def Material "taccap_print"
-        {
-            token outputs:surface.connect = </TacCap/Looks/taccap_print/Shader.outputs:surface>
-
-            def Shader "Shader"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.2, 0.2, 0.21)
-                float inputs:metallic = 0
-                float inputs:opacity = 1
-                float inputs:roughness = 0.6
-                token outputs:surface
-            }
-        }
     }
 
     def Xform "taccap_base_link" (
@@ -332,8 +317,8 @@ def Xform "TacCap"
             prepend references = @./meshes/grip_left_silkscreen.usdc@</TacCap/Mesh>
         )
         {
-            rel material:binding = </TacCap/Looks/taccap_print>
-            color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
+            rel material:binding = </TacCap/Looks/taccap_black>
+            color3f[] primvars:displayColor = [(0.018, 0.02, 0.022)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
@@ -421,8 +406,8 @@ def Xform "TacCap"
             prepend references = @./meshes/grip_right_silkscreen.usdc@</TacCap/Mesh>
         )
         {
-            rel material:binding = </TacCap/Looks/taccap_print>
-            color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
+            rel material:binding = </TacCap/Looks/taccap_black>
+            color3f[] primvars:displayColor = [(0.018, 0.02, 0.022)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }

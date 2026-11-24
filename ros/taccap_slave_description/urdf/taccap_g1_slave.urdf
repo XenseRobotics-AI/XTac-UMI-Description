@@ -21,9 +21,6 @@
   <material name="taccap_light">
     <color rgba="0.92 0.94 0.96 0.85" />
   </material>
-  <material name="taccap_print">
-    <color rgba="0.2 0.2 0.21 1" />
-  </material>
   <link name="taccap_base_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0.010155 -0.0007499 0.0361" />
@@ -118,7 +115,7 @@
       <geometry>
         <mesh filename="../meshes/grip_left_silkscreen.STL" />
       </geometry>
-      <material name="taccap_print" />
+      <material name="taccap_black" />
     </visual>
     <collision name="left_finger_collision">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
@@ -182,7 +179,7 @@
       <geometry>
         <mesh filename="../meshes/grip_right_silkscreen.STL" />
       </geometry>
-      <material name="taccap_print" />
+      <material name="taccap_black" />
     </visual>
     <collision name="right_finger_collision">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />

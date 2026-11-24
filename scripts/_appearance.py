@@ -33,8 +33,6 @@ MATERIALS = {
     # Status-LED window: a frosted diffuser. Mostly opaque and rough, so the
     # hollow inside of the shell behind it does not show through.
     "taccap_light": dict(rgba=(0.92, 0.94, 0.96, 0.85), metallic=0.00, roughness=0.55),
-    # "XENSE" silkscreen on the fingertip caps: dark grey ink, matte.
-    "taccap_print": dict(rgba=(0.20, 0.20, 0.21, 1.0), metallic=0.00, roughness=0.60),
 }
 
 PARTITION = Path(__file__).resolve().parents[1] / "ros/taccap_slave_description/config/appearance.json"

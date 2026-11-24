@@ -14,7 +14,6 @@ xensim-bench TacCap asset (`Looks/TacCap/*`).
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | Slave tactile pad |
 | `taccap_lens` | `0.05 0.055 0.06 0.62` | 0.85 | 0.06 | Fisheye cover glass (dark mirror) |
 | `taccap_light` | `0.92 0.94 0.96 0.85` | 0.00 | 0.55 | Slave status-LED window (frosted) |
-| `taccap_print` | `0.20 0.20 0.21 1` | 0.00 | 0.60 | "XENSE" silkscreen on the fingertip caps |
 
 ## How it is shipped
 
@@ -45,12 +44,13 @@ writes the parts from it.
   is white. All finger screws are black, including two that the CAD export
   welds onto the right-finger shell.
 - **Slave internals.** Parts hidden inside the shell carry no yellow.
-- **Silkscreen.** "XENSE" in dark grey on the large outer facet of every
-  fingertip cap (slave and master), centred across the finger, 3 mm from the
-  facet edge next to the black connector; letter tops point to the connector.
-  Shipped as `<stem>_silkscreen.STL` (thin prisms 0.02 mm off the facet), not
-  a texture, so URDF, MJCF and USD show it alike. Glyphs and placement:
-  `scripts/_silkscreen.py`.
+- **Silkscreen.** The XENSE wordmark in `taccap_black` on the large outer facet
+  of every fingertip cap (slave and master), 13.5 mm long, centred across the
+  finger, 3 mm from the facet edge next to the black connector; letter tops
+  point to the connector. Shipped as `<stem>_silkscreen.STL` (thin prisms
+  0.02 mm off the facet), not a texture, so URDF, MJCF and USD show it alike.
+  Outlines: `config/silkscreen.json`, vectorised from the brand artwork by
+  `scripts/extract_silkscreen_outline.py`; placement: `scripts/_silkscreen.py`.
 
 `tests/test_appearance.py` reads the shipped parts and checks these rules per
 CAD solid: every screw head black, the sync button yellow, the camera lens

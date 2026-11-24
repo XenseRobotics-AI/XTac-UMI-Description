@@ -34,7 +34,6 @@ EXPECTED = {
     "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
     "taccap_lens": ((0.05, 0.055, 0.06), 0.85, 0.06),
     "taccap_light": ((0.92, 0.94, 0.96), 0.00, 0.55),
-    "taccap_print": ((0.20, 0.20, 0.21), 0.00, 0.60),
 }
 
 
@@ -425,7 +424,7 @@ def test_silkscreen_sits_on_the_cap_outer_facet(directory, stem):
 
 @pytest.mark.parametrize("directory, stem", FINGER_MESHES)
 def test_silkscreen_ships_in_every_format(directory, stem):
-    """URDF, MJCF and USD all carry the print visual with ``taccap_print``."""
+    """URDF, MJCF and USD all carry the print visual, in black."""
     name = f"{stem}_silkscreen"
     if directory == "slave":
         urdf, mjcf = get_urdf_path(), ASSET_ROOT / "mjcf" / "taccap_g1_slave.xml"
@@ -438,7 +437,7 @@ def test_silkscreen_ships_in_every_format(directory, stem):
         if v.find("geometry/mesh").get("filename").endswith(f"{name}.STL")
     ]
     assert len(visuals) == 1
-    assert visuals[0].find("material").get("name").endswith("print")
+    assert visuals[0].find("material").get("name").endswith("black")
     assert name in mjcf.read_text()
     assert f"{name}.usdc" in usd.read_text()
 

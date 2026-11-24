@@ -4,80 +4,37 @@ The print is shipped as its own thin mesh, ``<stem>_silkscreen.STL``, rather
 than as a texture: URDF has no portable texture support and the meshes carry no
 UVs, while a separate visual renders identically in URDF, MJCF and USD.
 
-Placement follows the photo of the hardware (2026-11-24): dark grey letters on
-the large flat outer facet of the yellow cap, centred across the finger, next to
-the edge of that facet closest to the black connector. The letter tops point
-towards the connector and the text reads across the finger.
+Placement follows the photo of the hardware (2026-11-24): black letters on the
+large flat outer facet of the yellow cap, centred across the finger, next to the
+edge of that facet closest to the black connector. The letter tops point towards
+the connector and the text reads across the finger.
 
-Glyphs are single-line strokes in the logo's style (thin geometric sans, rounded
-E). Each stroke segment and joint becomes a thin prism standing just off the
-facet, so it neither z-fights with the cap nor hides inside it.
+The glyphs are the brand wordmark, vectorised from the artwork into
+``config/silkscreen.json`` by ``scripts/extract_silkscreen_outline.py``. Each
+outline is extruded into a thin prism standing just off the facet, so it neither
+z-fights with the cap nor hides inside it.
 """
+
+import json
+from pathlib import Path
 
 import numpy as np
 
-# Glyph metrics in units of the letter height.
-HEIGHT = 2.1e-3  # m, letter height
-PITCH = 1.43  # letter advance
-WIDTH = 0.72  # letter width
-STROKE = 0.14  # stroke width
+OUTLINE = Path(__file__).resolve().parents[1] / "ros/taccap_slave_description/config/silkscreen.json"
+LENGTH = 13.52e-3  # m, overall text length (measured on the hardware photo)
 FROM_EDGE = 3.0e-3  # m, text centre to the facet's connector-side edge
 LIFT = 0.02e-3  # m, gap between the facet and the print
 THICKNESS = 0.05e-3  # m, print thickness
-JOINT_SIDES = 12
 
 
-def _arc(centre, radii, start, stop, steps=14):
-    angles = np.radians(np.linspace(start, stop, steps))
-    return np.column_stack(
-        [centre[0] + radii[0] * np.cos(angles), centre[1] + radii[1] * np.sin(angles)]
-    )
-
-
-def _glyphs():
-    """Stroke polylines per letter, in (across, up) letter units."""
-    w = WIDTH
-    half = w / 2
-    rounded_e = [
-        _arc((half, 0.5), (half, 0.5), 50, 310),
-        np.array([[0.0, 0.5], [w * 0.78, 0.5]]),
+def _shapes():
+    """Wordmark outlines scaled to ``LENGTH``: ``[(vertices (n, 2), rings, triangles)]``."""
+    record = json.loads(OUTLINE.read_text())
+    scale = LENGTH / record["aspect"]  # outlines have unit letter height
+    return [
+        (np.array(shape["vertices"]) * scale, shape["rings"], np.array(shape["triangles"]))
+        for shape in record["shapes"]
     ]
-    return {
-        "X": [np.array([[0, 0], [w, 1]]), np.array([[0, 1], [w, 0]])],
-        "E": rounded_e,
-        "N": [np.array([[0, 0], [0, 1], [w, 0], [w, 1]])],
-        "S": [
-            np.vstack(
-                [
-                    _arc((half, 0.75), (half * 0.95, 0.25), 20, 270),
-                    _arc((half, 0.25), (half, 0.25), 90, -160),
-                ]
-            )
-        ],
-    }
-
-
-def _convex_pieces(text):
-    """2D convex polygons (in metres, text centred on the origin) for ``text``."""
-    glyphs = _glyphs()
-    total = (len(text) - 1) * PITCH + WIDTH
-    radius = STROKE / 2
-    ring = np.radians(np.arange(JOINT_SIDES) * 360 / JOINT_SIDES)
-    pieces = []
-    for index, letter in enumerate(text):
-        offset = np.array([index * PITCH - total / 2, -0.5])
-        for stroke in glyphs[letter]:
-            points = stroke + offset
-            for a, b in zip(points[:-1], points[1:]):
-                direction = b - a
-                length = np.linalg.norm(direction)
-                if length < 1e-9:
-                    continue
-                normal = np.array([-direction[1], direction[0]]) / length * radius
-                pieces.append(np.array([a - normal, b - normal, b + normal, a + normal]))
-            for point in points:
-                pieces.append(point + radius * np.column_stack([np.cos(ring), np.sin(ring)]))
-    return [piece * HEIGHT for piece in pieces]
 
 
 def label_facet(yellow):
@@ -108,20 +65,19 @@ def label_facet(yellow):
     return normal, across, up, centre
 
 
-def silkscreen_triangles(yellow, text="XENSE"):
+def silkscreen_triangles(yellow):
     """Triangles ``(n, 3, 3)`` of the print for a cap whose yellow part is ``yellow``."""
     normal, across, up, centre = label_facet(yellow)
     base = centre + normal * LIFT
     top = base + normal * THICKNESS
     triangles = []
-    for piece in _convex_pieces(text):
-        flat = piece[:, :1] * across + piece[:, 1:] * up
+    for vertices, rings, faces in _shapes():
+        flat = vertices[:, :1] * across + vertices[:, 1:] * up
         lower, upper = base + flat, top + flat
-        for i in range(1, len(piece) - 1):
-            triangles.append([upper[0], upper[i], upper[i + 1]])
-            triangles.append([lower[0], lower[i + 1], lower[i]])
-        for i in range(len(piece)):
-            j = (i + 1) % len(piece)
-            triangles.append([lower[i], lower[j], upper[j]])
-            triangles.append([lower[i], upper[j], upper[i]])
+        triangles.extend(upper[faces])  # outlines are CCW in (across, up): +normal
+        triangles.extend(lower[faces[:, ::-1]])
+        for ring in rings:  # exterior CCW, holes CW: walls face outwards either way
+            for i, j in zip(ring, ring[1:] + ring[:1]):
+                triangles.append([lower[i], lower[j], upper[j]])
+                triangles.append([lower[i], upper[j], upper[i]])
     return np.array(triangles)

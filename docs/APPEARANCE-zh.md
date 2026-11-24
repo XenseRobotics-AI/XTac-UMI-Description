@@ -13,7 +13,6 @@
 | `taccap_gel` | `0.055 0.055 0.055 1` | 0.00 | 0.85 | 从爪触觉胶面 |
 | `taccap_lens` | `0.05 0.055 0.06 0.62` | 0.85 | 0.06 | 鱼眼保护玻璃（深色镜面） |
 | `taccap_light` | `0.92 0.94 0.96 0.85` | 0.00 | 0.55 | 从爪指示灯窗口（磨砂） |
-| `taccap_print` | `0.20 0.20 0.21 1` | 0.00 | 0.60 | 指尖帽上的 "XENSE" 丝印 |
 
 ## 交付方式
 
@@ -36,9 +35,10 @@ URDF、MJCF、USD 中每个 visual 只能有一种材质，所以每个 CAD 网�
   （0.1 mm 内）的部分沿用从爪颜色，黑色连接件、螺丝座和内侧框条与从爪一致，改版部分为白色。
   手指上的螺丝全部为黑色，包括 CAD 导出时焊连在右手指外壳上的两颗。
 - **从爪内部：** 藏在外壳内的零件不带黄色。
-- **丝印：** 主从每个指尖帽外侧大平面上印深灰色 "XENSE"，沿手指宽度居中，距靠黑色连接件的
-  平面边缘 3 mm，字头朝向连接件。以 `<stem>_silkscreen.STL`（离平面 0.02 mm 的薄棱柱）交付而非
-  贴图，URDF、MJCF、USD 显示一致。字形与位置见 `scripts/_silkscreen.py`。
+- **丝印：** 主从每个指尖帽外侧大平面上印黑色（`taccap_black`）XENSE 字标，长 13.5 mm，沿手指
+  宽度居中，距靠黑色连接件的平面边缘 3 mm，字头朝向连接件。以 `<stem>_silkscreen.STL`（离平面
+  0.02 mm 的薄棱柱）交付而非贴图，URDF、MJCF、USD 显示一致。字形轮廓 `config/silkscreen.json`
+  由 `scripts/extract_silkscreen_outline.py` 从品牌原图矢量化，位置见 `scripts/_silkscreen.py`。
 
 `tests/test_appearance.py` 读取交付的零件，按 CAD 实体检查以上规则：螺丝头全黑、
 校时按钮为黄色、相机镜头模组只有玻璃和黑色、外环只有黄色、指示灯窗口只有 `taccap_light`。

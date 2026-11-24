@@ -13,9 +13,6 @@
     <material name="${prefix}right_yellow">
       <color rgba="0.95 0.72 0.07 1" />
     </material>
-    <material name="${prefix}right_print">
-      <color rgba="0.2 0.2 0.21 1" />
-    </material>
     <material name="${prefix}right_lens">
       <color rgba="0.05 0.055 0.06 0.62" />
     </material>
@@ -97,7 +94,7 @@
         <geometry>
           <mesh filename="${mesh_root}/right/link1_silkscreen.STL" />
         </geometry>
-        <material name="${prefix}right_print" />
+        <material name="${prefix}right_black" />
       </visual>
     </link>
     <joint name="${prefix}right_right_joint" type="revolute">
@@ -141,7 +138,7 @@
         <geometry>
           <mesh filename="${mesh_root}/right/link2_silkscreen.STL" />
         </geometry>
-        <material name="${prefix}right_print" />
+        <material name="${prefix}right_black" />
       </visual>
     </link>
     <joint name="${prefix}right_left_joint" type="revolute">

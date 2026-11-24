@@ -21,7 +21,6 @@
     <material name="taccap_gel" rgba="0.055 0.055 0.055 1" />
     <material name="taccap_lens" rgba="0.05 0.055 0.06 0.62" />
     <material name="taccap_light" rgba="0.92 0.94 0.96 0.85" />
-    <material name="taccap_print" rgba="0.2 0.2 0.21 1" />
     <mesh name="base_link" file="../meshes/base_link.STL" />
     <mesh name="base_link_black" file="../meshes/base_link__black.STL" />
     <mesh name="base_link_lens" file="../meshes/base_link__lens.STL" />
@@ -60,7 +59,7 @@
         <geom name="left_finger_visual_silver" type="mesh" mass="0" mesh="grip_left_silver" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_silver" />
         <geom name="left_finger_visual_gel" type="mesh" mass="0" mesh="grip_left_gel" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_gel" />
         <geom name="left_finger_visual_yellow" type="mesh" mass="0" mesh="grip_left_yellow" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_yellow" />
-        <geom name="left_finger_visual_print" type="mesh" mass="0" mesh="grip_left_silkscreen" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_print" />
+        <geom name="left_finger_visual_print" type="mesh" mass="0" mesh="grip_left_silkscreen" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_black" />
         <geom name="left_finger_collision" type="mesh" mass="0" mesh="grip_left" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="1 1 1 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
       </body>
       <body name="taccap_right_finger_link" pos="0.0120336718 -0.0199499894 0.0484999712" quat="1 0 0 0">
@@ -71,7 +70,7 @@
         <geom name="right_finger_visual_silver" type="mesh" mass="0" mesh="grip_right_silver" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_silver" />
         <geom name="right_finger_visual_gel" type="mesh" mass="0" mesh="grip_right_gel" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_gel" />
         <geom name="right_finger_visual_yellow" type="mesh" mass="0" mesh="grip_right_yellow" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_yellow" />
-        <geom name="right_finger_visual_print" type="mesh" mass="0" mesh="grip_right_silkscreen" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_print" />
+        <geom name="right_finger_visual_print" type="mesh" mass="0" mesh="grip_right_silkscreen" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_black" />
         <geom name="right_finger_collision" type="mesh" mass="0" mesh="grip_right" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="0.60392 0.60392 0.60392 0" condim="4" friction="1 0.005 0.0001" solref="0.01 0.5" />
       </body>
       <body name="taccap_eef_link" pos="0.036575 0 0.2009217" quat="1 0 0 0">
