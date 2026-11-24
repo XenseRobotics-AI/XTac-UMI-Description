@@ -118,6 +118,29 @@ def component_labels(triangles):
     return labels[faces[:, 0]]
 
 
+def edge_components(triangles):
+    """Per-face solid id where faces must share an edge, not just a vertex.
+
+    Some screws touch their housing within the 1 um weld tolerance, so
+    ``component_labels`` merges them into it; edge connectivity separates them.
+    """
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(triangles.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    edges = np.sort(np.concatenate([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]]), axis=1)
+    _, edge_ids = np.unique(edges, axis=0, return_inverse=True)
+    edge_ids = edge_ids.ravel()
+    face_ids = np.tile(np.arange(len(faces)), 3)
+    incidence = coo_matrix(
+        (np.ones(len(edge_ids)), (face_ids, edge_ids)), shape=(len(faces), edge_ids.max() + 1)
+    ).tocsr()
+    _, labels = connected_components(incidence @ incidence.T, directed=False)
+    return labels
+
+
 def kabsch(source, target):
     """Rigid ``(R, t)`` with ``target ~ source @ R.T + t``."""
     source_centre, target_centre = source.mean(axis=0), target.mean(axis=0)
@@ -182,7 +205,13 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
             labels[faces] = "taccap_cover"       # white side plate carrying the button
         else:
             labels[faces] = "taccap_black"       # screws and clip pins
-    labels[target_components == body] = "taccap_cover"
+    body_faces = np.nonzero(target_components == body)[0]
+    labels[body_faces] = "taccap_cover"
+    # Screws welded onto the shell at a single vertex are part of ``body`` by
+    # vertex connectivity; every solid but the shell itself is a black screw.
+    solids = edge_components(triangles[body_faces])
+    shell = int(np.argmax(np.bincount(solids)))
+    labels[body_faces[solids != shell]] = "taccap_black"
     print(
         f"{target_path.name}: fingertips transferred from the follower "
         f"(median offset {np.median(distance) * 1e6:.1f} um), other groups by component"

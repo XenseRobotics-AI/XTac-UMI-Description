@@ -252,6 +252,60 @@ def test_shipped_screw_heads_are_black(package, side, stem):
         assert set(materials) == {"black"}, (stem, materials)
 
 
+def _edge_solids(triangles):
+    """Solid id per face, faces joined only through a shared edge.
+
+    Separates screws that touch their housing at a single welded vertex,
+    which vertex connectivity (``_solids``) merges into the housing.
+    """
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(triangles.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    edges = np.sort(np.concatenate([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]]), axis=1)
+    _, edge_ids = np.unique(edges, axis=0, return_inverse=True)
+    edge_ids = edge_ids.ravel()
+    rows = np.tile(np.arange(len(faces)), 3)
+    incidence = coo_matrix((np.ones(len(edge_ids)), (rows, edge_ids))).tocsr()
+    return connected_components(incidence @ incidence.T, directed=False)[1]
+
+
+def _triangle_key(triangle):
+    return tuple(sorted(map(tuple, np.round(triangle * 1e6).astype(np.int64))))
+
+
+@pytest.mark.parametrize(
+    "package, side, stem",
+    [
+        ("slave", "", "grip_left"),
+        ("slave", "", "grip_right"),
+        ("master", "left", "link1"),
+        ("master", "left", "link2"),
+        ("master", "right", "link1"),
+        ("master", "right", "link2"),
+    ],
+)
+def test_shipped_finger_screws_are_black(package, side, stem):
+    """Every M3 screw on a finger (1246-face solid, 6 x 6 x 8 mm) ships black,
+    including the two the CAD export welds onto the leader shell."""
+    root = ASSET_ROOT if package == "slave" else MASTER_ROOT
+    directory = root / "meshes" / side if side else root / "meshes"
+    source = _read(directory / f"{stem}.STL")
+    solids = _edge_solids(source)
+    shipped = {}
+    for part in directory.glob(f"{stem}__*.STL"):
+        material = part.stem.split("__")[1]
+        for triangle in _read(part):
+            shipped[_triangle_key(triangle)] = material
+    screws = [s for s in np.unique(solids) if (solids == s).sum() == 1246]
+    assert len(screws) == 4, (stem, len(screws))
+    for solid in screws:
+        materials = {shipped[_triangle_key(t)] for t in source[solids == solid]}
+        assert materials == {"black"}, (stem, materials)
+
+
 @pytest.mark.parametrize("side", ["left", "right"])
 def test_shipped_master_sync_button_is_yellow(side):
     """The time-sync button (1862-face solid) ships yellow on one finger per hand."""

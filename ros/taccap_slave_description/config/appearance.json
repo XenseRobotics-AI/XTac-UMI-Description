@@ -379,9 +379,9 @@
     "master/left/link1.STL": {
       "faces": 22636,
       "materials": {
-        "taccap_cover": 13706,
+        "taccap_cover": 11214,
         "taccap_silver": 3472,
-        "taccap_black": 5177,
+        "taccap_black": 7669,
         "taccap_yellow": 281
       },
       "order": [
@@ -393,9 +393,9 @@
       "runs": [
         3472,
         1,
-        7266,
+        6020,
         0,
-        552,
+        1798,
         2,
         3,
         3,
@@ -487,11 +487,7 @@
         2,
         54,
         3,
-        970,
-        2,
-        1246,
-        0,
-        2492,
+        4708,
         2,
         5194,
         0
@@ -643,9 +639,9 @@
     "master/right/link1.STL": {
       "faces": 25208,
       "materials": {
-        "taccap_cover": 14416,
+        "taccap_cover": 11924,
         "taccap_silver": 3472,
-        "taccap_black": 5176,
+        "taccap_black": 7668,
         "taccap_yellow": 2144
       },
       "order": [
@@ -765,13 +761,9 @@
         0,
         1862,
         3,
-        5518,
+        4272,
         0,
-        1246,
-        2,
-        1246,
-        0,
-        1246,
+        4984,
         2
       ],
       "transferred_from": "slave/grip_right.STL",
