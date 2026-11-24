@@ -17,6 +17,8 @@
     <material name="${prefix}taccap_lens"><color rgba="0.05 0.055 0.06 0.62"/></material>
     <!-- Frosted diffuser over the status LED. -->
     <material name="${prefix}taccap_light"><color rgba="0.92 0.94 0.96 0.85"/></material>
+    <!-- "XENSE" silkscreen on the fingertip caps (meshes/*_silkscreen.STL). -->
+    <material name="${prefix}taccap_print"><color rgba="0.2 0.2 0.21 1"/></material>
     <!-- taccap_base_link: gripper mounting face (body/Asm_link mating face). +Z along the tool
          axis, +Y toward the left finger, +X toward the off-axis fingers. Meshes keep their native
          CAD frame (+X tool axis); their placement is the origin below. -->
@@ -101,6 +103,10 @@
         <origin xyz="0 0 0" rpy="${cad_rpy}"/>
         <geometry><mesh filename="${mesh_root}/grip_left__yellow.STL"/></geometry><material name="${prefix}taccap_yellow"/>
       </visual>
+      <visual name="${prefix}left_finger_visual_print">
+        <origin xyz="0 0 0" rpy="${cad_rpy}"/>
+        <geometry><mesh filename="${mesh_root}/grip_left_silkscreen.STL"/></geometry><material name="${prefix}taccap_print"/>
+      </visual>
       <collision name="${prefix}left_finger_collision"><origin xyz="0 0 0" rpy="${cad_rpy}"/><geometry><mesh filename="${mesh_root}/grip_left.STL"/></geometry></collision>
     </link>
     <!-- Finger frames share the base axes; meshes use the native CAD placement and the
@@ -139,6 +145,10 @@
       <visual name="${prefix}right_finger_visual_yellow">
         <origin xyz="0 0 0" rpy="${cad_rpy}"/>
         <geometry><mesh filename="${mesh_root}/grip_right__yellow.STL"/></geometry><material name="${prefix}taccap_yellow"/>
+      </visual>
+      <visual name="${prefix}right_finger_visual_print">
+        <origin xyz="0 0 0" rpy="${cad_rpy}"/>
+        <geometry><mesh filename="${mesh_root}/grip_right_silkscreen.STL"/></geometry><material name="${prefix}taccap_print"/>
       </visual>
       <collision name="${prefix}right_finger_collision"><origin xyz="0 0 0" rpy="${cad_rpy}"/><geometry><mesh filename="${mesh_root}/grip_right.STL"/></geometry></collision>
     </link>

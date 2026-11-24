@@ -7,6 +7,7 @@
     <material name="left_cover" rgba="0.65 0.7 0.71 1" />
     <material name="left_black" rgba="0.018 0.02 0.022 1" />
     <material name="left_yellow" rgba="0.95 0.72 0.07 1" />
+    <material name="left_print" rgba="0.2 0.2 0.21 1" />
     <material name="left_lens" rgba="0.05 0.055 0.06 0.62" />
     <mesh name="base_link__silver" file="../meshes/left/base_link__silver.STL" />
     <mesh name="base_link__cover" file="../meshes/left/base_link__cover.STL" />
@@ -18,10 +19,12 @@
     <mesh name="link1__black" file="../meshes/left/link1__black.STL" />
     <mesh name="link1__silver" file="../meshes/left/link1__silver.STL" />
     <mesh name="link1__yellow" file="../meshes/left/link1__yellow.STL" />
+    <mesh name="link1_silkscreen" file="../meshes/left/link1_silkscreen.STL" />
     <mesh name="link2__cover" file="../meshes/left/link2__cover.STL" />
     <mesh name="link2__black" file="../meshes/left/link2__black.STL" />
     <mesh name="link2__silver" file="../meshes/left/link2__silver.STL" />
     <mesh name="link2__yellow" file="../meshes/left/link2__yellow.STL" />
+    <mesh name="link2_silkscreen" file="../meshes/left/link2_silkscreen.STL" />
     <mesh name="link3" file="../meshes/left/link3.STL" />
   </asset>
   <custom>
@@ -43,12 +46,14 @@
       <geom name="left_right_link_visual_black" type="mesh" mesh="link1__black" material="left_black" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="left_right_link_visual_silver" type="mesh" mesh="link1__silver" material="left_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="left_right_link_visual_yellow" type="mesh" mesh="link1__yellow" material="left_yellow" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="left_right_link_visual_print" type="mesh" mesh="link1_silkscreen" material="left_print" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="left_left_link" mocap="true" pos="0.01465 0.019955 0.037" quat="1 0 0 0">
       <geom name="left_left_link_visual_cover" type="mesh" mesh="link2__cover" material="left_cover" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="left_left_link_visual_black" type="mesh" mesh="link2__black" material="left_black" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="left_left_link_visual_silver" type="mesh" mesh="link2__silver" material="left_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
       <geom name="left_left_link_visual_yellow" type="mesh" mesh="link2__yellow" material="left_yellow" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
+      <geom name="left_left_link_visual_print" type="mesh" mesh="link2_silkscreen" material="left_print" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="0.7071067811865476 0 -0.7071067811865475 0" />
     </body>
     <body name="left_pico_link" mocap="true" pos="-0.032054 -0.023651 0.014053" quat="-0.2775276345642829 0.5441206024833772 -0.7201762264996663 -0.3290248999558879">
       <geom name="left_pico_link_visual" type="mesh" mesh="link3" material="left_silver" mass="0" contype="0" conaffinity="0" group="1" pos="0 0 0" quat="1 0 0 0" />

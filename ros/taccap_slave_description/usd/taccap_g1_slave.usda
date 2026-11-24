@@ -115,6 +115,21 @@ def Xform "TacCap"
                 token outputs:surface
             }
         }
+
+        def Material "taccap_print"
+        {
+            token outputs:surface.connect = </TacCap/Looks/taccap_print/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.2, 0.2, 0.21)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
     }
 
     def Xform "taccap_base_link" (
@@ -284,6 +299,17 @@ def Xform "TacCap"
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
+        def Mesh "left_finger_visual_print" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            prepend references = @./meshes/grip_left_silkscreen.usdc@</TacCap/Mesh>
+        )
+        {
+            rel material:binding = </TacCap/Looks/taccap_print>
+            color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
         def Mesh "left_finger_collision" (
             prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
             prepend references = @./meshes/grip_left.usdc@</TacCap/Mesh>
@@ -358,6 +384,17 @@ def Xform "TacCap"
         {
             rel material:binding = </TacCap/Looks/taccap_yellow>
             color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
+            matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Mesh "right_finger_visual_print" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            prepend references = @./meshes/grip_right_silkscreen.usdc@</TacCap/Mesh>
+        )
+        {
+            rel material:binding = </TacCap/Looks/taccap_print>
+            color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
             matrix4d xformOp:transform = ( (0, 0, 1, 0), (0, 1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }

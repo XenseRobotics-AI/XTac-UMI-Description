@@ -114,6 +114,21 @@ def Xform "Master"
                 token outputs:surface
             }
         }
+
+        def Material "taccap_print"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_print/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.2, 0.2, 0.21)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
     }
 
     def Xform "right_base_link"
@@ -248,6 +263,18 @@ def Xform "Master"
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
+
+            def Mesh "right_right_link_visual_print" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link1_silkscreen.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_print>
+                color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
         }
 
         def Xform "right_left_link"
@@ -300,6 +327,18 @@ def Xform "Master"
             {
                 rel material:binding = </Master/Looks/taccap_yellow>
                 color3f[] primvars:displayColor = [(0.95, 0.72, 0.07)]
+                quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Mesh "right_left_link_visual_print" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @./meshes/right/link2_silkscreen.usdc@</Master/Mesh>
+            )
+            {
+                rel material:binding = </Master/Looks/taccap_print>
+                color3f[] primvars:displayColor = [(0.2, 0.2, 0.21)]
                 quatf xformOp:orient = (0.70710677, 0, -0.70710677, 0)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]

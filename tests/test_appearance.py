@@ -34,6 +34,7 @@ EXPECTED = {
     "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
     "taccap_lens": ((0.05, 0.055, 0.06), 0.85, 0.06),
     "taccap_light": ((0.92, 0.94, 0.96), 0.00, 0.55),
+    "taccap_print": ((0.20, 0.20, 0.21), 0.00, 0.60),
 }
 
 
@@ -360,6 +361,86 @@ def test_shipped_fingertip_nub_is_black(directory, stem):
     assert yellow.mean(axis=1)[:, 0].max() < 0.146
     black = _read(root / f"{stem}__black.STL")
     assert (black.mean(axis=1)[:, 0] > 0.146).sum() > 50
+
+
+FINGER_MESHES = [
+    ("slave", "grip_left"),
+    ("slave", "grip_right"),
+    ("left", "link1"),
+    ("left", "link2"),
+    ("right", "link1"),
+    ("right", "link2"),
+]
+
+
+def _finger_dir(directory):
+    return ASSET_ROOT / "meshes" if directory == "slave" else MASTER_ROOT / "meshes" / directory
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_silkscreen_sits_on_the_cap_outer_facet(directory, stem):
+    """The "XENSE" print lies just outside the cap's large outer facet (0.02 to
+    0.07 mm off it), within the facet, on the side away from the gel pad, and
+    in the band next to the connector edge (x 112.3-118.9 mm)."""
+    root = _finger_dir(directory)
+    records = _read(root / f"{stem}_silkscreen.STL")
+    print_ = records.reshape(-1, 3)
+    yellow = _read(root / f"{stem}__yellow.STL")
+
+    def unit_normals(t):
+        n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
+        return n / np.linalg.norm(n, axis=1, keepdims=True), np.linalg.norm(n, axis=1) / 2
+
+    # The print's flat faces (top and bottom, +-n) give its plane; the yellow
+    # faces parallel to it are the facet, and their winding gives the outward n.
+    print_normals, print_area = unit_normals(records)
+    keys, inverse = np.unique(np.round(print_normals, 3), axis=0, return_inverse=True)
+    direction = keys[np.argmax(np.bincount(inverse.ravel(), weights=print_area))]
+    yellow_normals, _ = unit_normals(yellow)
+    parallel = np.abs(yellow_normals @ direction) > 0.999  # neighbour facets: < 0.95
+    facet = yellow[parallel]
+    assert len(facet)
+    normal = yellow_normals[parallel][0]
+    height = (print_ - facet[0, 0]) @ normal
+    assert height.min() > 0.015e-3 and height.max() < 0.075e-3
+    # Inside the facet: every print vertex projects onto one of its triangles.
+    projected = print_ - np.outer(height, normal)
+    a, b, c = facet[:, 0], facet[:, 1], facet[:, 2]
+    inside = np.zeros(len(projected), dtype=bool)
+    for i in range(len(facet)):
+        v0, v1 = b[i] - a[i], c[i] - a[i]
+        w = projected - a[i]
+        d00, d01, d11 = v0 @ v0, v0 @ v1, v1 @ v1
+        d20, d21 = w @ v0, w @ v1
+        denom = d00 * d11 - d01 * d01
+        s = (d11 * d20 - d01 * d21) / denom
+        t = (d00 * d21 - d01 * d20) / denom
+        inside |= (s >= -1e-6) & (t >= -1e-6) & (s + t <= 1 + 1e-6)
+    assert inside.all()
+    assert 0.1123 < print_[:, 0].min() and print_[:, 0].max() < 0.1189
+    # Outer side: the facet faces away from the cap's centre (and so from the pad).
+    cap_centre = yellow[yellow.mean(axis=1)[:, 0] > 0.1].reshape(-1, 3).mean(axis=0)
+    assert normal @ (print_.mean(axis=0) - cap_centre) > 0
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_silkscreen_ships_in_every_format(directory, stem):
+    """URDF, MJCF and USD all carry the print visual with ``taccap_print``."""
+    name = f"{stem}_silkscreen"
+    if directory == "slave":
+        urdf, mjcf = get_urdf_path(), ASSET_ROOT / "mjcf" / "taccap_g1_slave.xml"
+        usd = ASSET_ROOT / "usd" / "taccap_g1_slave.usda"
+    else:
+        urdf, mjcf = MASTER_ROOT / "urdf" / f"taccap_g1_master_{directory}.urdf", MASTER_ROOT / "mjcf" / f"{directory}.xml"
+        usd = MASTER_ROOT / "usd" / f"{directory}.usda"
+    visuals = [
+        v for v in ET.parse(urdf).getroot().iter("visual")
+        if v.find("geometry/mesh").get("filename").endswith(f"{name}.STL")
+    ]
+    assert len(visuals) == 1
+    assert visuals[0].find("material").get("name").endswith("print")
+    assert name in mjcf.read_text()
+    assert f"{name}.usdc" in usd.read_text()
 
 
 @pytest.mark.parametrize("side", ["left", "right"])

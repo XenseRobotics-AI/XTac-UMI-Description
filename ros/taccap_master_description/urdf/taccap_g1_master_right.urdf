@@ -18,6 +18,10 @@
     <color rgba="0.95 0.72 0.07 1" />
   </material>
   <!-- Fisheye cover glass: dark mirror, slightly transparent. -->
+  <!-- "XENSE" silkscreen on the fingertip caps (meshes/*/*_silkscreen.STL). -->
+  <material name="right_print">
+    <color rgba="0.2 0.2 0.21 1" />
+  </material>
   <material name="right_lens">
     <color rgba="0.05 0.055 0.06 0.62" />
   </material>
@@ -94,6 +98,13 @@
       </geometry>
       <material name="right_yellow" />
     </visual>
+    <visual name="right_right_link_visual_print">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link1_silkscreen.STL" />
+      </geometry>
+      <material name="right_print" />
+    </visual>
   </link>
   <joint name="right_right_joint" type="revolute">
     <origin xyz="0.01465 -0.019955 0.037" rpy="0 0 0" />
@@ -130,6 +141,13 @@
         <mesh filename="../meshes/right/link2__yellow.STL" />
       </geometry>
       <material name="right_yellow" />
+    </visual>
+    <visual name="right_left_link_visual_print">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link2_silkscreen.STL" />
+      </geometry>
+      <material name="right_print" />
     </visual>
   </link>
   <joint name="right_left_joint" type="revolute">

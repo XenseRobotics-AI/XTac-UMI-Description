@@ -21,6 +21,9 @@
   <material name="taccap_light">
     <color rgba="0.92 0.94 0.96 0.85" />
   </material>
+  <material name="taccap_print">
+    <color rgba="0.2 0.2 0.21 1" />
+  </material>
   <link name="taccap_mount_link">
     <visual name="asm_visual">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
@@ -130,6 +133,13 @@
       </geometry>
       <material name="taccap_yellow" />
     </visual>
+    <visual name="left_finger_visual_print">
+      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/grip_left_silkscreen.STL" />
+      </geometry>
+      <material name="taccap_print" />
+    </visual>
     <collision name="left_finger_collision">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
       <geometry>
@@ -186,6 +196,13 @@
         <mesh filename="../meshes/grip_right__yellow.STL" />
       </geometry>
       <material name="taccap_yellow" />
+    </visual>
+    <visual name="right_finger_visual_print">
+      <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/grip_right_silkscreen.STL" />
+      </geometry>
+      <material name="taccap_print" />
     </visual>
     <collision name="right_finger_collision">
       <origin rpy="0 -1.5707963267948966 0" xyz="0 0 0" />

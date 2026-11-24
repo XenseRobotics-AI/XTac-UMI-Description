@@ -3,7 +3,9 @@
 URDF, MJCF and USD all carry a single material per visual, so "only the
 fingertips are yellow" can only be expressed by shipping the yellow faces as
 their own mesh. This writes ``<stem>__<material>.STL`` next to each source, using
-the face partition in ``ros/taccap_slave_description/config/appearance.json``.
+the face partition in ``ros/taccap_slave_description/config/appearance.json``,
+and ``<stem>_silkscreen.STL`` for the "XENSE" print on each fingertip
+(``scripts/_silkscreen.py``).
 
 Triangles are copied verbatim (normals and vertex order included), so the parts
 render exactly like the original budget-free mesh; only the grouping changes.
@@ -19,6 +21,12 @@ import sys
 from pathlib import Path
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _silkscreen import silkscreen_triangles  # noqa: E402
+
+# Finger meshes whose yellow cap carries the "XENSE" silkscreen.
+FINGERS = {"grip_left", "grip_right", "link1", "link2"}
 
 ROOT = Path(__file__).resolve().parents[1]
 PARTITION = ROOT / "ros/taccap_slave_description/config/appearance.json"
@@ -300,6 +308,21 @@ def generated():
             suffix = material.removeprefix("taccap_")
             out = directory / f"{source.stem}__{suffix}.STL"
             yield out, header, triangles[faces]
+        if source.stem in FINGERS:
+            yellow = triangles[labels == "taccap_yellow"]["vertices"].astype(np.float64)
+            yield directory / f"{source.stem}_silkscreen.STL", header, _as_stl(
+                silkscreen_triangles(yellow)
+            )
+
+
+def _as_stl(vertices):
+    """Binary-STL records for ``(n, 3, 3)`` triangles, with unit normals."""
+    dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
+    records = np.zeros(len(vertices), dtype=dtype)
+    cross = np.cross(vertices[:, 1] - vertices[:, 0], vertices[:, 2] - vertices[:, 0])
+    records["normal"] = cross / np.linalg.norm(cross, axis=1, keepdims=True)
+    records["vertices"] = vertices
+    return records
 
 
 def main():
