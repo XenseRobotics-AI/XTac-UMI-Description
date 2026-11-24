@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 from _appearance import define_materials, urdf_material
-from _metadata import hash_tree, update_config
+from _metadata import hash_tree, mesh_hashes, update_config
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
@@ -320,9 +320,12 @@ def main():
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
             print(target.relative_to(ASSETS))
-    # Hash the shipped layers, so this runs after the copy above.
+    # Hash the shipped layers and meshes, so this runs after the copy above.
     config = update_config(
         ASSETS / "config" / "model.json", "usd", usd_metadata(), args.check
+    )
+    update_config(
+        config, "mesh_sha256", mesh_hashes(ASSETS / "meshes"), args.check
     )
     print(config.relative_to(ASSETS))
 

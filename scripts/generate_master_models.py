@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from _appearance import define_materials, urdf_material
 from _frames import tracker_offsets
-from _metadata import hash_tree, update_config
+from _metadata import hash_tree, mesh_hashes, update_config
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
@@ -375,6 +375,7 @@ def main():
     # Hash the shipped layers, so this runs after the copy above.
     update_config(config, "units", MASTER_UNITS, args.check)
     update_config(config, "usd", usd_metadata(), args.check)
+    update_config(config, "mesh_sha256", mesh_hashes(ASSETS / "meshes"), args.check)
     print(config.relative_to(ASSETS))
 
 

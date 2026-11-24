@@ -28,8 +28,22 @@
   "mesh_sha256": {
     "Asm_link.STL": "60b7f8c6c93211532d8fd419533dd904216314554bd5794c166b3dd8594f48bc",
     "base_link.STL": "fed33d6ec5113b8e34e65c096cb1ba7a6612f1f87e25fc6337ff11a45a5425ad",
+    "base_link__black.STL": "a5b2eeeb7233ed798601d9800ac7aa19acc5328c4e1a22b770185830c6a903dc",
+    "base_link__lens.STL": "9ff8b9ac8dafd906f3edb12643e998ae987b1452e21f2a955970c98d33ee6c13",
+    "base_link__silver.STL": "054b73650ce05e55f97902f6fcc7c24b2f61984bbe30a39c2d38b2e72168cea0",
+    "base_link__yellow.STL": "e69636007a8b352ae5fd4c990f9a14a045b939857b7bebaf067a0561fde175e3",
     "grip_left.STL": "9e14cf420497cd065271d5acb5be96e80c5e1759de85b396f1babb0b1635d594",
-    "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3"
+    "grip_left__black.STL": "09c5ab9d8c5d5d076b7b14d6c67d955807c2dcac83ddc3755b1ecf7ff4d07957",
+    "grip_left__cover.STL": "685c42ce94d6fd0d4a6ee9378672de7104bfb1f4eb8bc50cfc1dcfc0ddae4a37",
+    "grip_left__gel.STL": "73eccad2bb46a7f7beae25ace6fd2e07a211a0f30a8fe085aaf550849999f5cb",
+    "grip_left__silver.STL": "11d876ad61aa50458d76b331154531bda3fecda09d2db70c453ffcdd474f6243",
+    "grip_left__yellow.STL": "2f7cb6ff3b4eaa3fee55a040c218a069dd43cedee03cd7c5199bb1bb9f297982",
+    "grip_right.STL": "27822304badd4078e85e96a55be886266ea7439b6861151eaa5bcec99cb490c3",
+    "grip_right__black.STL": "ec622afaf633c1513ec22c25b25f0c3ade77645d63e8129e0fd10e119f13108e",
+    "grip_right__cover.STL": "d7aea832f1652e7e9e6d7cc87166f19a0db198bcab26b4d5fc932be7b3fdd68b",
+    "grip_right__gel.STL": "2bae8a60c42bdf19dde549ba3870b54826b16a819c5d6dd19fb40b97c45cad01",
+    "grip_right__silver.STL": "1fd6575828472092ce48f7d592e07e6b77a1c48ea61b62724eb058bdbf79362f",
+    "grip_right__yellow.STL": "4ad28a0d4e5721e209a186f8dfabfe1a049dfe77b12803a484a02d39c34f55bc"
   },
   "joint_contract": {
     "active_joint": "taccap_right_finger_joint",
