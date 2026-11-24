@@ -43,7 +43,7 @@
     "left_link__gel.STL": "6edbb1d9b490203b4f7a939c9f3fa23f88f070944c98aac5244617d802ef3fe0",
     "left_link__silver.STL": "47bf4ebd161ba00343ae8695cf3f7822edde77afdd961f9e941cd1b316337c5e",
     "left_link__yellow.STL": "c812d133e7da601fe99d8edc40acf09702f83763f69937e05db84b0a7b916476",
-    "left_link_silkscreen.STL": "dc8729be3227f43567574d7194a53640396d3778287cfca793a12db48f699a1d",
+    "left_link_silkscreen.STL": "a6534f9b374c1b037b8439141c33c18a44ef756556487d9943c56fb7aa9cd1cf",
     "motor_link.STL": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
     "motor_link__black.STL": "78ba121fcda6f82cd2a0e574b4717bf82ee23f7a49358cabc1395ea5f725cff9",
     "motor_link__silver.STL": "3190b1ffa49490b898342845c171861a1f6f551267047dcc223a4c3830193e29",
@@ -53,7 +53,7 @@
     "right_link__gel.STL": "f9a03eb1cf672efa85e36445b19b0fd4aa74a6897feb79735e29c29a025d2405",
     "right_link__silver.STL": "fd1bcf789fa8f6120a3b5cc97978aa6e451c0a4bc25a2b23b2c412c4e787efcc",
     "right_link__yellow.STL": "6531bb7290071419308881bf397dc93f1e6febb5dcd5c158760ee591f669e3d8",
-    "right_link_silkscreen.STL": "6f16bd437b3ac8198bc6f7220c831e93dcf5a3a7ba39694f80c000517b8d9e9e"
+    "right_link_silkscreen.STL": "b6c71110fcce17d5d662099c0e4db606490a215a1b4ac9387bb04fe37de22d96"
   },
   "joint_contract": {
     "active_joint": "taccap_right_finger_joint",
@@ -121,7 +121,7 @@
       "usd/meshes/left_link__gel.usdc": "8e7c94fc44489d35149f68994f58e9ee670cc39b691baee6bad79c17394b3144",
       "usd/meshes/left_link__silver.usdc": "e06531a3244923607a534dfd57441180541d87f95ffe63a1b2e64d7cd270fc57",
       "usd/meshes/left_link__yellow.usdc": "6c94381c1aff07975318da866d851f7ec2c6dbcae8bcb48f6208afabea80ea18",
-      "usd/meshes/left_link_silkscreen.usdc": "b0fca3d2b03b960a1e6545d453774c0f20f6b110dc1e9386cac8c5e745fbb777",
+      "usd/meshes/left_link_silkscreen.usdc": "0c8208b9d6f54f76f1cd214c47a64e36d4450973a6d896c8ecd47f9a3c87c374",
       "usd/meshes/motor_link.usdc": "5b52c8ea209126983101aa969d3e5b8a520906c684e1843b59abb97281a21b49",
       "usd/meshes/motor_link__black.usdc": "d49a26b2d3fb170de97de8e9f410053a94a5131738d2cdddbb71376bfec67652",
       "usd/meshes/motor_link__silver.usdc": "a0b8bf4c80590632921e49881ccfbc89a8f44c938ed9a9135a3606b49ed16fa3",
@@ -131,7 +131,7 @@
       "usd/meshes/right_link__gel.usdc": "c95d54486ffeda12345a0c95792df3e6daaecf9239bc1a1b36ce42c7aec042b3",
       "usd/meshes/right_link__silver.usdc": "44c2173cde22fc028a7a109c8f2c6a699185203dd82e8be92f68d6728d3ca1c9",
       "usd/meshes/right_link__yellow.usdc": "48225eed7422bea6bcc1e4b73455a3bcbb37b466863f7e6ba0b34beca5496bdf",
-      "usd/meshes/right_link_silkscreen.usdc": "56f5297b9619acca4991832b5b345a40e90c28261d8c550acc37f5987486545e",
+      "usd/meshes/right_link_silkscreen.usdc": "56260e3ce5cfbed61a8572140b068cbf3bafc1bacd67bab3ead839a9c2a8335a",
       "usd/taccap_g1_slave.usda": "09edfc814190b806af0205f8915a98c21e314db909743757e402ec552fa83c75",
       "usd/taccap_g1_slave_with_mount.usda": "5b10adf0daa415f6fa81977c12501469aeb873726c478886cec71ca707f32653"
     }
