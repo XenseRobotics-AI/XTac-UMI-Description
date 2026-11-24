@@ -28,6 +28,8 @@ MATERIALS = {
     "taccap_yellow": dict(rgba=(0.95, 0.72, 0.07, 1.0), metallic=0.00, roughness=0.48),
     "taccap_gel": dict(rgba=(0.055, 0.055, 0.055, 1.0), metallic=0.00, roughness=0.85),
     "taccap_lens": dict(rgba=(0.03, 0.03, 0.03, 1.0), metallic=0.10, roughness=0.12),
+    # Indicator window: translucent cover over the status LED.
+    "taccap_light": dict(rgba=(0.85, 0.90, 0.95, 0.35), metallic=0.00, roughness=0.15),
 }
 
 PARTITION = Path(__file__).resolve().parents[1] / "ros/taccap_description/config/appearance.json"

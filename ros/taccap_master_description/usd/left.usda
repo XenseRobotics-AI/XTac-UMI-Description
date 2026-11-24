@@ -99,6 +99,21 @@ def Xform "Master"
                 token outputs:surface
             }
         }
+
+        def Material "taccap_light"
+        {
+            token outputs:surface.connect = </Master/Looks/taccap_light/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.85, 0.9, 0.95)
+                float inputs:metallic = 0
+                float inputs:opacity = 0.35
+                float inputs:roughness = 0.15
+                token outputs:surface
+            }
+        }
     }
 
     def Xform "left_base_link"

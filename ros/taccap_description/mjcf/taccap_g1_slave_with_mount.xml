@@ -20,10 +20,12 @@
     <material name="taccap_yellow" rgba="0.95 0.72 0.07 1" />
     <material name="taccap_gel" rgba="0.055 0.055 0.055 1" />
     <material name="taccap_lens" rgba="0.03 0.03 0.03 1" />
+    <material name="taccap_light" rgba="0.85 0.9 0.95 0.35" />
     <mesh name="Asm_link" file="../meshes/Asm_link.STL" />
     <mesh name="base_link" file="../meshes/base_link.STL" />
     <mesh name="base_link_black" file="../meshes/base_link__black.STL" />
     <mesh name="base_link_lens" file="../meshes/base_link__lens.STL" />
+    <mesh name="base_link_light" file="../meshes/base_link__light.STL" />
     <mesh name="base_link_silver" file="../meshes/base_link__silver.STL" />
     <mesh name="base_link_yellow" file="../meshes/base_link__yellow.STL" />
     <mesh name="grip_left" file="../meshes/grip_left.STL" />
@@ -49,6 +51,7 @@
         <geom name="base_visual_black" type="mesh" mass="0" mesh="base_link_black" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_black" />
         <geom name="base_visual_yellow" type="mesh" mass="0" mesh="base_link_yellow" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_yellow" />
         <geom name="base_visual_lens" type="mesh" mass="0" mesh="base_link_lens" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_lens" />
+        <geom name="base_visual_light" type="mesh" mass="0" mesh="base_link_light" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="1" contype="0" conaffinity="0" material="taccap_light" />
         <geom name="base_collision" type="mesh" mass="0" mesh="base_link" pos="0.01975 -0.0060769 0.034023" quat="0.7071067811865476 0 -0.7071067811865475 0" group="0" rgba="0.75294 0.75294 0.75294 0" />
         <body name="taccap_left_finger_link" pos="0.0120336718 0.0199500106 0.0484999712" quat="1 0 0 0">
           <inertial pos="0.020693 -0.00669 0.074921" mass="0.36678" fullinertia="0.00015235 0.00015466 3.3606e-05 2.9254e-07 -2.4362e-06 -6.6715e-06" />

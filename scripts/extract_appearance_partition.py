@@ -70,7 +70,7 @@ FINGERTIP_SEAM = {
     "material": "taccap_yellow",
     # The inner face is silicone/TPU rubber on both designs and stays dark: the
     # follower's gel pad and the leader's bare rubber pad and frame.
-    "keep": ["taccap_gel", "taccap_black"],
+    "keep": ["taccap_gel"],
 }
 
 
@@ -185,6 +185,25 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
     return labels, count
 
 
+def mirror_finger(labels, left, right):
+    """Label the right finger from the mirrored left one.
+
+    The two fingers are mirror parts and the bench asset labels them
+    asymmetrically (the small outer plate on the right came out black), so the
+    left finger's partition is mirrored onto the right.
+    """
+    from scipy.spatial import cKDTree
+
+    mirror = np.array([1.0, -1.0, 1.0])
+    tree = cKDTree(left.mean(axis=1) * mirror)
+    distance, match = tree.query(right.mean(axis=1), k=1)
+    print(
+        f"  right finger from mirrored left: median {np.median(distance) * 1e6:.0f} um, "
+        f"p99 {np.percentile(distance, 99) * 1e6:.0f} um"
+    )
+    return labels[match]
+
+
 def _tip_component(triangles):
     """The fingertip is the 2 766-face solid present in every finger mesh."""
     sizes = np.bincount(component_labels(triangles))
@@ -216,55 +235,78 @@ def entry(labels, total, order, **extra):
     }
 
 
-def camera_window_cut():
-    """Circular edge between the fisheye glass and its yellow surround.
+# Camera window: glass, a black bezel ring, then the yellow surround ring
+# (about 1.45x the glass radius on the hardware photo), then shell.
+CAMERA_GLASS_M = 0.0085
+CAMERA_BEZEL_M = 0.0096
+CAMERA_RING_M = 0.0123
+# Mesh origins of the body visuals (URDF visual origin).
+BODY_ORIGIN = {
+    "slave": np.array([0.01975, -0.0060769, 0.034023]),
+    "master": np.array([0.02065, 0.0, 0.024785]),
+}
+CAMERA_BASE = np.array([-0.02285, 0.0, 0.04975])
+BODY_ROTATION = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
+
+
+def camera_in_mesh_frame(model):
+    """Camera position in the body mesh frame: mesh x is the optical axis."""
+    return BODY_ROTATION.T @ (CAMERA_BASE - BODY_ORIGIN[model])
+
+
+def camera_window_cut(model):
+    """Cylinders that give the window an exact glass / bezel / ring edge.
 
     The bench asset paints the whole window yellow and the window is a triangle
-    fan, so no per-face rule can produce the ring seen on the hardware. The
-    parts generator cuts the geometry on this cylinder instead: inside the
-    radius is the near-black lens, outside keeps the yellow surround.
-
-    Camera axis in the base mesh frame: ``^mesh = R^T (^base - t)`` with the
-    visual origin (0.01975 -0.0060769 0.034023) and ``rpy 0 -pi/2 0``.
+    fan, so no per-face rule can produce the rings. The parts generator cuts the
+    geometry instead. ``range`` bounds the cut along the axis: without it the
+    infinite cylinder also lands on the body behind the window and paints a dark
+    disc on the rear shell.
     """
-    rotation = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
-    origin = np.array([0.01975, -0.0060769, 0.034023])
-    camera = rotation.T @ (np.array([-0.02285, 0.0, 0.04975]) - origin)
-    # 8.5 mm: the flat ring radius recorded in docs/TACCAP_FLANGE_FRAMES.md.
+    camera = camera_in_mesh_frame(model)
     return {
         "axis": "x",
         "centre": [float(camera[1]), float(camera[2])],
-        "at": 0.0085,
+        "at": CAMERA_GLASS_M,
         "material": "taccap_lens",
+        "bezel": {"at": CAMERA_BEZEL_M, "material": "taccap_black"},
+        "range": [0.010, 10.0],
     }
 
 
-def fix_camera_ring(triangles, labels):
-    """Yellow surround ring, glass cut separately at 8.5 mm.
+# Status-LED window on the slave body: a 10 mm disc, base frame centre below.
+LIGHT_CENTRE_M = np.array([0.0248, -0.0025, 0.0255])
+LIGHT_RADIUS_M = 0.0052
 
-    The hardware photo (2026-11-24) shows the yellow ring ending about 1.45
-    times the black lens radius, with plain shell outside it; the bench asset
-    instead runs the yellow out to the window rim.
-    """
-    rotation = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
-    origin = np.array([0.01975, -0.0060769, 0.034023])
-    camera = np.array([-0.02285, 0.0, 0.04975])
-    centroids = triangles.mean(axis=1) @ rotation.T + origin
-    # The camera looks along +Z of the base frame (camera_link has rpy 0), so the
-    # radius is measured in the XY plane and the height runs along Z.
-    radius = np.hypot(centroids[:, 0] - camera[0], centroids[:, 1] - camera[1]) * 1e3
-    height = centroids[:, 2] - camera[2]
-    window = (radius < 14.0) & (height > -0.014)
-    ring = window & (radius >= 8.5) & (radius < 12.3)
-    # The window opening is a recessed barrel: some of it sits behind the rim, so
-    # the shell repaint ignores height and covers the whole annulus out to 16 mm.
-    outside = (radius >= 12.3) & (radius < 16.0)
+
+def fix_light_window(triangles, labels, model, origin):
+    """Make the indicator window translucent instead of shell-coloured."""
+    centroids = triangles.mean(axis=1) @ BODY_ROTATION.T + origin
+    near = np.linalg.norm(centroids - LIGHT_CENTRE_M, axis=1) < LIGHT_RADIUS_M
     labels = labels.copy()
+    labels[near] = "taccap_light"
+    print(f"  light window ({model}): {int(near.sum())} faces")
+    return labels
+
+
+def fix_camera_ring(triangles, labels, model):
+    """Paint the bezel black, the surround ring yellow and the rest shell."""
+    origin = BODY_ORIGIN[model]
+    centroids = triangles.mean(axis=1) @ BODY_ROTATION.T + origin
+    # camera_link has rpy 0, so the camera looks along base +Z.
+    radius = np.hypot(centroids[:, 0] - CAMERA_BASE[0], centroids[:, 1] - CAMERA_BASE[1]) * 1e3
+    height = centroids[:, 2] - CAMERA_BASE[2]
+    near = (radius < 16.0) & (height > 0.005)
+    bezel = near & (radius >= CAMERA_GLASS_M * 1e3) & (radius < CAMERA_BEZEL_M * 1e3)
+    ring = near & (radius >= CAMERA_BEZEL_M * 1e3) & (radius < CAMERA_RING_M * 1e3)
+    outside = near & (radius >= CAMERA_RING_M * 1e3)
+    labels = labels.copy()
+    labels[bezel] = "taccap_black"
     labels[ring] = "taccap_yellow"
     labels[outside] = "taccap_silver"
     print(
-        f"  camera: {int(ring.sum())} faces -> yellow ring (8.5-12.3 mm), "
-        f"{int(outside.sum())} -> shell (12.3-14 mm)"
+        f"  camera ({model}): {int(bezel.sum())} bezel, {int(ring.sum())} yellow ring, "
+        f"{int(outside.sum())} shell"
     )
     return labels
 
@@ -317,12 +359,30 @@ def main():
         order = [MATERIAL_OF[name] for name in names]
         extra = {"bench_faces": len(bench_labels), "bench_source": prim_path}
         if key == "base":
-            labels = fix_camera_ring(triangles, labels)
-            extra["radial_cut"] = camera_window_cut()
+            order.append("taccap_light")
+            labels = fix_camera_ring(triangles, labels, "slave")
+            labels = fix_light_window(triangles, labels, "slave", BODY_ORIGIN["slave"])
+            extra["radial_cut"] = camera_window_cut("slave")
         if key in ("left_finger", "right_finger"):
             extra["parting_plane"] = FINGERTIP_SEAM
         partition[relative] = entry(labels, count, order, **extra)
         slave_labels[relative] = (triangles, labels)
+
+    # Symmetric fingers: mirror the left partition onto the right.
+    left_triangles, left_labels = slave_labels["slave/grip_left.STL"]
+    right_triangles, _ = slave_labels["slave/grip_right.STL"]
+    mirrored = mirror_finger(left_labels, left_triangles, right_triangles)
+    right_entry = partition["slave/grip_right.STL"]
+    partition["slave/grip_right.STL"] = entry(
+        mirrored,
+        right_entry["faces"],
+        right_entry["order"],
+        bench_faces=right_entry["bench_faces"],
+        bench_source=right_entry["bench_source"],
+        parting_plane=FINGERTIP_SEAM,
+        note="Mirrored from the left finger so both hands match the hardware.",
+    )
+    slave_labels["slave/grip_right.STL"] = (right_triangles, mirrored)
 
     for relative, (path, reference) in MASTER_FINGERS.items():
         triangles, labels = slave_labels[reference]
@@ -342,12 +402,15 @@ def main():
         path = MASTER / side / "base_link.STL"
         triangles, count = stl_triangles(path)
         labels = leader_body_partition(triangles)
-        order = ["taccap_silver", "taccap_cover", "taccap_yellow"]
+        labels = fix_camera_ring(triangles, labels, "master")
+        order = ["taccap_silver", "taccap_cover", "taccap_black", "taccap_yellow", "taccap_lens"]
         partition[relative] = entry(
             labels,
             count,
             order,
-            note="Leader body: side buttons yellow, their plates white, rest silver.",
+            radial_cut=camera_window_cut("master"),
+            note="Leader body: side buttons yellow, their plates white, camera window "
+            "glass/bezel/ring, rest silver.",
         )
 
     destination = ROOT / "ros/taccap_description/config/appearance.json"

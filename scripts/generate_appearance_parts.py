@@ -130,10 +130,12 @@ def clip_radius(triangles, centre, radius):
                     if disc < 0:
                         continue
                     root = np.sqrt(disc)
+                    # Both roots can lie on the segment when it passes through
+                    # the circle with both endpoints outside; keep every one, or
+                    # the piece loses the arc it crossed.
                     for t in ((-b - root) / (2 * a), (-b + root) / (2 * a)):
-                        if 0 <= t <= 1:
+                        if -1e-12 <= t <= 1 + 1e-12:
                             piece.append(current + t * (following - current))
-                            break
             if len(piece) >= 3:
                 for corner in range(1, len(piece) - 1):
                     out.append(np.array([piece[0], piece[corner], piece[corner + 1]]))
@@ -155,17 +157,38 @@ def _rebuild(triangles, pieces):
 
 
 def cut_radius_faces(triangles, labels, spec):
-    """Give the camera glass a circular edge: inside ``at`` is ``material``."""
+    """Cut the camera window on cylinders about its axis.
+
+    Only faces inside ``range`` along the axis take part: the cylinder is
+    infinite, so without the bound the same cut also lands on the body behind
+    the window and paints a dark disc on the rear shell.
+
+    ``at`` is the glass radius and ``material`` its colour; ``bezel`` adds a
+    second, larger radius whose band takes ``bezel["material"]``.
+    """
     vertices = triangles["vertices"].astype(np.float64)
-    inner, outer = clip_radius(vertices, np.array(spec["centre"], dtype=float), spec["at"])
-    pieces = np.vstack([inner, outer])
-    piece_labels = np.concatenate(
-        [
-            np.full(len(inner), spec["material"], dtype=object),
-            _classify(outer, vertices, labels),
-        ]
-    )
-    return _rebuild(triangles, pieces), piece_labels
+    centre = np.array(spec["centre"], dtype=float)
+    window, rest = vertices, np.zeros((0, 3, 3))
+    if spec.get("range"):
+        low, high = spec["range"]
+        along = vertices[:, :, 0]
+        inside = (along.max(axis=1) >= low) & (along.min(axis=1) <= high)
+        window, rest = vertices[inside], vertices[~inside]
+
+    inner, outer = clip_radius(window, centre, spec["at"])
+    pieces = [inner]
+    piece_labels = [np.full(len(inner), spec["material"], dtype=object)]
+    bezel = spec.get("bezel")
+    if bezel:
+        middle, outer = clip_radius(outer, centre, bezel["at"])
+        pieces.append(middle)
+        piece_labels.append(np.full(len(middle), bezel["material"], dtype=object))
+    pieces.append(outer)
+    piece_labels.append(_classify(outer, vertices, labels))
+    if len(rest):
+        pieces.append(rest)
+        piece_labels.append(_classify(rest, vertices, labels))
+    return _rebuild(triangles, np.vstack(pieces)), np.concatenate(piece_labels)
 
 
 def cut_faces(triangles, labels, spec):
