@@ -30,7 +30,6 @@ MATERIALS = {
     # Fisheye cover glass: a dark mirror, slightly transparent so the barrel
     # behind it shows through instead of reading as a solid black disc.
     "taccap_lens": dict(rgba=(0.05, 0.055, 0.06, 0.62), metallic=0.85, roughness=0.06),
-    # Indicator window: translucent cover over the status LED.
     # Status-LED window: a frosted diffuser. Mostly opaque and rough, so the
     # hollow inside of the shell behind it does not show through.
     "taccap_light": dict(rgba=(0.92, 0.94, 0.96, 0.85), metallic=0.00, roughness=0.55),
