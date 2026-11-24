@@ -169,12 +169,14 @@ def transfer_finger(reference_triangles, reference_labels, target_path):
             continue
         faces = target_components == component
         centre = triangles[faces].mean(axis=(0, 1)) * 1e3
+        points = triangles[faces].reshape(-1, 3) * 1e3
+        extent = points.max(axis=0) - points.min(axis=0)
         if abs(centre[0]) < 25 and sizes[component] > 3000:
             labels[faces] = "taccap_silver"      # hinge block
-        elif sizes[component] < 200:
-            labels[faces] = "taccap_yellow"      # side button on the sensor plate
-        elif 800 <= sizes[component] <= 1000:
-            labels[faces] = "taccap_cover"       # white plate carrying the button
+        elif np.allclose(sorted(extent), [5.5, 9.7, 10.0], atol=0.4):
+            labels[faces] = "taccap_yellow"      # time-sync button on the outer side
+        elif 60 < centre[0] < 85 and extent[0] > 25:
+            labels[faces] = "taccap_cover"       # white side plate carrying the button
         else:
             labels[faces] = "taccap_black"       # screws and clip pins
     labels[target_components == body] = "taccap_cover"
