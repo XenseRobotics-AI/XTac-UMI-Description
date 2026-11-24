@@ -45,6 +45,7 @@ URDF、Xacro、MJCF、USD 中均相同。
 | `taccap_right_finger_link` | `taccap_right_finger_joint` | −Y 手指，主动，正角度张开 |
 | `taccap_left_finger_link` | `taccap_left_finger_joint` | +Y 手指，系数 −1 跟随 |
 | `taccap_eef_link` | `taccap_eef_joint`（fixed） | EEF |
+| `taccap_motor_link`、`taccap_camera_body_link` | fixed | 手指电机与相机模组（各自带质量和惯量） |
 | `taccap_camera_link`、`taccap_camera_optical_link` | fixed | 腕部相机 |
 
 主爪：
@@ -108,8 +109,8 @@ EEF 的距离均为 195.2514 mm，与 CAD 实测一致；左右手关于 XZ 平�
 | 格式 | 来源 | 说明 |
 | --- | --- | --- |
 | URDF | 从爪：由 Xacro 生成；主爪：手工编辑 | 相对网格路径 |
-| Xacro | 从爪：手工编辑的宏；主爪：生成 | 可加前缀的宏；`mesh_root` 默认 `package://` |
+| Xacro | 从爪：由锁定的上游快照导入（`scripts/import_slave.py`）；主爪：生成 | 可加前缀的宏；`mesh_root` 默认 `package://` |
 | MJCF | 生成 | 从爪沿用 robosuite 命名（执行器 `gripper`、`grip_site`、`ft_frame`）；主爪为 mocap 刚体，无自由度 |
-| USD | 生成 | 从爪：带 PhysX mimic 关节的关节体，**角度单位为度**；主爪：纯视觉，含开合动画 |
+| USD | 生成 | 从爪：关节体（本体、手指、电机、相机、可选转接件），带 PhysX mimic 关节，**角度单位为度**；主爪：纯视觉，含开合动画 |
 
 颜色与材质见[外观](APPEARANCE-zh.md)。

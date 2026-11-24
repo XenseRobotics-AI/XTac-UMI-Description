@@ -8,6 +8,7 @@ the cross-references to the models.
 
 import hashlib
 import json
+from pathlib import Path
 
 import mujoco
 import numpy as np
@@ -62,6 +63,30 @@ def test_slave_usd_drive_matches_the_mujoco_overlay():
     assert drive["max_force_nm"] == pytest.approx(model.actuator_forcerange[index][1])
     assert block["articulation"]["driven_joint"] == "taccap_right_finger_joint"
     assert block["articulation"]["mimic_gearing"] == 1.0
+
+
+def test_slave_metadata_references_all_mesh_layers_and_real_camera_links():
+    import xml.etree.ElementTree as ET
+
+    document = json.loads((SLAVE_ROOT / "config/model.json").read_text())
+    declared_layers = {str(p.relative_to(SLAVE_ROOT))
+                       for p in SLAVE_ROOT.glob(document["usd"]["mesh_layers"])}
+    mesh_layers = {str(p.relative_to(SLAVE_ROOT))
+                   for p in (SLAVE_ROOT / "usd/meshes").rglob("*.usdc")}
+    assert declared_layers == mesh_layers
+    # Every mesh the URDFs reference (visual parts and collisions) has its layer.
+    referenced = set()
+    for suffix in ("", "_with_mount"):
+        root = ET.parse(SLAVE_ROOT / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
+        referenced |= {
+            "usd/meshes/" + str(Path(m.get("filename")).relative_to("../meshes").with_suffix(".usdc"))
+            for m in root.iter("mesh")
+        }
+    assert referenced <= declared_layers
+    for suffix in ("", "_with_mount"):
+        root = ET.parse(SLAVE_ROOT / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
+        for name in document["urdf_frames"]["camera"]["links"]:
+            assert root.find(f"link[@name='{name}']") is not None
 
 
 @pytest.mark.parametrize("side", ("left", "right"))

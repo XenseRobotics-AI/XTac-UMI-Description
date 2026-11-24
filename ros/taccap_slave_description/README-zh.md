@@ -2,7 +2,9 @@
 
 [English](README.md)
 
-装在机械臂上的夹爪，提供裸爪与带 Asm_link 法兰转接件两种版本。
+装在机械臂上的夹爪，提供裸爪与带法兰转接件两种版本。模型版本 `slave-v2026.10.23`：裸爪
+0.750 kg，带转接件 0.785 kg。本体、电机（299 g）和相机模组（18 g）是各自独立的惯性 link
+（`taccap_motor_link`、`taccap_camera_body_link`），质心和完整惯量张量取自上游。
 ROS 包 `taccap_slave_description`；Python 模块 `taccap_description.slave`。
 
 ![不带转接件（左）与带转接件（右），闭合与张开](preview.png)
@@ -28,8 +30,8 @@ Xacro 宏参数为 `prefix`、`with_mount` 和 `mesh_root`。模型参数见 [co
 
 `taccap_right_finger_joint` 为主动关节，范围 0 至 0.5047 rad（28.92°），0 为闭合；
 `taccap_left_finger_joint` 镜像跟随（URDF `mimic`、MJCF equality、USD PhysX mimic）。
-1.1 N·m 限值是 RobStride EL05 手指电机的最大输出扭矩，只在 Xacro 中定义一次，
-MJCF 的 `forcerange` 和 USD 的 `maxForce` 都由它生成。
+1.1 N·m 限值是 RobStride EL05 手指电机的最大输出扭矩，由导入脚本（`scripts/import_slave.py`）
+统一设定，MJCF 的 `forcerange` 和 USD 的 `maxForce` 都由它生成。
 
 ## RViz
 
@@ -64,5 +66,6 @@ stage = Usd.Stage.Open(str(slave.get_usd_path(with_mount=True)))
 
 ## 重新生成
 
-编辑 `urdf/taccap_g1_slave_macro.xacro` 后运行 `python scripts/generate_models.py` 和
-`python scripts/generate_usd.py`。来源与声明见 [NOTICE](NOTICE.md)。
+模型由锁定的上游快照导入：先运行 `python scripts/import_slave.py`（Xacro 和网格），再运行
+`python scripts/generate_appearance_parts.py`、`python scripts/generate_models.py` 和
+`python scripts/generate_usd.py`。来源与声明见 [NOTICE](NOTICE.md) 和[更新流程](../../docs/UPSTREAM_SLAVE.md)。

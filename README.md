@@ -6,7 +6,7 @@ Robot descriptions of the **XTac-UMI G1** tactile data-collection gripper, in
 URDF, Xacro, MJCF and USD:
 
 - **Master** (handheld, the leader): left and right.
-- **Slave** (arm-mounted, the follower): bare, or with the Asm_link flange adapter.
+- **Slave** (arm-mounted, the follower): bare, or with the flange adapter.
 
 ![Slave without/with mount](ros/taccap_slave_description/preview.png)
 
@@ -83,6 +83,7 @@ Specification: [frames, flanges and naming](docs/TACCAP_FLANGE_FRAMES.md) ·
 
 ```bash
 pip install -e '.[dev]'
+python scripts/import_slave.py              # slave Xacro + meshes from the locked upstream snapshot
 python scripts/generate_models.py           # slave URDF + MJCF from the Xacro
 python scripts/generate_usd.py              # slave USD
 python scripts/generate_master_models.py    # master Xacro, MJCF, USD from the URDFs
@@ -90,11 +91,11 @@ python scripts/generate_appearance_parts.py # per-material mesh parts, silkscree
 python -m pytest -q
 ```
 
-Edit only the slave Xacro
-(`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`) and the master
-URDFs (`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`);
-colours come from the data files described in [appearance](docs/APPEARANCE.md).
-Everything else is generated. Every generator accepts `--check`, which CI runs
+The slave model (v2026.10.23) is imported from the locked upstream snapshot in
+`vendor/taccap_slave/`; local adaptations live in `scripts/import_slave.py` (see
+[upstream updates](docs/UPSTREAM_SLAVE.md)). For master changes edit the URDFs in
+`ros/taccap_master_description/urdf/`. Colours come from the data files
+described in [appearance](docs/APPEARANCE.md). Everything else is generated. Every generator accepts `--check`, which CI runs
 to reject stale files.
 
 ## Related

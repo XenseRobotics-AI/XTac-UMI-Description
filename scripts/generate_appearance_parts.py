@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _silkscreen import silkscreen_triangles  # noqa: E402
 
 # Finger meshes whose yellow cap carries the "XENSE" silkscreen.
-FINGERS = {"grip_left", "grip_right", "link1", "link2"}
+FINGERS = {"left_link", "right_link", "link1", "link2"}
 
 ROOT = Path(__file__).resolve().parents[1]
 PARTITION = ROOT / "ros/taccap_slave_description/config/appearance.json"
@@ -330,7 +330,9 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     stale = 0
+    written = set()
     for path, header, triangles in generated():
+        written.add(path)
         expected = header + struct.pack("<I", len(triangles)) + triangles.tobytes()
         if args.check:
             if not path.is_file() or path.read_bytes() != expected:
@@ -339,6 +341,16 @@ def main():
         else:
             path.write_bytes(expected)
             print(f"{path.relative_to(ROOT)}  {len(triangles)} faces")
+    # Parts no longer produced (a material dropped from a mesh, a mesh removed).
+    for directory in DIRECTORIES.values():
+        for path in sorted(directory.glob("*.STL")):
+            if ("__" in path.stem or path.stem.endswith("_silkscreen")) and path not in written:
+                if args.check:
+                    print(f"obsolete: {path.relative_to(ROOT)}")
+                    stale += 1
+                else:
+                    path.unlink()
+                    print(f"removed {path.relative_to(ROOT)}")
     if stale:
         raise SystemExit(f"{stale} appearance part(s) need regenerating")
     return 0

@@ -1,28 +1,43 @@
 # TacCap G1 slave: source and notices
 
-## Source
+## Current model
 
-The STL meshes and the original URDF/MJCF of the TacCap G1 slave gripper come
-from Xense Robotics' simulation model, which is based on
-[robosuite](https://github.com/ARISE-Initiative/robosuite). Xense Robotics
-releases these descriptions and meshes under this repository's MIT license.
+The URDF, six visual meshes, collision meshes and physical properties are
+imported from [XenseRobotics-AI/xense-description](https://github.com/XenseRobotics-AI/xense-description),
+path `assets/grippers/xense/taccap/slave-v2026.10.23`.
+[config/upstream.json](config/upstream.json) records the version, verified
+commit and SHA-256 of every imported upstream file. All imported files match
+upstream commit `b67736ce4d3bce785bedbb49f4c14011d38a7159` byte for byte.
 
-## Third-party notices
+The unmodified imported files, including the upstream notice and license
+texts, are retained in `vendor/taccap_slave/source/` in this repository.
+See [the update workflow](../../docs/UPSTREAM_SLAVE.md).
 
-- `LICENSES/robosuite.txt`: MIT license of robosuite (Stanford Vision and
-  Learning Lab and UT Robot Perception and Learning Lab), retained for the
-  imported model files.
+The new meshes derive from the Xense 2026.10.15 TacCap STEP;
+model version 2026.10.23 includes the corrected camera COM. Upstream retains
+separate CAD/screenshot attribution and records redistribution permission for
+those inputs as unconfirmed. This import preserves those statements; the
+repository MIT license does not replace them. Inherited robosuite and
+XTac-UMI license texts remain in the snapshot; `LICENSES/robosuite.txt` remains
+in this package.
 
-## Changes from the source files
+## Local changes
 
-- Root and link frames redefined: `taccap_base_link` on the gripper mounting
-  face with +Z along the tool axis; the optional Asm_link adapter is the
-  separate root `taccap_mount_link`. Links and joints use the `taccap_` prefix.
-- The adapter was removed from the body mesh (`base_link.STL`), and the
-  duplicate cover link was removed.
-- Joint limits and coupling: 28.92-degree opening, right finger drives, left
-  mimics with -1; finger torque limit 1.1 Nm (RobStride EL05).
-- Added the `taccap_eef_link` and wrist camera frames.
-- Visual meshes split per material, with colours matching the hardware, and
-  the XENSE fingertip silkscreen added.
-- MJCF and USD are generated from the URDF.
+- Preserve downstream root frames: bare `taccap_base_link`, mounted
+  `taccap_mount_link`; remove the upstream bare virtual flange and rename the
+  mounted flange/joint. Mounted base offset remains +12 mm along Z.
+- Retain 1.1 Nm EL05 effort instead of upstream 4 Nm.
+- Generate prefixable Xacro; preserve mesh bytes, masses, COMs, full inertia
+  tensors, local geometry transforms, hinge axes, limits and mimic.
+- Visuals use per-material parts cut from the imported meshes, coloured like
+  the hardware, plus the XENSE fingertip silkscreen; the imported mesh files
+  themselves are unchanged.
+- Generate MJCF/USD locally from the adapted URDF. MuJoCo actuator, sensor and
+  contact settings come from `config/mujoco.xml`, including exclusions for
+  internal motor/finger convex-hull overlap.
+
+## Previous model
+
+Before this update, the model was a Xense robosuite-derived simulation asset,
+with robosuite's MIT notice retained in `LICENSES/robosuite.txt`. Repository
+history (`c46c088` onward) preserves it; no external source commit was recorded.

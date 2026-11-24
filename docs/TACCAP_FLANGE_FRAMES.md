@@ -51,6 +51,7 @@ Slave:
 | `taccap_right_finger_link` | `taccap_right_finger_joint` | −Y finger, driven, positive opens |
 | `taccap_left_finger_link` | `taccap_left_finger_joint` | +Y finger, mimics with multiplier −1 |
 | `taccap_eef_link` | `taccap_eef_joint` (fixed) | EEF |
+| `taccap_motor_link`, `taccap_camera_body_link` | fixed | Finger motor and camera module (own mass and inertia) |
 | `taccap_camera_link`, `taccap_camera_optical_link` | fixed | Wrist camera |
 
 Master:
@@ -119,8 +120,8 @@ with no physical meaning. `scripts/_frames.py` derives the tracker frame and
 | Format | Source | Notes |
 | --- | --- | --- |
 | URDF | Slave: generated from the Xacro. Master: hand-edited | Relative mesh paths |
-| Xacro | Slave: hand-edited macro. Master: generated | Prefixable macros; `mesh_root` defaults to `package://` |
+| Xacro | Slave: imported from the locked upstream snapshot (`scripts/import_slave.py`). Master: generated | Prefixable macros; `mesh_root` defaults to `package://` |
 | MJCF | Generated | Slave keeps robosuite names (actuator `gripper`, `grip_site`, `ft_frame`); master is mocap bodies, no DOFs |
-| USD | Generated | Slave: articulated with PhysX mimic joint, **angles in degrees**. Master: visual, with an open/close animation |
+| USD | Generated | Slave: articulated (body, fingers, motor, camera, optional adapter) with a PhysX mimic joint, **angles in degrees**. Master: visual, with an open/close animation |
 
 Colours and materials: [appearance](APPEARANCE.md).

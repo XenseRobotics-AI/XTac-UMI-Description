@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/XenseRobotics-AI/xense-description.git",
+  "path": "assets/grippers/xense/taccap/slave-v2026.10.23",
+  "version": "slave-v2026.10.23",
+  "revision": "b67736ce4d3bce785bedbb49f4c14011d38a7159",
+  "files_sha256": {
+    "LICENSES/robosuite.txt": "177978cbece0a4c454c2aaec5b3f145b39270814874c43109da9e829c39d9cba",
+    "LICENSES/xtac-umi-description.txt": "e377d313ab1da9536ccb3c97583680fbb8e818c3a89c9cd15724cc1f3fa92834",
+    "NOTICE.md": "aad907b65887ab967875ae7208113ada5f3e88755cc6ffb5a2c3fde17b891e70",
+    "meshes/body_link.STL": "4f2545d5680998302febe1b1ee19e4e88a9596421e2a74711ab7ef098e8ce9c0",
+    "meshes/camera_link.STL": "71d4311039a39eb46ce2d8731e87eb028d25ea60455481180382705dc0407422",
+    "meshes/collision/body_link.stl": "e40866ec9a44b9209881ae053882595c1c11abbdb623a1b25fc50b85933b1cdc",
+    "meshes/collision/flange_link.stl": "4c2c3a36c4c94bf34cd939def0e989cbc764c40296132efc61f4eb5413d83da7",
+    "meshes/collision/left_link.stl": "57709f0dd3e83ad2da5d2cd2cab29d86c4f9b2f3eb2eb66f044f310cd0d6becc",
+    "meshes/collision/motor_link.stl": "904aba324248d8f12e38c41bd5227d20afb04c5e44941926a5d73a2ab904b40f",
+    "meshes/collision/right_link.stl": "ec45904d48ec00f358cc7218ebee412f79b7926c6d9f0c469829f6620502e5d5",
+    "meshes/flange_link.STL": "bfd7cdc06fada26a0e8ddb9627e44f1fb652b30b8384c59f5098d2a6e8c4f6f6",
+    "meshes/left_link.STL": "fb69f4d4de9a0cb423ccd14e447335692245555cc02e6f544a420a5dcbeaee69",
+    "meshes/motor_link.STL": "75fd0e1efe9b64d89cf6c16c0d93811ed9dd5edf1b6506861573e0c95e688509",
+    "meshes/right_link.STL": "82d58ff80a8d84da06d3a4be75a00c10d13b66f55ec211d486b1e74e66210e53",
+    "urdf/taccap_g1_slave.urdf": "3d56ee94a2939c172fcc0b88b503f4c37c9cede7b1886d92ba7dc098116104e0",
+    "urdf/taccap_g1_slave_with_mount.urdf": "fa0bf715fa52d3e1f09956dfa257b2db7ce38cfec62b29d6f13306f9f3712445"
+  },
+  "local_patches": [
+    "Retain downstream root frames: bare taccap_base_link; mounted taccap_mount_link. Remove upstream virtual flange_link from bare; rename mounted flange_link and flange_to_base_joint.",
+    "Retain downstream finger motor effort 1.1 Nm (RobStride EL05).",
+    "Generate prefixed Xacro and downstream URDF/MJCF/USD from the locked URDF snapshot; keep physical geometry, masses, COMs, inertia, joint origins, axes and mimic."
+  ],
+  "verification": "Every source file matches the pinned commit byte for byte."
+}

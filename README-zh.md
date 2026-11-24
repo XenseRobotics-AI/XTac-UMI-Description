@@ -5,7 +5,7 @@
 **XTac-UMI G1** 触觉数据采集夹爪的机器人描述文件，提供 URDF、Xacro、MJCF 和 USD：
 
 - **主夹爪**（手持，leader）：左手与右手。
-- **从夹爪**（装在机械臂上，follower）：裸爪，或带 Asm_link 法兰转接件。
+- **从夹爪**（装在机械臂上，follower）：裸爪，或带法兰转接件。
 
 ![从夹爪：不带/带转接件](ros/taccap_slave_description/preview.png)
 
@@ -80,6 +80,7 @@ URDF 查看器打开。
 
 ```bash
 pip install -e '.[dev]'
+python scripts/import_slave.py              # 从锁定的上游快照生成从爪 Xacro 和网格
 python scripts/generate_models.py           # 从 Xacro 生成从爪 URDF + MJCF
 python scripts/generate_usd.py              # 从爪 USD
 python scripts/generate_master_models.py    # 从主爪 URDF 生成 Xacro、MJCF、USD
@@ -87,9 +88,10 @@ python scripts/generate_appearance_parts.py # 按材质拆分的网格零件、�
 python -m pytest -q
 ```
 
-只需手工编辑从爪 Xacro（`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`）和
-主爪 URDF（`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`）；颜色来自
-[外观](docs/APPEARANCE-zh.md)中说明的数据文件。其余文件都是生成的。所有生成器都支持 `--check`，
+从爪模型（v2026.10.23）由 `vendor/taccap_slave/` 中锁定的上游快照导入，本地适配都在
+`scripts/import_slave.py`（见[上游更新流程](docs/UPSTREAM_SLAVE.md)）。主爪修改请编辑
+`ros/taccap_master_description/urdf/` 下的 URDF。颜色来自[外观](docs/APPEARANCE-zh.md)中说明的
+数据文件。其余文件都是生成的。所有生成器都支持 `--check`，
 CI 用它拒绝过期文件。
 
 ## 相关链接

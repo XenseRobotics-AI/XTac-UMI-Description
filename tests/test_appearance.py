@@ -87,7 +87,7 @@ def test_slave_fingertips_are_yellow_on_both_hands():
                 f".//link[@name='taccap_{finger}_link']/visual"
             )
         }
-        assert "grip_left__yellow.STL" in meshes or "grip_right__yellow.STL" in meshes
+        assert f"{finger.split('_')[0]}_link__yellow.STL" in meshes
     # No pink/cyan side coding from the previous design.
     for rgb in materials.values():
         assert not (abs(rgb[0] - 0.96) < 0.01 and abs(rgb[1] - 0.45) < 0.01)
@@ -231,21 +231,21 @@ def _solid_materials(directory, stem, faces_count):
 
 
 @pytest.mark.parametrize(
-    "package, side, stem",
+    "package, side, stem, faces",
     [
-        ("slave", "", "grip_left"),
-        ("slave", "", "grip_right"),
-        ("master", "left", "link1"),
-        ("master", "left", "link2"),
-        ("master", "right", "link1"),
-        ("master", "right", "link2"),
+        ("slave", "", "left_link", 448),
+        ("slave", "", "right_link", 448),
+        ("master", "left", "link1", 100),
+        ("master", "left", "link2", 100),
+        ("master", "right", "link1", 100),
+        ("master", "right", "link2", 100),
     ],
 )
-def test_shipped_screw_heads_are_black(package, side, stem):
-    """Every fingertip screw head (100-face solid) ships black in the parts."""
+def test_shipped_screw_heads_are_black(package, side, stem, faces):
+    """Every fingertip screw head / pin ships black in the parts."""
     root = ASSET_ROOT if package == "slave" else MASTER_ROOT
     directory = root / "meshes" / side if side else root / "meshes"
-    screws = _solid_materials(directory, stem, 100)
+    screws = _solid_materials(directory, stem, faces)
     assert screws
     for materials in screws:
         assert set(materials) == {"black"}, (stem, materials)
@@ -278,8 +278,6 @@ def _triangle_key(triangle):
 @pytest.mark.parametrize(
     "package, side, stem",
     [
-        ("slave", "", "grip_left"),
-        ("slave", "", "grip_right"),
         ("master", "left", "link1"),
         ("master", "left", "link2"),
         ("master", "right", "link1"),
@@ -311,40 +309,33 @@ def _triangles_area(triangles):
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
-@pytest.mark.parametrize("stem", ["link1", "link2"])
-def test_shipped_master_fingertip_yellow_matches_the_follower(side, stem):
-    """The leader fingertip is the follower's solid: only the same cap ships
-    yellow; its silicone/TPU pad (gel on the follower) ships black, never yellow."""
+def test_shipped_master_fingertips_match_each_other(side):
+    """Both leader fingertips are the same solid: they ship the same yellow cap,
+    and the silicone/TPU pad ships black, never yellow (no gel on the leader)."""
     directory = MASTER_ROOT / "meshes" / side
     tip = lambda triangles: triangles[triangles.mean(axis=1)[:, 0] > 0.1]  # past the button
-    leader = tip(_read(directory / f"{stem}__yellow.STL"))
-    # Each leader's fingers were transferred from one follower finger
-    # (the same fingertip solid): left <- grip_left, right <- grip_right.
-    follower = tip(_read(ASSET_ROOT / "meshes" / f"grip_{side}__yellow.STL"))
-    assert len(leader) == len(follower)
-    assert _triangles_area(leader) == pytest.approx(_triangles_area(follower), rel=1e-6)
-    assert not list(directory.glob(f"{stem}__gel.STL"))
+    caps = [tip(_read(directory / f"{stem}__yellow.STL")) for stem in ("link1", "link2")]
+    assert len(caps[0]) == len(caps[1]) > 100
+    assert _triangles_area(caps[0]) == pytest.approx(_triangles_area(caps[1]), rel=1e-6)
+    assert not list(directory.glob("link*__gel.STL"))
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
 @pytest.mark.parametrize("stem", ["link1", "link2"])
-def test_shipped_master_screw_seat_is_black_like_the_follower(side, stem):
+def test_shipped_master_screw_seat_is_black(side, stem):
     """Between the screws and the fingertip seam (x 88-106.4 mm) the leader shell
-    is the follower's black connector. The leader also ships its rubber pad
-    black there (gel on the follower), so its black area is at least the
-    follower's; a white connector would leave it far below."""
+    is the black connector, as on the hardware; a white connector would leave
+    about 3100 mm^2 of black there."""
     band = lambda t: t[(t.mean(axis=1)[:, 0] > 0.088) & (t.mean(axis=1)[:, 0] < 0.1064)]
     leader = band(_read(MASTER_ROOT / "meshes" / side / f"{stem}__black.STL"))
-    finger = "grip_right" if stem == "link1" else "grip_left"
-    follower = band(_read(ASSET_ROOT / "meshes" / f"{finger}__black.STL"))
-    assert _triangles_area(leader) >= _triangles_area(follower)
+    assert _triangles_area(leader) > 5000e-6
 
 
 @pytest.mark.parametrize(
     "directory, stem",
     [
-        ("slave", "grip_left"),
-        ("slave", "grip_right"),
+        ("slave", "left_link"),
+        ("slave", "right_link"),
         ("left", "link1"),
         ("left", "link2"),
         ("right", "link1"),
@@ -352,18 +343,20 @@ def test_shipped_master_screw_seat_is_black_like_the_follower(side, stem):
     ],
 )
 def test_shipped_fingertip_nub_is_black(directory, stem):
-    """The small TPU nub at the very end of every fingertip (x > 146 mm) ships
-    black on all sides: nothing yellow reaches it, and it is still present."""
+    """The small TPU nub at the very end of every fingertip ships black on all
+    sides: nothing yellow reaches it, and it is still present. It starts past
+    146 mm on the leader tip and past 148 mm on the follower's (v2026.10.23)."""
     root = ASSET_ROOT / "meshes" if directory == "slave" else MASTER_ROOT / "meshes" / directory
+    start = 0.148 if directory == "slave" else 0.146
     yellow = _read(root / f"{stem}__yellow.STL")
-    assert yellow.mean(axis=1)[:, 0].max() < 0.146
+    assert yellow.mean(axis=1)[:, 0].max() < start
     black = _read(root / f"{stem}__black.STL")
-    assert (black.mean(axis=1)[:, 0] > 0.146).sum() > 50
+    assert (black.mean(axis=1)[:, 0] > start).sum() > 50
 
 
 FINGER_MESHES = [
-    ("slave", "grip_left"),
-    ("slave", "grip_right"),
+    ("slave", "left_link"),
+    ("slave", "right_link"),
     ("left", "link1"),
     ("left", "link2"),
     ("right", "link1"),
@@ -377,16 +370,19 @@ def _finger_dir(directory):
 
 @pytest.mark.parametrize("directory, stem", FINGER_MESHES)
 def test_shipped_pad_plane_has_no_yellow(directory, stem):
-    """The fingertip's inner pad plane (x > 100 mm, |n_y| > 0.99, |y| > 12 mm) carries no
-    yellow on any finger: gel on the follower, black rubber on the leader."""
-    yellow = _read(_finger_dir(directory) / f"{stem}__yellow.STL")
+    """The fingertip's inner pad plane (x > 100 mm, facing inwards, |n_y| > 0.99)
+    carries no yellow on any finger: gel on the follower, black rubber on the
+    leader. Inwards is away from the silkscreen, which sits on the outer face."""
+    root = _finger_dir(directory)
+    yellow = _read(root / f"{stem}__yellow.STL")
+    inwards = -np.sign(_read(root / f"{stem}_silkscreen.STL").reshape(-1, 3)[:, 1].mean())
     normals = np.cross(yellow[:, 1] - yellow[:, 0], yellow[:, 2] - yellow[:, 0])
     normals /= np.linalg.norm(normals, axis=1, keepdims=True)
     centres = yellow.mean(axis=1)
     on_pad_plane = (
         (centres[:, 0] > 0.1)  # the fingertip, not the leader's sync button
-        & (np.abs(normals[:, 1]) > 0.99)
-        & (np.abs(centres[:, 1]) > 0.012)
+        & (normals[:, 1] * inwards > 0.99)
+        & (centres[:, 1] * inwards > 0.005)
     )
     assert not on_pad_plane.any(), yellow.mean(axis=1)[on_pad_plane] * 1e3
 
@@ -410,11 +406,18 @@ def test_silkscreen_sits_on_the_cap_outer_facet(directory, stem):
     print_normals, print_area = unit_normals(records)
     keys, inverse = np.unique(np.round(print_normals, 3), axis=0, return_inverse=True)
     direction = keys[np.argmax(np.bincount(inverse.ravel(), weights=print_area))]
+    top = print_normals @ direction > 0.99
+    direction = np.average(print_normals[top], axis=0, weights=print_area[top])
+    direction /= np.linalg.norm(direction)
     yellow_normals, _ = unit_normals(yellow)
-    parallel = np.abs(yellow_normals @ direction) > 0.999  # neighbour facets: < 0.95
-    facet = yellow[parallel]
+    # Exactly parallel: the cap's tapered faces next to the facet are 2 deg off.
+    parallel = np.abs(yellow_normals @ direction) > 0.99999
+    # Of the parallel yellow planes, the facet is the one the print sits on.
+    offsets = yellow[parallel][:, 0] @ direction
+    nearest = np.abs(offsets - np.median(print_ @ direction)) < 0.2e-3
+    facet = yellow[parallel][nearest]
     assert len(facet)
-    normal = yellow_normals[parallel][0]
+    normal = yellow_normals[parallel][nearest][0]
     height = (print_ - facet[0, 0]) @ normal
     assert height.min() > 0.015e-3 and height.max() < 0.075e-3
     # Inside the facet: every print vertex projects onto one of its triangles.
@@ -468,16 +471,16 @@ def test_shipped_master_sync_button_is_yellow(side):
 
 def test_shipped_slave_light_window_is_translucent():
     """The status-LED capsule on top of the slave ships as the light material."""
-    capsules = _solid_materials(ASSET_ROOT / "meshes", "base_link", 764)
+    capsules = _solid_materials(ASSET_ROOT / "meshes", "body_link", 3168)
     lights = [m for m in capsules if "light" in m]
     assert len(lights) == 1
     assert set(lights[0]) == {"light"}, capsules
 
 
-@pytest.mark.parametrize("stem", ["grip_left", "grip_right"])
+@pytest.mark.parametrize("stem", ["left_link", "right_link"])
 def test_shipped_slave_fingertip_has_no_grey(stem):
     """The fingertip solid ships only yellow cap, dark gel and black rubber."""
-    tips = _solid_materials(ASSET_ROOT / "meshes", stem, 2766)
+    tips = _solid_materials(ASSET_ROOT / "meshes", stem, 16514)
     assert len(tips) == 1
     assert set(tips[0]) <= {"yellow", "gel", "black"}, tips[0]
 
@@ -486,27 +489,31 @@ def test_shipped_slave_fingers_match_each_other():
     """Both slave hands ship the same materials on their common solids."""
     left = sorted(
         (faces, tuple(sorted(m)))
-        for faces in (100, 1246, 2766)
-        for m in _solid_materials(ASSET_ROOT / "meshes", "grip_left", faces)
+        for faces in (448, 16514)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "left_link", faces)
     )
     right = sorted(
         (faces, tuple(sorted(m)))
-        for faces in (100, 1246, 2766)
-        for m in _solid_materials(ASSET_ROOT / "meshes", "grip_right", faces)
+        for faces in (448, 16514)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "right_link", faces)
     )
-    assert {r[1] for r in right} <= {l[1] for l in left}, (left, right)
+    assert left == right, (left, right)
 
 
 @pytest.mark.parametrize(
-    "root, side",
-    [("slave", ""), ("master", "left"), ("master", "right")],
+    "root, side, module, collar",
+    [
+        ("slave", "", ("camera_link", 2674), ("body_link", 572)),
+        ("master", "left", ("base_link", 1102), ("base_link", 296)),
+        ("master", "right", ("base_link", 1102), ("base_link", 296)),
+    ],
 )
-def test_shipped_camera_window_matches_the_hardware(root, side):
+def test_shipped_camera_window_matches_the_hardware(root, side, module, collar):
     """Lens module: glass + black barrel/second step. Collar: yellow only."""
     base = ASSET_ROOT if root == "slave" else MASTER_ROOT
     directory = base / "meshes" / side if side else base / "meshes"
-    modules = _solid_materials(directory, "base_link", 1102)
-    collars = _solid_materials(directory, "base_link", 296)
+    modules = _solid_materials(directory, *module)
+    collars = _solid_materials(directory, *collar)
     module = next(m for m in modules if "lens" in m)
     assert set(module) == {"lens", "black"}, module
     assert any(set(c) == {"yellow"} for c in collars), collars
@@ -515,6 +522,6 @@ def test_shipped_camera_window_matches_the_hardware(root, side):
 def test_shipped_slave_body_has_no_stray_yellow():
     """On the slave body, yellow is the camera collar and nothing else."""
     directory = ASSET_ROOT / "meshes"
-    yellow = _read(directory / "base_link__yellow.STL")
-    collar_faces = sum(c.get("yellow", 0) for c in _solid_materials(directory, "base_link", 296))
+    yellow = _read(directory / "body_link__yellow.STL")
+    collar_faces = sum(c.get("yellow", 0) for c in _solid_materials(directory, "body_link", 572))
     assert len(yellow) == collar_faces

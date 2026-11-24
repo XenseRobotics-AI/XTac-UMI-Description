@@ -50,7 +50,7 @@ taccap_description = "python/taccap_description"
 "taccap_description.share.master" = "ros/taccap_master_description"
 
 [tool.setuptools.package-data]
-"taccap_description.share.slave" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
+"taccap_description.share.slave" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.stl", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
 "taccap_description.share.master" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
 
 # ROS metadata, launch and RViz files belong to the ament share, not the wheel.

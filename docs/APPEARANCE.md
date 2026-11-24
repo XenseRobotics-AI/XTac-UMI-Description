@@ -20,8 +20,8 @@ URDF `<color>` has no metallic or roughness; those two apply to USD.
 ## Mesh parts
 
 A visual carries one material, so each CAD mesh ships as one part per material,
-`<stem>__<material>.STL` (for example `grip_left__yellow.STL`). Collision uses
-the complete mesh.
+`<stem>__<material>.STL` (for example `left_link__yellow.STL`). Collision uses
+its own meshes and is not split.
 
 Each fingertip cap also carries the XENSE silkscreen as its own visual,
 `<stem>_silkscreen.STL`, a thin black print just off the cap's outer face. It

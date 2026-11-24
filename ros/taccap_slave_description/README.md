@@ -2,8 +2,12 @@
 
 [中文](README-zh.md)
 
-Arm-mounted gripper, bare or with the Asm_link flange adapter.
-ROS package `taccap_slave_description`; Python module `taccap_description.slave`.
+Arm-mounted gripper, bare or with the flange adapter. Model `slave-v2026.10.23`:
+0.750 kg bare, 0.785 kg with the adapter. Body, motor (299 g) and camera
+module (18 g) are separate inertial links (`taccap_motor_link`,
+`taccap_camera_body_link`) with upstream centres of mass and full inertia
+tensors. ROS package `taccap_slave_description`; Python module
+`taccap_description.slave`.
 
 ![Without mount (left) and with mount (right), closed and open](preview.png)
 
@@ -30,8 +34,8 @@ are in [config/model.json](config/model.json); frames and offsets are in the
 `taccap_right_finger_joint` drives, 0 to 0.5047 rad (28.92°), 0 = closed;
 `taccap_left_finger_joint` mirrors it (URDF `mimic`, MJCF equality, USD PhysX
 mimic). The 1.1 N·m limit is the RobStride EL05 finger motor's maximum output
-torque, defined once in the Xacro; the MJCF `forcerange` and USD `maxForce` are
-generated from it.
+torque, set once by the importer (`scripts/import_slave.py`); the MJCF
+`forcerange` and USD `maxForce` are generated from it.
 
 ## RViz
 
@@ -68,5 +72,8 @@ stage = Usd.Stage.Open(str(slave.get_usd_path(with_mount=True)))
 
 ## Regenerate
 
-Edit `urdf/taccap_g1_slave_macro.xacro`, then run `python scripts/generate_models.py`
-and `python scripts/generate_usd.py`. See [source and notices](NOTICE.md).
+The model is imported from a locked upstream snapshot: run
+`python scripts/import_slave.py` (Xacro and meshes), then
+`python scripts/generate_appearance_parts.py`, `python scripts/generate_models.py`
+and `python scripts/generate_usd.py`. See [source and notices](NOTICE.md) and the
+[update workflow](../../docs/UPSTREAM_SLAVE.md).

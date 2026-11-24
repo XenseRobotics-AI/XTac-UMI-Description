@@ -19,7 +19,7 @@ URDF 的 `<color>` 没有 metallic 和 roughness，这两项只用于 USD。
 ## 网格零件
 
 每个 visual 只能有一种材质，所以每个 CAD 网格按材质拆成多个零件：`<stem>__<材质>.STL`
-（例如 `grip_left__yellow.STL`）。碰撞使用完整网格。
+（例如 `left_link__yellow.STL`）。碰撞使用各自的碰撞网格，不拆分。
 
 每个指尖帽另有一个 XENSE 丝印 visual：`<stem>_silkscreen.STL`，是贴在指尖帽外侧面上的一层
 黑色薄片。它是几何体而不是贴图，所以所有格式都能显示。

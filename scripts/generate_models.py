@@ -17,8 +17,8 @@ ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_slave_description
 
 
 def mesh_name(filename):
-    """MuJoCo asset name for a shipped STL (``base_link__silver.STL`` -> ``base_link_silver``)."""
-    return Path(filename).stem.replace("__", "_")
+    relative = Path(filename).relative_to("../meshes")
+    return "taccap_" + "_".join(relative.with_suffix("").parts) + "_mesh"
 
 
 def pose(origin):
@@ -45,13 +45,9 @@ def make_mjcf(urdf):
             name=material.get("name"),
             rgba=material.find("color").get("rgba"),
         )
-    referenced_meshes = {
-        Path(mesh.get("filename")).name for mesh in urdf.findall(".//mesh")
-    }
-    for filename in sorted(referenced_meshes):
-        ET.SubElement(
-            assets, "mesh", name=mesh_name(filename), file=f"../meshes/{filename}"
-        )
+    referenced_meshes = sorted({mesh.get("filename") for mesh in urdf.findall(".//mesh")})
+    for filename in referenced_meshes:
+        ET.SubElement(assets, "mesh", name=mesh_name(filename), file=filename)
 
     links = {link.get("name"): link for link in urdf.findall("link")}
     children = {}

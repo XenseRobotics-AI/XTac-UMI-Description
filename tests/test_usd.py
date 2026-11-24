@@ -11,6 +11,7 @@ import mujoco
 import numpy as np
 import pytest
 from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdUtils
+
 from taccap_description import slave
 ASSET_ROOT = slave.ASSET_ROOT
 get_mjcf_path = slave.get_mjcf_path
@@ -18,12 +19,49 @@ get_urdf_path = slave.get_urdf_path
 get_usd_path = slave.get_usd_path
 
 
-
 def frame(position, rotation):
     result = np.eye(4)
     result[:3, 3] = position
     result[:3, :3] = np.array(Gf.Matrix3d(Gf.Quatd(rotation))).T
     return result
+
+
+@pytest.mark.parametrize("with_mount", [False, True])
+def test_every_physical_part_is_connected_and_joint_frames_close(with_mount):
+    stage = Usd.Stage.Open(str(get_usd_path(with_mount=with_mount)))
+    cache = UsdGeom.XformCache()
+    rigid_bodies = {str(prim.GetPath()) for prim in stage.Traverse()
+                    if prim.HasAPI(UsdPhysics.RigidBodyAPI)}
+    assert len(rigid_bodies) == (6 if with_mount else 5)
+    edges = []
+    for prim in stage.Traverse():
+        if not prim.IsA(UsdPhysics.Joint):
+            continue
+        joint = UsdPhysics.Joint(prim)
+        endpoints = []
+        for relationship, position, rotation in (
+            (joint.GetBody0Rel(), joint.GetLocalPos0Attr(), joint.GetLocalRot0Attr()),
+            (joint.GetBody1Rel(), joint.GetLocalPos1Attr(), joint.GetLocalRot1Attr()),
+        ):
+            targets = relationship.GetTargets()
+            assert len(targets) <= 1
+            path = str(targets[0]) if targets else "world"
+            if targets:
+                assert path in rigid_bodies
+                pose = np.array(cache.GetLocalToWorldTransform(stage.GetPrimAtPath(path))).T
+            else:
+                pose = np.eye(4)
+            endpoints.append((path, pose @ frame(position.Get(), rotation.Get())))
+        np.testing.assert_allclose(endpoints[0][1], endpoints[1][1], atol=1e-8)
+        edges.append((endpoints[0][0], endpoints[1][0]))
+    assert len(edges) == len(rigid_bodies)
+    reached = {"world"}
+    while True:
+        connected = reached | {b for a, b in edges if a in reached} | {a for a, b in edges if b in reached}
+        if connected == reached:
+            break
+        reached = connected
+    assert reached == rigid_bodies | {"world"}
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
@@ -35,11 +73,9 @@ def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount, 
     layers, assets, unresolved = UsdUtils.ComputeAllDependencies(str(path))
     assert not assets  # All dependencies are USD layers, no external textures.
     assert not unresolved
-    # One layer per shipped mesh (visuals and collisions share) plus the entry layer.
+    # One layer per mesh the URDF references (visual parts and collisions) plus the entry layer.
     urdf = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
-    meshes = {
-        mesh.get("filename").split("/")[-1] for mesh in urdf.findall(".//mesh")
-    }
+    meshes = {mesh.get("filename") for mesh in urdf.findall(".//mesh")}
     assert len(layers) == len(meshes) + 1
     assert all(str(destination) in layer.realPath for layer in layers)
     stage = Usd.Stage.CreateInMemory()
@@ -121,7 +157,7 @@ def test_usd_joint_frames_and_mass_match_mujoco(with_mount, opening):
     for name in ("taccap_eef_link", "taccap_mount_link") if with_mount else ("taccap_eef_link",):
         pose = np.array(
             cache.GetLocalToWorldTransform(
-                stage.GetPrimAtPath(f"/TacCap/taccap_base_link/{name}")
+                stage.GetPrimAtPath(f"/TacCap/{name}" if name == "taccap_mount_link" else f"/TacCap/taccap_base_link/{name}")
             )
         ).T
         np.testing.assert_allclose(pose[:3, 3], data.body(name).xpos, atol=1e-12)
@@ -163,11 +199,7 @@ def test_usd_physics_contract_and_mesh_conversion(with_mount):
     for geometry in urdf.findall(".//visual") + urdf.findall(".//collision"):
         prim = next(p for p in stage.Traverse() if p.GetName() == geometry.get("name"))
         mesh = UsdGeom.Mesh(prim)
-        source = (
-            ASSET_ROOT
-            / "meshes"
-            / geometry.find("geometry/mesh").get("filename").split("/")[-1]
-        )
+        source = get_urdf_path(with_mount=with_mount).parent / geometry.find("geometry/mesh").get("filename")
         data = source.read_bytes()
         count = struct.unpack_from("<I", data, 80)[0]
         vertices = np.ndarray(
