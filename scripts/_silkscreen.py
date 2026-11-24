@@ -80,4 +80,6 @@ def silkscreen_triangles(yellow):
             for i, j in zip(ring, ring[1:] + ring[:1]):
                 triangles.append([lower[i], lower[j], upper[j]])
                 triangles.append([lower[i], upper[j], upper[i]])
-    return np.array(triangles)
+    # Quantise to 0.1 um before the float32 STL: the last bits of the float64
+    # maths differ between CPUs (SIMD paths), which must not flip a vertex.
+    return np.round(np.array(triangles), 7)
