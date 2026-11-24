@@ -13,16 +13,17 @@ from pathlib import Path
 import pytest
 import xacro
 import yaml
+from taccap_description import master, slave
+MASTER_ROOT = master.ASSET_ROOT
+SLAVE_ROOT = slave.ASSET_ROOT
 
-from taccap_description import ASSET_ROOT as SLAVE_ROOT
-from taccap_master_description import ASSET_ROOT as MASTER_ROOT
 
 # launch/ and rviz/ install into the ROS share and ship in the sdist, but are
 # excluded from the Python wheel, so they are absent from ASSET_ROOT under a
 # non-editable install. Read them from the repository instead, like the
 # generator regressions do.
 REPOSITORY = Path(__file__).resolve().parents[1]
-SLAVE_SOURCE = REPOSITORY / "ros" / "taccap_description"
+SLAVE_SOURCE = REPOSITORY / "ros" / "taccap_slave_description"
 MASTER_SOURCE = REPOSITORY / "ros" / "taccap_master_description"
 
 LAUNCH_FILES = [

@@ -21,6 +21,20 @@ def hash_tree(root, subdirectory):
     }
 
 
+def mesh_hashes(base):
+    """Map every shipped STL under ``base`` to its sha256, sorted by path.
+
+    Covers the per-material parts (``<stem>__<material>.STL``) as well as the
+    CAD meshes they were split from, so a changed part fails the same check as a
+    changed model.
+    """
+    return {
+        str(path.relative_to(base)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(base.rglob("*.STL"))
+        if path.is_file()
+    }
+
+
 def update_config(path, key, payload, check):
     """Set ``key`` in the JSON at ``path``; compare instead of writing under check.
 

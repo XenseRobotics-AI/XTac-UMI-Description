@@ -8,13 +8,15 @@ the cross-references to the models.
 
 import hashlib
 import json
+from pathlib import Path
 
 import mujoco
 import numpy as np
 import pytest
-from taccap_description import ASSET_ROOT as SLAVE_ROOT
-from taccap_master_description import ASSET_ROOT as MASTER_ROOT
-from taccap_master_description import get_master_mjcf_path
+from taccap_description import master, slave
+MASTER_ROOT = master.ASSET_ROOT
+get_master_mjcf_path = master.get_mjcf_path
+SLAVE_ROOT = slave.ASSET_ROOT
 
 CONFIGS = [
     (SLAVE_ROOT, SLAVE_ROOT / "config" / "model.json"),
@@ -72,7 +74,15 @@ def test_slave_metadata_references_all_mesh_layers_and_real_camera_links():
     mesh_layers = {str(p.relative_to(SLAVE_ROOT))
                    for p in (SLAVE_ROOT / "usd/meshes").rglob("*.usdc")}
     assert declared_layers == mesh_layers
-    assert len(declared_layers) == 11
+    # Every mesh the URDFs reference (visual parts and collisions) has its layer.
+    referenced = set()
+    for suffix in ("", "_with_mount"):
+        root = ET.parse(SLAVE_ROOT / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
+        referenced |= {
+            "usd/meshes/" + str(Path(m.get("filename")).relative_to("../meshes").with_suffix(".usdc"))
+            for m in root.iter("mesh")
+        }
+    assert referenced <= declared_layers
     for suffix in ("", "_with_mount"):
         root = ET.parse(SLAVE_ROOT / f"urdf/taccap_g1_slave{suffix}.urdf").getroot()
         for name in document["urdf_frames"]["camera"]["links"]:
@@ -100,7 +110,7 @@ def test_master_tcp_site_sits_on_the_documented_tcp_link(side):
 
 
 def test_versions_match_the_python_package():
-    """package.xml must repeat the version defined in taccap_description."""
+    """Both package.xml files must repeat taccap_description.__version__."""
     import xml.etree.ElementTree as ET
 
     import taccap_description

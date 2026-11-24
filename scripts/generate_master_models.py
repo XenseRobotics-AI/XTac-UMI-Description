@@ -14,8 +14,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from _metadata import hash_tree, update_config
-from pxr import Gf, Sdf, Usd, UsdGeom, Vt
+from _appearance import define_materials, urdf_material
+from _frames import tracker_offsets
+from _metadata import hash_tree, mesh_hashes, update_config
+from pxr import Gf, Sdf, Usd, UsdGeom, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
 ASSETS = Path(__file__).resolve().parents[1] / "ros/taccap_master_description"
@@ -141,6 +143,24 @@ def generate_side(output, side):
     fingers = (f"{side}_right_link", f"{side}_left_link")
     if urdf.find(f"link[@name='{tcp_link}']") is None:
         raise ValueError(f"Expected master TCP link {tcp_link}")
+    # The tracker datum is derived from the code's built-in extrinsic; the URDF
+    # must carry exactly that frame. Regenerate the value if this trips.
+    eef_xyz = np.fromstring(joints[tcp_link].find("origin").get("xyz"), sep=" ")
+    tracker_link = f"{side}_tracker_link"
+    if urdf.find(f"link[@name='{tracker_link}']") is None:
+        raise ValueError(f"Expected tracker datum link {tracker_link}")
+    expected_xyz, expected_rpy = tracker_offsets(eef_xyz)[side]
+    tracker_origin = joints[tracker_link].find("origin")
+    if not np.allclose(
+        np.fromstring(tracker_origin.get("xyz"), sep=" "), expected_xyz, atol=5e-10
+    ) or not np.allclose(
+        np.fromstring(tracker_origin.get("rpy"), sep=" "), expected_rpy, atol=5e-10
+    ):
+        raise ValueError(
+            f"{tracker_link} does not match scripts/_frames.py tracker_offsets(); "
+            f"URDF has xyz={tracker_origin.get('xyz')} rpy={tracker_origin.get('rpy')}, "
+            f"expected xyz={np.round(expected_xyz, 9).tolist()} rpy={np.round(expected_rpy, 12).tolist()}"
+        )
     signs = []
     # Both fingers share one principal hinge axis; set_opening and the USD
     # animation rotate about it from each finger's closed pose.
@@ -193,6 +213,7 @@ def generate_side(output, side):
     ET.SubElement(custom, "numeric", name="master_finger_axis", data=numbers(np.abs(axis)))
     world_body = ET.SubElement(model, "worldbody")
     stage = new_stage(output / "usd" / f"{side}.usda")
+    materials = define_materials(stage, "/Master")
     colors = {}
     for material in urdf.findall("material"):
         rgba = material.find("color").get("rgba")
@@ -261,8 +282,10 @@ def generate_side(output, side):
                 f"./meshes/{side}/{mesh_name}.usdc", "/Master/Mesh"
             )
             usd_transform(mesh, visual.find("origin"))
-            mesh.CreateDisplayColorAttr(
-                [Gf.Vec3f(*colors[visual.find("material").get("name")])]
+            material = visual.find("material").get("name")
+            mesh.CreateDisplayColorAttr([Gf.Vec3f(*colors[material])])
+            UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(
+                materials[urdf_material(material)]
             )
     ET.SubElement(
         ET.SubElement(model, "keyframe"),
@@ -352,6 +375,7 @@ def main():
     # Hash the shipped layers, so this runs after the copy above.
     update_config(config, "units", MASTER_UNITS, args.check)
     update_config(config, "usd", usd_metadata(), args.check)
+    update_config(config, "mesh_sha256", mesh_hashes(ASSETS / "meshes"), args.check)
     print(config.relative_to(ASSETS))
 
 

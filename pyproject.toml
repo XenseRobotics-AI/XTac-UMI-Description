@@ -37,19 +37,21 @@ SDK = "https://github.com/XenseRobotics-AI/TacCap-Gripper"
 [tool.setuptools.dynamic]
 version = { attr = "taccap_description.__version__" }
 
+# One import package. The two ROS packages under ros/ ship as data subpackages,
+# so a pip install and a ROS install read the very same files.
 [tool.setuptools]
-packages = ["taccap_description", "taccap_description.share", "taccap_master_description", "taccap_master_description.share"]
+packages = ["taccap_description", "taccap_description.share", "taccap_description.share.slave", "taccap_description.share.master"]
 include-package-data = false
 
 [tool.setuptools.package-dir]
 taccap_description = "python/taccap_description"
-"taccap_description.share" = "ros/taccap_description"
-taccap_master_description = "python/taccap_master_description"
-"taccap_master_description.share" = "ros/taccap_master_description"
+"taccap_description.share" = "python/taccap_description/share"
+"taccap_description.share.slave" = "ros/taccap_slave_description"
+"taccap_description.share.master" = "ros/taccap_master_description"
 
 [tool.setuptools.package-data]
-"taccap_description.share" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.stl", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
-"taccap_master_description.share" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
+"taccap_description.share.slave" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.stl", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
+"taccap_description.share.master" = ["**/*.json", "**/*.urdf", "**/*.xacro", "**/*.STL", "**/*.xml", "**/*.usda", "**/*.usdc", "**/*.md", "**/*.txt", "**/*.png"]
 
 # ROS metadata, launch and RViz files belong to the ament share, not the wheel.
 [tool.setuptools.exclude-package-data]

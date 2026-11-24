@@ -7,8 +7,11 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from taccap_description import ASSET_ROOT as SLAVE_ASSET_ROOT, get_urdf_path
-from taccap_master_description import ASSET_ROOT as MASTER_ASSET_ROOT, get_master_urdf_path
+from taccap_description import master, slave
+MASTER_ASSET_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
+SLAVE_ASSET_ROOT = slave.ASSET_ROOT
+get_urdf_path = slave.get_urdf_path
 
 # Original imported URDFs, kept only as regression references.
 DATA = Path(__file__).resolve().parent / "data"
@@ -61,9 +64,16 @@ def visuals(root, fk):
         for visual in link.findall("visual"):
             mesh = visual.find("geometry/mesh")
             if mesh is not None:
-                name = Path(mesh.get("filename")).name
-                assert name not in result
-                result[name] = fk[link.get("name")] @ matrix(visual.find("origin"))
+                # Per-material parts (``<stem>__<material>.STL``) stand for their
+                # CAD mesh and share its pose; the silkscreen is an overlay.
+                stem = Path(mesh.get("filename")).stem
+                if stem.endswith("_silkscreen"):
+                    continue
+                name = stem.split("__")[0] + ".STL"
+                pose = fk[link.get("name")] @ matrix(visual.find("origin"))
+                if name in result:
+                    np.testing.assert_allclose(result[name], pose, atol=1e-15)
+                result[name] = pose
     return result
 
 
@@ -96,7 +106,7 @@ def test_master_visuals_preserved_and_root_on_rear_surface(side, opening):
     angle = opening * .5047492196767601
     old_fk, new_fk = frames(original, angle), frames(current, angle)
     # The root carries the shell meshes; their native frame is the original base_link.
-    assert {l.get("name") for l in current.findall("link")} == {f"{side}_{n}_link" for n in ("base", "right", "left", "pico", "eef", "camera", "camera_optical", "follower")}
+    assert {l.get("name") for l in current.findall("link")} == {f"{side}_{n}_link" for n in ("base", "right", "left", "pico", "tracker", "eef", "camera", "camera_optical", "follower")}
     old_visuals, new_visuals = visuals(original, old_fk), visuals(current, new_fk)
     shift = new_visuals["base_link.STL"]
     # Root on the rear outer surface: 23.5 mm ahead of the former virtual flange.

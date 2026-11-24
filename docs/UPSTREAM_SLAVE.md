@@ -17,7 +17,7 @@
 - `vendor/taccap_slave/source/`：上游资源目录的未修改子集，只包含 `urdf/`、`meshes/`、`LICENSES/` 和 `NOTICE.md`。上游的 CAD 导出配置、测量截图等建模记录保留在上游仓库，不纳入本仓库。
 - `vendor/taccap_slave/upstream.json`：仓库地址、资源路径、版本、commit，以及快照中每个文件的 SHA-256。
 - `scripts/import_slave.py`：唯一的本地适配入口；纳入的路径由 `SNAPSHOT_PREFIXES` 定义。
-- `ros/taccap_description/config/upstream.json`：随 ROS/Python 包分发的来源锁副本。
+- `ros/taccap_slave_description/config/upstream.json`：随 ROS/Python 包分发的来源锁副本。
 
 ## 本地适配与派生格式
 

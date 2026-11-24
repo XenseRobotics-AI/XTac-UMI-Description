@@ -17,5 +17,8 @@ meshes under this repository's MIT license.
   tool axis; links and joints renamed (`<side>_right_link`, `<side>_left_link`,
   `<side>_pico_link`, ...).
 - Finger frames aligned with the base axes (hinge +X).
-- Added the `<side>_follower_link`, `<side>_eef_link` and wrist camera frames.
+- Added the `<side>_follower_link`, `<side>_tracker_link`, `<side>_eef_link`
+  and wrist camera frames.
+- Visual meshes split per material, with colours matching the hardware, and
+  the XENSE fingertip silkscreen added.
 - MJCF and USD are generated from the URDFs.

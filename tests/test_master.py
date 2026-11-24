@@ -7,8 +7,10 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
+from taccap_description import master
+ASSET_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
 
-from taccap_master_description import ASSET_ROOT, get_master_urdf_path
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
@@ -30,13 +32,13 @@ def test_master_portability_and_kinematic_contract(tmp_path, side):
     path = destination / get_master_urdf_path(side=side).relative_to(ASSET_ROOT)
     root = ET.parse(path).getroot()
     links = {link.get("name") for link in root.findall("link")}
-    assert links == {f"{side}_{suffix}_link" for suffix in ("base", "pico", "left", "right", "eef", "camera", "camera_optical", "follower")}
+    assert links == {f"{side}_{suffix}_link" for suffix in ("base", "pico", "tracker", "left", "right", "eef", "camera", "camera_optical", "follower")}
     assert not root.findall(".//inertial") and not root.findall(".//collision")
     for mesh in root.findall(".//mesh"):
         resolved = (path.parent / mesh.get("filename")).resolve()
         assert resolved.is_relative_to(destination) and resolved.is_file()
     joints = {joint.get("name"): joint for joint in root.findall("joint")}
-    assert len(joints) == 7
+    assert len(joints) == 8
     for suffix, limits in (
         ("right", (0, 0.5047492196767601)),
         ("left", (-0.5047492196767601, 0)),
@@ -55,9 +57,18 @@ def test_master_portability_and_kinematic_contract(tmp_path, side):
     # The shell meshes sit on the root; only the left link4 visual keeps its
     # source -90 degree Z correction relative to the shell.
     base = root.find(f"link[@name='{side}_base_link']")
+    # The body is shipped as one part per material, all on the same origin.
+    def origin_of(name):
+        return base.find(f"visual[@name='{name}']/origin")
+
+    body = next(
+        visual
+        for visual in base.findall("visual")
+        if visual.get("name").startswith(f"{side}_body_visual")
+    )
     shell, auxiliary = (
-        Rotation.from_euler("xyz", [float(v) for v in base.find(f"visual[@name='{side}_body_{name}']/origin").get("rpy").split()])
-        for name in ("visual", "aux_visual")
+        Rotation.from_euler("xyz", [float(v) for v in origin.get("rpy").split()])
+        for origin in (origin_of(body.get("name")), origin_of(f"{side}_body_aux_visual"))
     )
     np.testing.assert_allclose(
         (shell.inv() * auxiliary).as_rotvec(), [0, 0, -np.pi / 2 if side == "left" else 0], atol=1e-12

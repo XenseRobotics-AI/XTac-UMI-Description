@@ -1,0 +1,527 @@
+"""Appearance: the gripper must look like the physical unit, not like a placeholder.
+
+Reference: the physical gripper. Light shell, grey finger covers, black frame
+and motor, a dark gel pad, a dark lens and **yellow only on the fingertips and
+around the lens**.
+URDF carries one material per visual, so the face partition is shipped as
+separate mesh parts; these tests pin both the split and the colours.
+"""
+
+import json
+import struct
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+import numpy as np
+import pytest
+from pxr import Usd, UsdGeom, UsdShade
+from taccap_description import master, slave
+MASTER_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
+get_master_usd_path = master.get_usd_path
+ASSET_ROOT = slave.ASSET_ROOT
+get_urdf_path = slave.get_urdf_path
+get_usd_path = slave.get_usd_path
+
+
+# (diffuse sRGB, metallic, roughness), as in docs/APPEARANCE.md.
+EXPECTED = {
+    "taccap_silver": ((0.82, 0.81, 0.79), 0.00, 0.45),
+    "taccap_cover": ((0.65, 0.70, 0.71), 0.00, 0.60),
+    "taccap_black": ((0.018, 0.020, 0.022), 0.05, 0.70),
+    "taccap_yellow": ((0.95, 0.72, 0.07), 0.00, 0.48),
+    "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
+    "taccap_lens": ((0.05, 0.055, 0.06), 0.85, 0.06),
+    "taccap_light": ((0.92, 0.94, 0.96), 0.00, 0.55),
+}
+
+
+def urdf_materials(path):
+    root = ET.parse(path).getroot()
+    return {
+        material.get("name"): np.fromstring(
+            material.find("color").get("rgba"), sep=" "
+        )[:3]
+        for material in root.findall("material")
+    }
+
+
+def faces(path):
+    return struct.unpack_from("<I", path.read_bytes(), 80)[0]
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_master_fingers_are_grey_with_yellow_tips(side):
+    materials = urdf_materials(get_master_urdf_path(side=side))
+    for name in ("silver", "cover", "black", "yellow"):
+        assert f"{side}_{name}" in materials
+        np.testing.assert_allclose(
+            materials[f"{side}_{name}"], EXPECTED[f"taccap_{name}"][0], atol=1e-6
+        )
+    root = ET.parse(get_master_urdf_path(side=side)).getroot()
+    for finger, stem in (("right_link", "link1"), ("left_link", "link2")):
+        meshes = [
+            visual.find("geometry/mesh").get("filename").split("/")[-1]
+            for visual in root.findall(f".//link[@name='{side}_{finger}']/visual")
+        ]
+        # The tip is its own (yellow) part; the finger body is not yellow.
+        assert f"{stem}__yellow.STL" in meshes
+        body = [name for name in meshes if name.endswith("__cover.STL")]
+        assert body, meshes
+        # Yellow is the fingertip cap plus, on one finger per hand, the
+        # time-sync button: a small share of the finger, never its body.
+        yellow_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__yellow.STL")
+        cover_faces = faces(MASTER_ROOT / "meshes" / side / f"{stem}__cover.STL")
+        assert 0 < yellow_faces < cover_faces / 3
+
+
+def test_slave_fingertips_are_yellow_on_both_hands():
+    materials = urdf_materials(get_urdf_path())
+    for name in EXPECTED:
+        np.testing.assert_allclose(materials[name], EXPECTED[name][0], atol=1e-6)
+    root = ET.parse(get_urdf_path()).getroot()
+    for finger in ("left_finger", "right_finger"):
+        meshes = {
+            visual.find("geometry/mesh").get("filename").split("/")[-1]
+            for visual in root.findall(
+                f".//link[@name='taccap_{finger}_link']/visual"
+            )
+        }
+        assert f"{finger.split('_')[0]}_link__yellow.STL" in meshes
+    # No pink/cyan side coding from the previous design.
+    for rgb in materials.values():
+        assert not (abs(rgb[0] - 0.96) < 0.01 and abs(rgb[1] - 0.45) < 0.01)
+        assert not (abs(rgb[0] - 0.20) < 0.01 and abs(rgb[1] - 0.83) < 0.01)
+
+
+def _area(path):
+    data = path.read_bytes()
+    dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
+    triangles = np.frombuffer(data, dtype=dtype, offset=84)["vertices"].astype(float)
+    edges = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    return float(np.linalg.norm(edges, axis=1).sum() / 2)
+
+
+def test_parts_reassemble_the_source_mesh():
+    """Parts cover the source surface exactly; parting-plane cuts add triangles."""
+    partition = json.loads((ASSET_ROOT / "config" / "appearance.json").read_text())[
+        "partition"
+    ]
+    for relative, entry in partition.items():
+        directory = (
+            MASTER_ROOT / "meshes" / relative.split("/")[1]
+            if relative.startswith("master/")
+            else ASSET_ROOT / "meshes"
+        )
+        stem = Path(relative).stem
+        parts = sorted(directory.glob(f"{stem}__*.STL"))
+        assert parts, relative
+        total = sum(_area(part) for part in parts)
+        assert total == pytest.approx(_area(directory / f"{stem}.STL"), rel=1e-6)
+
+
+@pytest.mark.parametrize("with_mount", [False, True])
+def test_slave_usd_carries_the_materials(with_mount):
+    stage = Usd.Stage.Open(str(get_usd_path(with_mount=with_mount)))
+    materials = {
+        prim.GetName(): prim
+        for prim in stage.Traverse()
+        if prim.GetTypeName() == "Material"
+    }
+    assert set(materials) == set(EXPECTED)
+    for name, (rgb, metallic, roughness) in EXPECTED.items():
+        shader = stage.GetPrimAtPath(f"/TacCap/Looks/{name}/Shader")
+        assert shader.GetAttribute("info:id").Get() == "UsdPreviewSurface"
+        np.testing.assert_allclose(
+            tuple(shader.GetAttribute("inputs:diffuseColor").Get()), rgb, atol=1e-6
+        )
+        assert shader.GetAttribute("inputs:metallic").Get() == pytest.approx(
+            metallic, abs=1e-6
+        )
+        assert shader.GetAttribute("inputs:roughness").Get() == pytest.approx(
+            roughness, abs=1e-6
+        )
+    # Every visual binds exactly one material; yellow is carried by the yellow parts.
+    urdf = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
+    expected_yellow = [
+        visual.get("name")
+        for visual in urdf.findall(".//visual")
+        if visual.find("material").get("name") == "taccap_yellow"
+    ]
+    yellow = []
+    for prim in stage.Traverse():
+        if prim.GetTypeName() != "Mesh" or prim.GetName().endswith("_collision"):
+            continue
+        binding = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterialPath()
+        assert binding, prim.GetPath()
+        if binding.name == "taccap_yellow":
+            yellow.append(prim.GetPath().name)
+    assert sorted(yellow) == sorted(expected_yellow)
+    assert len(yellow) == 3  # lens cap plus both fingertips
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_master_usd_binds_yellow_fingers_only_at_the_tip(side):
+    stage = Usd.Stage.Open(str(get_master_usd_path(side=side)))
+    urdf = ET.parse(get_master_urdf_path(side=side)).getroot()
+    expected = [
+        visual.get("name")
+        for visual in urdf.findall(".//visual")
+        if visual.find("material").get("name") in ("taccap_yellow", f"{side}_yellow")
+    ]
+    yellow = []
+    for prim in stage.Traverse():
+        if prim.GetTypeName() != "Mesh":
+            continue
+        binding = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterialPath()
+        if binding and binding.name == "taccap_yellow":
+            yellow.append(prim.GetPath().name)
+    # Finger tips and the body's side buttons and camera ring are yellow; the
+    # finger bodies themselves are grey.
+    assert set(expected) <= set(yellow)
+    assert len(yellow) == len(expected)
+    assert not any(name.endswith("_visual") for name in yellow)
+
+
+def _solids(triangles):
+    """Per-face connected-solid id for a triangle soup."""
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(triangles.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    rows = np.concatenate([faces[:, 0], faces[:, 1], faces[:, 2]])
+    cols = np.concatenate([faces[:, 1], faces[:, 2], faces[:, 0]])
+    graph = coo_matrix((np.ones(len(rows)), (rows, cols)), shape=(len(faces),) * 2).tocsr()
+    return connected_components(graph, directed=False)[1][faces[:, 0]]
+
+
+def _read(path):
+    data = path.read_bytes()
+    dtype = np.dtype([("normal", "<f4", 3), ("vertices", "<f4", (3, 3)), ("attr", "<u2")])
+    return np.frombuffer(data, dtype=dtype, offset=84)["vertices"].astype(float)
+
+
+def _solid_materials(directory, stem, faces_count):
+    """For every source solid with ``faces_count`` faces, the materials its
+    surface ships with.
+
+    A shipped part face belongs to the solid if all three of its vertices lie on
+    that solid's vertex set (welded to 1 um), so neighbouring parts that merely
+    touch it are not counted. Reads the delivered ``<stem>__<material>.STL``
+    files, i.e. exactly what URDF, MJCF and USD reference.
+    """
+    source = _read(directory / f"{stem}.STL")
+    solids = _solids(source)
+    keys = np.round(source.reshape(-1, 3) * 1e6).astype(np.int64)
+    vertex_solid = {}
+    for key, solid in zip(map(tuple, keys), np.repeat(solids, 3)):
+        vertex_solid.setdefault(key, set()).add(int(solid))
+    targets = {int(s) for s in np.unique(solids) if (solids == s).sum() == faces_count}
+    result = {t: {} for t in targets}
+    for part in sorted(directory.glob(f"{stem}__*.STL")):
+        material = part.stem.split("__")[1]
+        for triangle in np.round(_read(part) * 1e6).astype(np.int64):
+            owners = [vertex_solid.get(tuple(v), set()) for v in triangle]
+            common = set.intersection(*owners) if all(owners) else set()
+            for solid in common & targets:
+                result[solid][material] = result[solid].get(material, 0) + 1
+    return list(result.values())
+
+
+@pytest.mark.parametrize(
+    "package, side, stem, faces",
+    [
+        ("slave", "", "left_link", 448),
+        ("slave", "", "right_link", 448),
+        ("master", "left", "link1", 100),
+        ("master", "left", "link2", 100),
+        ("master", "right", "link1", 100),
+        ("master", "right", "link2", 100),
+    ],
+)
+def test_shipped_screw_heads_are_black(package, side, stem, faces):
+    """Every fingertip screw head / pin ships black in the parts."""
+    root = ASSET_ROOT if package == "slave" else MASTER_ROOT
+    directory = root / "meshes" / side if side else root / "meshes"
+    screws = _solid_materials(directory, stem, faces)
+    assert screws
+    for materials in screws:
+        assert set(materials) == {"black"}, (stem, materials)
+
+
+def _edge_solids(triangles):
+    """Solid id per face, faces joined only through a shared edge.
+
+    Separates screws that touch their housing at a single welded vertex,
+    which vertex connectivity (``_solids``) merges into the housing.
+    """
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    welded = np.round(triangles.reshape(-1, 3) * 1e6).astype(np.int64)
+    _, inverse = np.unique(welded, axis=0, return_inverse=True)
+    faces = inverse.reshape(-1, 3)
+    edges = np.sort(np.concatenate([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]]), axis=1)
+    _, edge_ids = np.unique(edges, axis=0, return_inverse=True)
+    edge_ids = edge_ids.ravel()
+    rows = np.tile(np.arange(len(faces)), 3)
+    incidence = coo_matrix((np.ones(len(edge_ids)), (rows, edge_ids))).tocsr()
+    return connected_components(incidence @ incidence.T, directed=False)[1]
+
+
+def _triangle_key(triangle):
+    return tuple(sorted(map(tuple, np.round(triangle * 1e6).astype(np.int64))))
+
+
+@pytest.mark.parametrize(
+    "package, side, stem",
+    [
+        ("master", "left", "link1"),
+        ("master", "left", "link2"),
+        ("master", "right", "link1"),
+        ("master", "right", "link2"),
+    ],
+)
+def test_shipped_finger_screws_are_black(package, side, stem):
+    """Every M3 screw on a finger (1246-face solid, 6 x 6 x 8 mm) ships black,
+    including the two the CAD export welds onto the leader shell."""
+    root = ASSET_ROOT if package == "slave" else MASTER_ROOT
+    directory = root / "meshes" / side if side else root / "meshes"
+    source = _read(directory / f"{stem}.STL")
+    solids = _edge_solids(source)
+    shipped = {}
+    for part in directory.glob(f"{stem}__*.STL"):
+        material = part.stem.split("__")[1]
+        for triangle in _read(part):
+            shipped[_triangle_key(triangle)] = material
+    screws = [s for s in np.unique(solids) if (solids == s).sum() == 1246]
+    assert len(screws) == 4, (stem, len(screws))
+    for solid in screws:
+        materials = {shipped[_triangle_key(t)] for t in source[solids == solid]}
+        assert materials == {"black"}, (stem, materials)
+
+
+def _triangles_area(triangles):
+    edges = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+    return float(np.linalg.norm(edges, axis=1).sum() / 2)
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_shipped_master_fingertips_match_each_other(side):
+    """Both leader fingertips are the same solid: they ship the same yellow cap,
+    and the silicone/TPU pad ships black, never yellow (no gel on the leader)."""
+    directory = MASTER_ROOT / "meshes" / side
+    tip = lambda triangles: triangles[triangles.mean(axis=1)[:, 0] > 0.1]  # past the button
+    caps = [tip(_read(directory / f"{stem}__yellow.STL")) for stem in ("link1", "link2")]
+    assert len(caps[0]) == len(caps[1]) > 100
+    assert _triangles_area(caps[0]) == pytest.approx(_triangles_area(caps[1]), rel=1e-6)
+    assert not list(directory.glob("link*__gel.STL"))
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+@pytest.mark.parametrize("stem", ["link1", "link2"])
+def test_shipped_master_screw_seat_is_black(side, stem):
+    """Between the screws and the fingertip seam (x 88-106.4 mm) the leader shell
+    is the black connector, as on the hardware; a white connector would leave
+    about 3100 mm^2 of black there."""
+    band = lambda t: t[(t.mean(axis=1)[:, 0] > 0.088) & (t.mean(axis=1)[:, 0] < 0.1064)]
+    leader = band(_read(MASTER_ROOT / "meshes" / side / f"{stem}__black.STL"))
+    assert _triangles_area(leader) > 5000e-6
+
+
+@pytest.mark.parametrize(
+    "directory, stem",
+    [
+        ("slave", "left_link"),
+        ("slave", "right_link"),
+        ("left", "link1"),
+        ("left", "link2"),
+        ("right", "link1"),
+        ("right", "link2"),
+    ],
+)
+def test_shipped_fingertip_nub_is_black(directory, stem):
+    """The small TPU nub at the very end of every fingertip ships black on all
+    sides: nothing yellow reaches it, and it is still present. It starts past
+    146 mm on the leader tip and past 148 mm on the follower's (v2026.10.23)."""
+    root = ASSET_ROOT / "meshes" if directory == "slave" else MASTER_ROOT / "meshes" / directory
+    start = 0.148 if directory == "slave" else 0.146
+    yellow = _read(root / f"{stem}__yellow.STL")
+    assert yellow.mean(axis=1)[:, 0].max() < start
+    black = _read(root / f"{stem}__black.STL")
+    assert (black.mean(axis=1)[:, 0] > start).sum() > 50
+
+
+FINGER_MESHES = [
+    ("slave", "left_link"),
+    ("slave", "right_link"),
+    ("left", "link1"),
+    ("left", "link2"),
+    ("right", "link1"),
+    ("right", "link2"),
+]
+
+
+def _finger_dir(directory):
+    return ASSET_ROOT / "meshes" if directory == "slave" else MASTER_ROOT / "meshes" / directory
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_shipped_pad_plane_has_no_yellow(directory, stem):
+    """The fingertip's inner pad plane (x > 100 mm, facing inwards, |n_y| > 0.99)
+    carries no yellow on any finger: gel on the follower, black rubber on the
+    leader. Inwards is away from the silkscreen, which sits on the outer face."""
+    root = _finger_dir(directory)
+    yellow = _read(root / f"{stem}__yellow.STL")
+    inwards = -np.sign(_read(root / f"{stem}_silkscreen.STL").reshape(-1, 3)[:, 1].mean())
+    normals = np.cross(yellow[:, 1] - yellow[:, 0], yellow[:, 2] - yellow[:, 0])
+    normals /= np.linalg.norm(normals, axis=1, keepdims=True)
+    centres = yellow.mean(axis=1)
+    on_pad_plane = (
+        (centres[:, 0] > 0.1)  # the fingertip, not the leader's sync button
+        & (normals[:, 1] * inwards > 0.99)
+        & (centres[:, 1] * inwards > 0.005)
+    )
+    assert not on_pad_plane.any(), yellow.mean(axis=1)[on_pad_plane] * 1e3
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_silkscreen_sits_on_the_cap_outer_facet(directory, stem):
+    """The "XENSE" print lies just outside the cap's large outer facet (0.02 to
+    0.07 mm off it), within the facet, on the side away from the gel pad, and
+    in the band next to the connector edge (x 112.3-118.9 mm)."""
+    root = _finger_dir(directory)
+    records = _read(root / f"{stem}_silkscreen.STL")
+    print_ = records.reshape(-1, 3)
+    yellow = _read(root / f"{stem}__yellow.STL")
+
+    def unit_normals(t):
+        n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
+        return n / np.linalg.norm(n, axis=1, keepdims=True), np.linalg.norm(n, axis=1) / 2
+
+    # The print's flat faces (top and bottom, +-n) give its plane; the yellow
+    # faces parallel to it are the facet, and their winding gives the outward n.
+    print_normals, print_area = unit_normals(records)
+    keys, inverse = np.unique(np.round(print_normals, 3), axis=0, return_inverse=True)
+    direction = keys[np.argmax(np.bincount(inverse.ravel(), weights=print_area))]
+    top = print_normals @ direction > 0.99
+    direction = np.average(print_normals[top], axis=0, weights=print_area[top])
+    direction /= np.linalg.norm(direction)
+    yellow_normals, _ = unit_normals(yellow)
+    # Exactly parallel: the cap's tapered faces next to the facet are 2 deg off.
+    parallel = np.abs(yellow_normals @ direction) > 0.99999
+    # Of the parallel yellow planes, the facet is the one the print sits on.
+    offsets = yellow[parallel][:, 0] @ direction
+    nearest = np.abs(offsets - np.median(print_ @ direction)) < 0.2e-3
+    facet = yellow[parallel][nearest]
+    assert len(facet)
+    normal = yellow_normals[parallel][nearest][0]
+    height = (print_ - facet[0, 0]) @ normal
+    assert height.min() > 0.015e-3 and height.max() < 0.075e-3
+    # Inside the facet: every print vertex projects onto one of its triangles.
+    projected = print_ - np.outer(height, normal)
+    a, b, c = facet[:, 0], facet[:, 1], facet[:, 2]
+    inside = np.zeros(len(projected), dtype=bool)
+    for i in range(len(facet)):
+        v0, v1 = b[i] - a[i], c[i] - a[i]
+        w = projected - a[i]
+        d00, d01, d11 = v0 @ v0, v0 @ v1, v1 @ v1
+        d20, d21 = w @ v0, w @ v1
+        denom = d00 * d11 - d01 * d01
+        s = (d11 * d20 - d01 * d21) / denom
+        t = (d00 * d21 - d01 * d20) / denom
+        inside |= (s >= -1e-6) & (t >= -1e-6) & (s + t <= 1 + 1e-6)
+    assert inside.all()
+    assert 0.1123 < print_[:, 0].min() and print_[:, 0].max() < 0.1189
+    # Outer side: the facet faces away from the cap's centre (and so from the pad).
+    cap_centre = yellow[yellow.mean(axis=1)[:, 0] > 0.1].reshape(-1, 3).mean(axis=0)
+    assert normal @ (print_.mean(axis=0) - cap_centre) > 0
+
+
+@pytest.mark.parametrize("directory, stem", FINGER_MESHES)
+def test_silkscreen_ships_in_every_format(directory, stem):
+    """URDF, MJCF and USD all carry the print visual, in black."""
+    name = f"{stem}_silkscreen"
+    if directory == "slave":
+        urdf, mjcf = get_urdf_path(), ASSET_ROOT / "mjcf" / "taccap_g1_slave.xml"
+        usd = ASSET_ROOT / "usd" / "taccap_g1_slave.usda"
+    else:
+        urdf, mjcf = MASTER_ROOT / "urdf" / f"taccap_g1_master_{directory}.urdf", MASTER_ROOT / "mjcf" / f"{directory}.xml"
+        usd = MASTER_ROOT / "usd" / f"{directory}.usda"
+    visuals = [
+        v for v in ET.parse(urdf).getroot().iter("visual")
+        if v.find("geometry/mesh").get("filename").endswith(f"{name}.STL")
+    ]
+    assert len(visuals) == 1
+    assert visuals[0].find("material").get("name").endswith("black")
+    assert name in mjcf.read_text()
+    assert f"{name}.usdc" in usd.read_text()
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_shipped_master_sync_button_is_yellow(side):
+    """The time-sync button (1862-face solid) ships yellow on one finger per hand."""
+    directory = MASTER_ROOT / "meshes" / side
+    buttons = [m for stem in ("link1", "link2") for m in _solid_materials(directory, stem, 1862)]
+    assert len(buttons) == 1
+    assert set(buttons[0]) == {"yellow"}, buttons
+
+
+def test_shipped_slave_light_window_is_translucent():
+    """The status-LED capsule on top of the slave ships as the light material."""
+    capsules = _solid_materials(ASSET_ROOT / "meshes", "body_link", 3168)
+    lights = [m for m in capsules if "light" in m]
+    assert len(lights) == 1
+    assert set(lights[0]) == {"light"}, capsules
+
+
+@pytest.mark.parametrize("stem", ["left_link", "right_link"])
+def test_shipped_slave_fingertip_has_no_grey(stem):
+    """The fingertip solid ships only yellow cap, dark gel and black rubber."""
+    tips = _solid_materials(ASSET_ROOT / "meshes", stem, 16514)
+    assert len(tips) == 1
+    assert set(tips[0]) <= {"yellow", "gel", "black"}, tips[0]
+
+
+def test_shipped_slave_fingers_match_each_other():
+    """Both slave hands ship the same materials on their common solids."""
+    left = sorted(
+        (faces, tuple(sorted(m)))
+        for faces in (448, 16514)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "left_link", faces)
+    )
+    right = sorted(
+        (faces, tuple(sorted(m)))
+        for faces in (448, 16514)
+        for m in _solid_materials(ASSET_ROOT / "meshes", "right_link", faces)
+    )
+    assert left == right, (left, right)
+
+
+@pytest.mark.parametrize(
+    "root, side, module, collar",
+    [
+        ("slave", "", ("camera_link", 2674), ("body_link", 572)),
+        ("master", "left", ("base_link", 1102), ("base_link", 296)),
+        ("master", "right", ("base_link", 1102), ("base_link", 296)),
+    ],
+)
+def test_shipped_camera_window_matches_the_hardware(root, side, module, collar):
+    """Lens module: glass + black barrel/second step. Collar: yellow only."""
+    base = ASSET_ROOT if root == "slave" else MASTER_ROOT
+    directory = base / "meshes" / side if side else base / "meshes"
+    modules = _solid_materials(directory, *module)
+    collars = _solid_materials(directory, *collar)
+    module = next(m for m in modules if "lens" in m)
+    assert set(module) == {"lens", "black"}, module
+    assert any(set(c) == {"yellow"} for c in collars), collars
+
+
+def test_shipped_slave_body_has_no_stray_yellow():
+    """On the slave body, yellow is the camera collar and nothing else."""
+    directory = ASSET_ROOT / "meshes"
+    yellow = _read(directory / "body_link__yellow.STL")
+    collar_faces = sum(c.get("yellow", 0) for c in _solid_materials(directory, "body_link", 572))
+    assert len(yellow) == collar_faces

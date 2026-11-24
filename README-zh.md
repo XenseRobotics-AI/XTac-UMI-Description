@@ -2,54 +2,45 @@
 
 [English](README.md)
 
-**XTac-UMI G1** 触觉数据采集夹爪的机器人模型，提供 URDF、Xacro、MJCF 和 USD 格式：
+**XTac-UMI G1** 触觉数据采集夹爪的机器人描述文件，提供 URDF、Xacro、MJCF 和 USD：
 
-- **主夹爪**（master，手持端，SDK 中称 leader），分左、右。
-- **从夹爪**（slave，安装在机械臂上，SDK 中称 follower）：裸夹爪，或带 Asm_link 连接件。
+- **主夹爪**（手持，leader）：左手与右手。
+- **从夹爪**（装在机械臂上，follower）：裸爪，或带法兰转接件。
 
-以 ROS 2（Humble/Jazzy）包和不依赖 ROS 的 Python wheel 两种形式提供。
+![从夹爪：不带/带转接件](ros/taccap_slave_description/preview.png)
 
-![从夹爪：不带/带连接件](ros/taccap_description/preview.png)
+## 目录结构
 
-## 关键参数
+```
+ros/taccap_slave_description/    ROS 2 包：从爪资产（URDF、Xacro、MJCF、USD、网格、launch）
+ros/taccap_master_description/   ROS 2 包：主爪资产，左右手
+python/taccap_description/       Python 包：基于上面两个 ROS 包的路径接口
+scripts/                         生成脚本，所有派生文件都由它们生成
+docs/                            坐标系规范与外观
+```
 
-| 项目 | 数值 |
-| --- | --- |
-| 从夹爪夹指电机 | RobStride EL05，最大输出扭矩 1.1 N·m（为保证连续堵转，硬件限制） |
-| 夹指开合 | 0 至 28.92°（0.5047 rad）；右夹指主动，左夹指镜像 |
-| 连接件接口 | 4 × Ø6.5 mm 通孔，Ø50 mm 节圆，Ø26 mm 中心孔，厚 12 mm |
-| 安装 | +Z 沿工具轴；挂接到 Z 轴朝外的机械臂坐标系（如 `tool0`），用 `rpy="0 0 θ"` 设定安装相位 |
-| EEF（闭合指尖中心） | 相对从夹爪安装面 `[0.036575, 0, 0.2009217]` m（带连接件时再加 12 mm） |
-| 主从对应 | `<side>_follower_link` 对应从夹爪 `taccap_base_link`；EEF、指尖、相机位置差小于 0.1 mm |
+资产只放在 `ros/` 下。Python 包本身不含数据：它的 wheel 把两个 ROS 包目录装成
+`taccap_description.share`，所以 pip 安装和 ROS 安装读取的是同一份文件。
 
-完整的坐标系与命名规范见 [docs/TACCAP_FLANGE_FRAMES-zh.md](docs/TACCAP_FLANGE_FRAMES-zh.md)。
+## 快速开始
 
-## 包
-
-| 包 | 内容 |
-| --- | --- |
-| [`taccap_description`](ros/taccap_description/README-zh.md) | 从夹爪：URDF（裸/带连接件）、Xacro 宏、MJCF、USD、RViz 启动文件 |
-| [`taccap_master_description`](ros/taccap_master_description/README-zh.md) | 主夹爪（左/右）：URDF、Xacro 宏、MuJoCo 预览、带开合动画的 USD、RViz 启动文件 |
-
-## 快速上手
-
-ROS 2：
+ROS 2（Humble/Jazzy）：
 
 ```bash
 cd ~/ws/src && git clone https://github.com/XenseRobotics-AI/XTac-UMI-Description.git
 cd ~/ws && colcon build && source install/setup.bash
-ros2 launch taccap_description display.launch.py with_mount:=true
+ros2 launch taccap_slave_description display.launch.py with_mount:=true
 ros2 launch taccap_master_description display.launch.py side:=left
 ```
 
-将从夹爪挂接到机械臂：
+把从爪装到机械臂上：
 
 ```xml
-<xacro:include filename="$(find taccap_description)/urdf/taccap_g1_slave_macro.xacro"/>
+<xacro:include filename="$(find taccap_slave_description)/urdf/taccap_g1_slave_macro.xacro"/>
 <xacro:taccap_g1_slave prefix="right_" with_mount="false"/>
 <joint name="arm_to_gripper" type="fixed">
   <parent link="tool0"/><child link="right_taccap_base_link"/>
-  <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- clocking about Z per installation -->
+  <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- 绕 Z 的安装角按实际调整 -->
 </joint>
 ```
 
@@ -60,38 +51,57 @@ pip install git+https://github.com/XenseRobotics-AI/XTac-UMI-Description.git
 ```
 
 ```python
-from taccap_description import get_urdf_path, get_mjcf_path, get_usd_path
-from taccap_master_description import get_master_urdf_path
+from taccap_description import slave, master
 
-get_urdf_path(with_mount=True)
-get_master_urdf_path(side="left")
+slave.get_urdf_path(with_mount=True)
+slave.get_usd_path()
+master.get_urdf_path(side="left")
+master.get_usd_path(side="right", animated=True)
 ```
 
-纯 `.urdf` 文件使用相对网格路径，可直接在 URDF 查看器中打开。
+两个模块都提供 `get_urdf_path`、`get_xacro_path`、`get_mjcf_path`、`get_usd_path`；
+从爪的参数是 `with_mount=`，主爪是 `side=`。普通 `.urdf` 使用相对网格路径，可直接用
+URDF 查看器打开。
 
-## 相关链接
+## 关键参数
 
-- [XTac-UMI G1 文档](https://xenserobotics-ai.github.io/XTac-UMI-G1-Docs/)
-- [TacCap-Gripper SDK](https://github.com/XenseRobotics-AI/TacCap-Gripper)：电机控制、IMU/编码器读取及每台设备的相机内参
+| 项目 | 数值 |
+| --- | --- |
+| 坐标轴（所有 link） | +Z 沿工具轴指向指尖，+Y 指向左手指 |
+| 手指开合 | 0 至 0.5047 rad（28.92°）；右手指主动，左手指镜像跟随 |
+| 从爪手指电机 | RobStride EL05，最大输出扭矩 1.1 N·m |
+| 从爪 EEF（闭合指尖中心） | 距 `taccap_base_link` 为 `[0.036575, 0, 0.2009217]` m（带转接件时再加 12 mm） |
+| 主从对应 | `<side>_follower_link` 等同于从爪 `taccap_base_link`；EEF、指尖、相机偏差小于 0.1 mm |
+| 追踪器 | `<side>_tracker_link` 精确复现 TacCap-Gripper 内置的 tracker → EE 外参 |
+
+规范文档：[坐标系、法兰与命名](docs/TACCAP_FLANGE_FRAMES-zh.md) · [外观](docs/APPEARANCE-zh.md)。
 
 ## 开发
 
 ```bash
 pip install -e '.[dev]'
-python scripts/import_slave.py             # locked upstream snapshot -> Xacro + meshes
-python scripts/generate_models.py          # slave URDF + MJCF from the Xacro
-python scripts/generate_usd.py             # slave USD
-python scripts/generate_master_models.py   # master Xacro/MJCF/USD from the URDFs
+python scripts/import_slave.py              # 从锁定的上游快照生成从爪 Xacro 和网格
+python scripts/generate_models.py           # 从 Xacro 生成从爪 URDF + MJCF
+python scripts/generate_usd.py              # 从爪 USD
+python scripts/generate_master_models.py    # 从主爪 URDF 生成 Xacro、MJCF、USD
+python scripts/generate_appearance_parts.py # 按材质拆分的网格零件、丝印
 python -m pytest -q
 ```
 
-从夹爪由锁定的上游 `slave-v2026.10.23` 快照导入，本地适配在 `scripts/import_slave.py` 中维护；
-具体操作见[上游同步流程](docs/UPSTREAM_SLAVE.md)。主夹爪仍编辑
-`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`。
-`--check` 用于校验导入与生成文件是否最新。
+从爪模型（v2026.10.23）由 `vendor/taccap_slave/` 中锁定的上游快照导入，本地适配都在
+`scripts/import_slave.py`（见[上游更新流程](docs/UPSTREAM_SLAVE.md)）。主爪修改请编辑
+`ros/taccap_master_description/urdf/` 下的 URDF。颜色来自[外观](docs/APPEARANCE-zh.md)中说明的
+数据文件。其余文件都是生成的。所有生成器都支持 `--check`，
+CI 用它拒绝过期文件。
 
-## 许可证与联系方式
+## 相关链接
 
-MIT，见 [LICENSE](LICENSE)。来源及第三方许可声明：[从夹爪](ros/taccap_description/NOTICE.md)、[主夹爪](ros/taccap_master_description/NOTICE.md)。
+- [XTac-UMI G1 文档](https://xenserobotics-ai.github.io/XTac-UMI-G1-Docs/)
+- [TacCap-Gripper SDK](https://github.com/XenseRobotics-AI/TacCap-Gripper)：电机控制、IMU/编码器读取、逐台相机内参
 
-如有问题，请提交 GitHub issue 或联系 dylan@xenserobotics.com。
+## 许可与联系
+
+MIT 许可，见 [LICENSE](LICENSE)。来源与第三方声明：
+[从爪](ros/taccap_slave_description/NOTICE.md)、[主爪](ros/taccap_master_description/NOTICE.md)。
+
+问题请提交 GitHub issue 或联系 dylan@xenserobotics.com。

@@ -13,7 +13,7 @@ from pathlib import Path
 import xacro
 from scipy.spatial.transform import Rotation
 
-ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
+ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_slave_description"
 
 
 def mesh_name(filename):

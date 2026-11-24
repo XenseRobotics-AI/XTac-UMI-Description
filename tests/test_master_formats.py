@@ -12,14 +12,13 @@ import xacro
 from pxr import Usd, UsdGeom, UsdUtils
 from scipy.spatial.transform import Rotation
 
-from taccap_master_description.mujoco_preview import set_opening
-from taccap_master_description import (
-    ASSET_ROOT as MASTER_ASSET_ROOT,
-    get_master_mjcf_path,
-    get_master_urdf_path,
-    get_master_usd_path,
-    get_master_xacro_path,
-)
+from taccap_description.mujoco_preview import set_opening
+from taccap_description import master
+MASTER_ASSET_ROOT = master.ASSET_ROOT
+get_master_mjcf_path = master.get_mjcf_path
+get_master_urdf_path = master.get_urdf_path
+get_master_usd_path = master.get_usd_path
+get_master_xacro_path = master.get_xacro_path
 
 
 def origin_matrix(origin):
@@ -52,7 +51,7 @@ def test_master_urdf_mjcf_usd_fk(side, opening):
     urdf = ET.parse(get_master_urdf_path(side=side)).getroot()
     model = mujoco.MjModel.from_xml_path(str(get_master_mjcf_path(side=side)))
     data = mujoco.MjData(model)
-    assert (model.nq, model.nv, model.nu, model.neq, model.nmocap) == (0, 0, 0, 0, 8)
+    assert (model.nq, model.nv, model.nu, model.neq, model.nmocap) == (0, 0, 0, 0, 9)
     assert not model.geom_contype.any() and not model.geom_conaffinity.any()
     assert not model.body_mass.any() and not model.body_inertia.any()
     set_opening(model, data, opening)
@@ -111,7 +110,7 @@ def test_master_urdf_mjcf_usd_fk(side, opening):
 
 
 @pytest.mark.parametrize("side", ["left", "right"])
-def test_master_formats_relocated(tmp_path, side):
+def test_master_formats_relocated(tmp_path, side, usd_compliance):
     relocated = tmp_path / "master assets"
     shutil.copytree(MASTER_ASSET_ROOT, relocated)
     mujoco.MjModel.from_xml_path(str(relocated / "mjcf" / f"{side}.xml"))
@@ -119,11 +118,7 @@ def test_master_formats_relocated(tmp_path, side):
         path = relocated / get_master_usd_path(
             side=side, animated=animated
         ).relative_to(MASTER_ASSET_ROOT)
-        checker = UsdUtils.ComplianceChecker()
-        checker.CheckCompliance(str(path))
-        assert not (
-            checker.GetErrors() or checker.GetFailedChecks() or checker.GetWarnings()
-        )
+        usd_compliance(path)
         layers, _, unresolved = UsdUtils.ComputeAllDependencies(str(path))
         assert not unresolved
         assert all(Path(layer.realPath).is_relative_to(relocated) for layer in layers)
@@ -131,7 +126,13 @@ def test_master_formats_relocated(tmp_path, side):
         assert UsdGeom.GetStageMetersPerUnit(stage) == 1
         assert UsdGeom.GetStageUpAxis(stage) == "Z"
         for prim in stage.Traverse():
-            assert not prim.GetAppliedSchemas()  # No physical schemas, including mimic.
+            # No physical schemas, including mimic. Shading schemas (NodeDefAPI,
+            # MaterialBindingAPI) are expected on the material layer.
+            assert not [
+                schema
+                for schema in prim.GetAppliedSchemas()
+                if "hysic" in schema or "Simulation" in schema
+            ]
     stage = Usd.Stage.Open(str(relocated / "usd" / f"{side}.usda"))
     urdf = ET.parse(get_master_urdf_path(side=side)).getroot()
     for link in urdf.findall("link"):

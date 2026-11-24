@@ -17,6 +17,7 @@ jobs:
       - run: python scripts/generate_models.py --check
       - run: python scripts/generate_usd.py --check
       - run: python scripts/generate_master_models.py --check
+      - run: python scripts/generate_appearance_parts.py --check
       - run: python -m pytest -q
       - run: python -m build
       - name: Wheel resolves installed resources without the checkout
@@ -26,10 +27,9 @@ jobs:
           from zipfile import ZipFile
           from pathlib import Path
           import glob
-          from taccap_description import get_urdf_path, get_mjcf_path, get_usd_path
-          from taccap_master_description import get_master_urdf_path, get_master_mjcf_path, get_master_usd_path
-          paths = [get_urdf_path(), get_urdf_path(with_mount=True), get_mjcf_path(), get_usd_path(with_mount=True)]
-          paths += [f(side=s) for f in (get_master_urdf_path, get_master_mjcf_path, get_master_usd_path) for s in ("left", "right")]
+          from taccap_description import slave, master
+          paths = [slave.get_urdf_path(), slave.get_urdf_path(with_mount=True), slave.get_mjcf_path(), slave.get_usd_path(with_mount=True)]
+          paths += [f(side=s) for f in (master.get_urdf_path, master.get_mjcf_path, master.get_usd_path) for s in ("left", "right")]
           for p in paths:
               assert p.is_file() and "site-packages" in str(p), p
           import xml.etree.ElementTree as ET
@@ -54,9 +54,9 @@ jobs:
           apt-get update -qq && apt-get install -y -qq ros-humble-xacro > /dev/null
           colcon build --base-paths src
           source install/setup.bash
-          for pkg in taccap_description taccap_master_description; do
+          for pkg in taccap_slave_description taccap_master_description; do
             test -f "$(ros2 pkg prefix $pkg)/share/$pkg/package.xml"
           done
-          xacro "$(ros2 pkg prefix taccap_description)/share/taccap_description/urdf/taccap_g1_slave.urdf.xacro" with_mount:=true > /tmp/slave.urdf
+          xacro "$(ros2 pkg prefix taccap_slave_description)/share/taccap_slave_description/urdf/taccap_g1_slave.urdf.xacro" with_mount:=true > /tmp/slave.urdf
           xacro "$(ros2 pkg prefix taccap_master_description)/share/taccap_master_description/urdf/display_left.urdf.xacro" > /tmp/master.urdf
           grep -q taccap_mount_link /tmp/slave.urdf && grep -q left_follower_link /tmp/master.urdf

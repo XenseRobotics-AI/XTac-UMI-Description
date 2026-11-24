@@ -14,11 +14,12 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from _metadata import hash_tree, update_config
-from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, Vt
+from _appearance import define_materials, urdf_material
+from _metadata import hash_tree, mesh_hashes, update_config
+from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
-ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
+ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_slave_description"
 ROOT = "/TacCap"
 MODEL = "taccap_g1_slave"
 # Rigid body that carries massless EEF and camera reference frames.
@@ -120,6 +121,7 @@ def generate_model(output, with_mount):
         for name, link in links.items()
     }
     stage = new_stage(output / f"{MODEL}{suffix}.usda")
+    materials = define_materials(stage, ROOT)
     colors = {
         mat.get("name"): vector(mat.find("color").get("rgba"))[:3]
         for mat in urdf.findall("material")
@@ -162,8 +164,10 @@ def generate_model(output, with_mount):
                     Gf.Matrix4d(transform(geometry.find("origin")).T.tolist())
                 )
                 if kind == "visual":
-                    mesh.CreateDisplayColorAttr(
-                        [Gf.Vec3f(*colors[geometry.find("material").get("name")])]
+                    material = geometry.find("material").get("name")
+                    mesh.CreateDisplayColorAttr([Gf.Vec3f(*colors[material])])
+                    UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(
+                        materials[urdf_material(material)]
                     )
                 else:
                     mesh.CreatePurposeAttr(UsdGeom.Tokens.guide)
@@ -334,9 +338,12 @@ def main():
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
             print(target.relative_to(ASSETS))
-    # Hash the shipped layers, so this runs after the copy above.
+    # Hash the shipped layers and meshes, so this runs after the copy above.
     config = update_config(
         ASSETS / "config" / "model.json", "usd", usd_metadata(), args.check
+    )
+    update_config(
+        config, "mesh_sha256", mesh_hashes(ASSETS / "meshes"), args.check
     )
     print(config.relative_to(ASSETS))
 

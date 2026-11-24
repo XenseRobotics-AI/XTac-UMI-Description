@@ -12,7 +12,11 @@ import numpy as np
 import pytest
 from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdUtils
 
-from taccap_description import ASSET_ROOT, get_mjcf_path, get_urdf_path, get_usd_path
+from taccap_description import slave
+ASSET_ROOT = slave.ASSET_ROOT
+get_mjcf_path = slave.get_mjcf_path
+get_urdf_path = slave.get_urdf_path
+get_usd_path = slave.get_usd_path
 
 
 def frame(position, rotation):
@@ -61,19 +65,18 @@ def test_every_physical_part_is_connected_and_joint_frames_close(with_mount):
 
 
 @pytest.mark.parametrize("with_mount", [False, True])
-def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount):
+def test_usd_relocated_compliance_and_reference_remapping(tmp_path, with_mount, usd_compliance):
     destination = tmp_path / "relocated assets"
     shutil.copytree(ASSET_ROOT / "usd", destination)
     path = destination / get_usd_path(with_mount=with_mount).name
-    checker = UsdUtils.ComplianceChecker()
-    checker.CheckCompliance(str(path))
-    assert not checker.GetErrors()
-    assert not checker.GetFailedChecks()
-    assert not checker.GetWarnings()
+    usd_compliance(path)
     layers, assets, unresolved = UsdUtils.ComputeAllDependencies(str(path))
     assert not assets  # All dependencies are USD layers, no external textures.
     assert not unresolved
-    assert len(layers) == (12 if with_mount else 10)
+    # One layer per mesh the URDF references (visual parts and collisions) plus the entry layer.
+    urdf = ET.parse(get_urdf_path(with_mount=with_mount)).getroot()
+    meshes = {mesh.get("filename") for mesh in urdf.findall(".//mesh")}
+    assert len(layers) == len(meshes) + 1
     assert all(str(destination) in layer.realPath for layer in layers)
     stage = Usd.Stage.CreateInMemory()
     for instance in ("/World/Left", "/World/Right"):

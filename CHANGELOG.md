@@ -1,6 +1,28 @@
 # Changelog
 
-## Slave model v2026.10.23
+## 0.2.0 (2026-11-25)
+
+### Breaking changes
+
+- The slave ROS package is now `taccap_slave_description` (was
+  `taccap_description`), matching `taccap_master_description`. Update
+  `package://` URIs, `$(find ...)` and launch commands.
+- One Python package, `taccap_description`, with `slave` and `master` modules:
+  `slave.get_urdf_path(with_mount=...)`, `master.get_urdf_path(side=...)`, and
+  likewise `get_xacro_path`, `get_mjcf_path`, `get_usd_path`. The old
+  `taccap_description.get_*` functions and `taccap_master_description` are gone.
+- Visual meshes are split per material (`<stem>__<material>.STL`), so visual
+  names and mesh files changed. Collision meshes are unchanged.
+
+### Added
+
+- `<side>_tracker_link` on the masters: the PICO tracker datum, reproducing the
+  TacCap-Gripper SDK built-in tracker → EE extrinsic exactly.
+- Colours matching the hardware in URDF, MJCF and USD (see
+  [appearance](docs/APPEARANCE.md)), and the XENSE silkscreen on every
+  fingertip cap.
+
+### Slave model v2026.10.23
 
 The TacCap G1 slave URDF, meshes and physical properties are imported from
 [xense-description](https://github.com/XenseRobotics-AI/xense-description)
@@ -8,7 +30,7 @@ The TacCap G1 slave URDF, meshes and physical properties are imported from
 `b67736ce4d3bce785bedbb49f4c14011d38a7159`. MJCF and USD are regenerated from
 the adapted URDF. See the [upstream update workflow](docs/UPSTREAM_SLAVE.md).
 
-### Changed
+#### Changed
 
 - Physical model split into six parts. Masses: body 0.153 kg, motor 0.299 kg,
   left/right finger 0.140 kg each, camera body 0.018 kg; mount 0.035 kg.
@@ -26,12 +48,10 @@ the adapted URDF. See the [upstream update workflow](docs/UPSTREAM_SLAVE.md).
 - MJCF/USD exclude internal motor–finger contacts; external collisions are
   kept.
 
-### Unchanged
+#### Unchanged
 
 - Root frames: `taccap_base_link` (bare) and `taccap_mount_link` /
   `taccap_mount_joint` (with mount, +12 mm along Z). The bare model is the
   upstream model shifted −12 mm along Z.
 - Finger effort limit 1.1 N·m (RobStride EL05); upstream uses 4 N·m.
-- EEF, camera reference and optical frames, Python API, file names, ROS
-  packages and launch arguments.
-- Master gripper models.
+- EEF, camera reference and optical frames, and launch arguments.

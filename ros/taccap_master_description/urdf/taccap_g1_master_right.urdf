@@ -1,35 +1,105 @@
 <?xml version="1.0"?>
 <robot name="taccap_g1_master_right">
   <!-- Root on the shell rear outer surface (centre on the tool axis), 23.5 mm above the higher fingertip holding plane; +Z tool axis, +Y left finger. All link frames share these axes; meshes keep their native CAD frame via visual origins (finger hinges along +X). EEF: centre of the closed fingertips' most distal face (mesh-derived, shared with the slave). -->
-  <material name="right_shell">
-    <color rgba="0.58 0.64 0.72 1" />
+  <!-- Appearance follows the physical gripper: light shell,
+       light-grey finger bodies, black frame strip and screws, yellow only on the fingertips.
+       One material per visual, so the face partition in config/appearance.json is shipped as
+       separate mesh parts. -->
+  <material name="right_silver">
+    <color rgba="0.82 0.81 0.79 1" />
   </material>
-  <material name="right_finger">
-    <color rgba="0.96 0.45 0.71 1" />
+  <material name="right_cover">
+    <color rgba="0.65 0.7 0.71 1" />
+  </material>
+  <material name="right_black">
+    <color rgba="0.018 0.02 0.022 1" />
+  </material>
+  <material name="right_yellow">
+    <color rgba="0.95 0.72 0.07 1" />
+  </material>
+  <!-- Fisheye cover glass: dark mirror, slightly transparent. -->
+  <material name="right_lens">
+    <color rgba="0.05 0.055 0.06 0.62" />
   </material>
   <link name="right_base_link">
-    <visual name="right_body_visual">
+    <visual name="right_body_visual_silver">
       <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
       <geometry>
-        <mesh filename="../meshes/right/base_link.STL" />
+        <mesh filename="../meshes/right/base_link__silver.STL" />
       </geometry>
-      <material name="right_shell" />
+      <material name="right_silver" />
+    </visual>
+    <visual name="right_body_visual_cover">
+      <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/base_link__cover.STL" />
+      </geometry>
+      <material name="right_cover" />
+    </visual>
+    <visual name="right_body_visual_black">
+      <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/base_link__black.STL" />
+      </geometry>
+      <material name="right_black" />
+    </visual>
+    <visual name="right_body_visual_yellow">
+      <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/base_link__yellow.STL" />
+      </geometry>
+      <material name="right_yellow" />
+    </visual>
+    <visual name="right_body_visual_lens">
+      <origin xyz="0.02065 0 0.024779" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/base_link__lens.STL" />
+      </geometry>
+      <material name="right_lens" />
     </visual>
     <visual name="right_body_aux_visual">
       <origin xyz="0.03664997155194 0 0.189422038155223" rpy="0 -1.5707963267948966 0" />
       <geometry>
         <mesh filename="../meshes/right/link4.STL" />
       </geometry>
-      <material name="right_shell" />
+      <material name="right_silver" />
     </visual>
   </link>
   <link name="right_right_link">
-    <visual>
+    <visual name="right_right_link_visual_cover">
       <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
       <geometry>
-        <mesh filename="../meshes/right/link1.STL" />
+        <mesh filename="../meshes/right/link1__cover.STL" />
       </geometry>
-      <material name="right_finger" />
+      <material name="right_cover" />
+    </visual>
+    <visual name="right_right_link_visual_black">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link1__black.STL" />
+      </geometry>
+      <material name="right_black" />
+    </visual>
+    <visual name="right_right_link_visual_silver">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link1__silver.STL" />
+      </geometry>
+      <material name="right_silver" />
+    </visual>
+    <visual name="right_right_link_visual_yellow">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link1__yellow.STL" />
+      </geometry>
+      <material name="right_yellow" />
+    </visual>
+    <visual name="right_right_link_visual_print">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link1_silkscreen.STL" />
+      </geometry>
+      <material name="right_black" />
     </visual>
   </link>
   <joint name="right_right_joint" type="revolute">
@@ -40,12 +110,40 @@
     <limit lower="0" upper="0.5047492196767601" effort="1" velocity="1" />
   </joint>
   <link name="right_left_link">
-    <visual>
+    <visual name="right_left_link_visual_cover">
       <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
       <geometry>
-        <mesh filename="../meshes/right/link2.STL" />
+        <mesh filename="../meshes/right/link2__cover.STL" />
       </geometry>
-      <material name="right_finger" />
+      <material name="right_cover" />
+    </visual>
+    <visual name="right_left_link_visual_black">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link2__black.STL" />
+      </geometry>
+      <material name="right_black" />
+    </visual>
+    <visual name="right_left_link_visual_silver">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link2__silver.STL" />
+      </geometry>
+      <material name="right_silver" />
+    </visual>
+    <visual name="right_left_link_visual_yellow">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link2__yellow.STL" />
+      </geometry>
+      <material name="right_yellow" />
+    </visual>
+    <visual name="right_left_link_visual_print">
+      <origin xyz="0 0 0" rpy="0 -1.5707963267948966 0" />
+      <geometry>
+        <mesh filename="../meshes/right/link2_silkscreen.STL" />
+      </geometry>
+      <material name="right_black" />
     </visual>
   </link>
   <joint name="right_left_joint" type="revolute">
@@ -57,17 +155,31 @@
     <mimic joint="right_right_joint" multiplier="-1" offset="0" />
   </joint>
   <link name="right_pico_link">
+    <!-- The PICO puck mesh, kept in its own CAD part frame (export artefact). -->
     <visual>
       <geometry>
         <mesh filename="../meshes/right/link3.STL" />
       </geometry>
-      <material name="right_shell" />
+      <material name="right_silver" />
     </visual>
   </link>
   <joint name="right_pico_joint" type="fixed">
     <origin xyz="-0.032782 0.024077 0.013155" rpy="0.33958373456889773 -0.8514219456851909 1.551281704353287" />
     <parent link="right_base_link" />
     <child link="right_pico_link" />
+  </joint>
+  <!-- PICO tracker datum: what TacCap-Gripper records as the tracker pose. This is
+       NOT right_pico_link, which is the puck mesh's CAD part frame (an export
+       artefact, unrelated to the device axes). Anchored on the code's built-in
+       tracker->EE extrinsic, which this frame must reproduce exactly:
+         ^eef T_tracker = T(Ry(-90 deg)) * inverse(^tracker T_eef)
+       See scripts/_frames.py and tests/test_tracker_frame.py.
+       Teleoperation: take this frame from the URDF of the side in use. -->
+  <link name="right_tracker_link" />
+  <joint name="right_tracker_joint" type="fixed">
+    <origin xyz="-0.035075794 0.029203296 0.010155299" rpy="1.855768178207 0.742430111242 1.979704154721" />
+    <parent link="right_base_link" />
+    <child link="right_tracker_link" />
   </joint>
   <link name="right_eef_link" />
   <joint name="right_eef_joint" type="fixed">

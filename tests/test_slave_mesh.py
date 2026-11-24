@@ -10,7 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from taccap_description import ASSET_ROOT, get_urdf_path
+from taccap_description import slave
+ASSET_ROOT = slave.ASSET_ROOT
+get_urdf_path = slave.get_urdf_path
 
 REPOSITORY = Path(__file__).resolve().parents[1]
 VENDOR = REPOSITORY / "vendor/taccap_slave"
@@ -49,7 +51,9 @@ def test_six_part_model_mass_and_camera_com(with_mount):
     for name in ("taccap_eef_link", "taccap_camera_link", "taccap_camera_optical_link"):
         assert not list(root.find(f"link[@name='{name}']"))
     base = root.find("link[@name='taccap_base_link']")
-    assert base.find("visual/geometry/mesh").get("filename") == "../meshes/body_link.STL"
+    # Visuals are the body's per-material parts; collision keeps the imported mesh.
+    visuals = [v.find("geometry/mesh").get("filename") for v in base.findall("visual")]
+    assert visuals and all(name.startswith("../meshes/body_link__") for name in visuals)
     assert base.find("collision/geometry/mesh").get("filename") == "../meshes/collision/body_link.stl"
     assert len(root.findall("joint[@name='taccap_mount_joint']")) == int(with_mount)
 
@@ -79,7 +83,13 @@ def test_commit_pin_accepts_exact_snapshot_and_rejects_changed_or_missing_files(
     shutil.copytree(VENDOR, sandbox / "vendor/taccap_slave")
     (sandbox / "scripts").mkdir()
     importer = sandbox / "scripts/import_slave.py"
-    shutil.copyfile(REPOSITORY / "scripts/import_slave.py", importer)
+    for script in ("import_slave.py", "_appearance.py", "generate_appearance_parts.py", "_silkscreen.py"):
+        shutil.copyfile(REPOSITORY / "scripts" / script, sandbox / "scripts" / script)
+    # The importer colours the visuals from the appearance data.
+    config = sandbox / "ros/taccap_slave_description/config"
+    config.mkdir(parents=True)
+    for data in ("appearance.json", "silkscreen.json"):
+        shutil.copyfile(ASSET_ROOT / "config" / data, config / data)
 
     def pin(sha):
         return subprocess.run([sys.executable, str(importer), "--source-repo",
@@ -89,7 +99,7 @@ def test_commit_pin_accepts_exact_snapshot_and_rejects_changed_or_missing_files(
     pinned = sandbox / "vendor/taccap_slave/upstream.json"
     accepted = pinned.read_bytes()
     assert json.loads(accepted)["revision"] == revision
-    assert (sandbox / "ros/taccap_description/config/upstream.json").read_bytes() == accepted
+    assert (sandbox / "ros/taccap_slave_description/config/upstream.json").read_bytes() == accepted
     (source / "NOTICE.md").write_text("changed source\n")
     rejected = pin(commit())
     assert rejected.returncode != 0 and "differs from snapshot" in rejected.stderr

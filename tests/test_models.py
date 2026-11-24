@@ -11,8 +11,11 @@ import numpy as np
 import pytest
 import xacro
 from scipy.spatial.transform import Rotation
+from taccap_description import slave
+ASSET_ROOT = slave.ASSET_ROOT
+get_mjcf_path = slave.get_mjcf_path
+get_urdf_path = slave.get_urdf_path
 
-from taccap_description import ASSET_ROOT, get_mjcf_path, get_urdf_path
 
 
 def transform(origin):
@@ -157,7 +160,7 @@ def test_xacro_can_compose_two_prefixed_grippers(tmp_path):
         mimic = root.find(f"./joint[@name='{prefix}taccap_left_finger_joint']/mimic")
         assert mimic.get("joint") == f"{prefix}taccap_right_finger_joint"
     assert all(
-        mesh.get("filename").startswith("package://taccap_description/meshes/")
+        mesh.get("filename").startswith("package://taccap_slave_description/meshes/")
         for mesh in root.findall(".//mesh")
     )
 
