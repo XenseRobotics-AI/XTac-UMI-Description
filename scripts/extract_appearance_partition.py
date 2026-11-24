@@ -291,23 +291,12 @@ def camera_in_mesh_frame(model):
 
 
 def camera_window_cut(model):
-    """Cylinders that give the window an exact glass / bezel / ring edge.
+    """No geometry cut: the window colours follow its two CAD solids.
 
-    The bench asset paints the whole window yellow and the window is a triangle
-    fan, so no per-face rule can produce the rings. The parts generator cuts the
-    geometry instead. ``range`` bounds the cut along the axis: without it the
-    infinite cylinder also lands on the body behind the window and paints a dark
-    disc on the rear shell.
+    Kept as a function so callers stay unchanged; returns ``None`` and the
+    partition alone carries the window (see :func:`fix_camera_ring`).
     """
-    camera = camera_in_mesh_frame(model)
-    return {
-        "axis": "x",
-        "centre": [float(camera[1]), float(camera[2])],
-        "at": CAMERA_GLASS_M,
-        "material": "taccap_lens",
-        "bezel": {"at": CAMERA_BEZEL_M, "material": "taccap_black"},
-        "range": [0.010, 10.0],
-    }
+    return None
 
 
 # Status-LED window on the slave body: the 6.7 x 13.6 mm capsule on top of the
@@ -334,23 +323,69 @@ def fix_light_window(triangles, labels, model, origin):
 
 
 def fix_camera_ring(triangles, labels, model):
-    """Paint the bezel black, the surround ring yellow and the rest shell."""
+    """Colour the camera window from its two CAD solids, matching the photo.
+
+    The window is the same on both grippers and is made of two solids (base
+    frame, camera axis = +Z, radius r and height z from camera_link, in mm):
+
+    * lens module (1102 faces): the glass dome (r < 8.2, z > 31.3), the lens
+      barrel lip around it, and a flat second step at z = 28.9 out to r 11.3
+      that continues down inside the shell. Glass is ``taccap_lens``; the
+      barrel, the step and everything below are black.
+    * collar (296 faces): r 11.0 - 14.7 with its top at z = 28.9. This is the
+      yellow ring on the hardware.
+
+    Colours are assigned per solid and per profile band of its own vertices,
+    so no geometry cut is needed and nothing outside these solids changes.
+    """
     origin = BODY_ORIGIN[model]
-    centroids = triangles.mean(axis=1) @ BODY_ROTATION.T + origin
-    # camera_link has rpy 0, so the camera looks along base +Z.
-    radius = np.hypot(centroids[:, 0] - CAMERA_BASE[0], centroids[:, 1] - CAMERA_BASE[1]) * 1e3
-    height = centroids[:, 2] - CAMERA_BASE[2]
-    near = (radius < 16.0) & (height > 0.005)
-    bezel = near & (radius >= CAMERA_GLASS_M * 1e3) & (radius < CAMERA_BEZEL_M * 1e3)
-    ring = near & (radius >= CAMERA_BEZEL_M * 1e3) & (radius < CAMERA_RING_M * 1e3)
-    outside = near & (radius >= CAMERA_RING_M * 1e3)
+    components = component_labels(triangles)
+    sizes = np.bincount(components)
+    base = triangles @ BODY_ROTATION.T + origin
+    radius = np.hypot(base[:, :, 0] - CAMERA_BASE[0], base[:, :, 1] - CAMERA_BASE[1]) * 1e3
+    height = (base[:, :, 2] - CAMERA_BASE[2]) * 1e3
+    centre_radius = radius.mean(axis=1)
+
+    def solid_near_axis(face_count):
+        for solid in np.nonzero(sizes == face_count)[0]:
+            faces = components == solid
+            if np.median(centre_radius[faces]) < 20.0:
+                return faces
+        raise ValueError(f"{model}: no {face_count}-face camera solid near the axis")
+
+    lens_module = solid_near_axis(1102)
+    collar = solid_near_axis(296)
+
+    # Measure the dome on the lens module's own axis and top: the two grippers
+    # carry the same module at different heights relative to camera_link.
+    module = base[lens_module].reshape(-1, 3) * 1e3
+    top = module[:, 2].max()
+    axis = module[module[:, 2] > top - 0.05][:, :2].mean(axis=0)
+    own_radius = np.hypot(base[:, :, 0] * 1e3 - axis[0], base[:, :, 1] * 1e3 - axis[1])
+    depth = top - base[:, :, 2] * 1e3
+
     labels = labels.copy()
-    labels[bezel] = "taccap_black"
-    labels[ring] = "taccap_yellow"
-    labels[outside] = "taccap_silver"
+    # Glass: every vertex inside the dome footprint and within the 2.9 mm the
+    # dome rises above the barrel lip.
+    glass = lens_module & (own_radius.max(axis=1) <= 8.25) & (depth.max(axis=1) <= 2.95)
+    labels[lens_module] = "taccap_black"
+    labels[glass] = "taccap_lens"
+    labels[collar] = "taccap_yellow"
+    # Yellow belongs only to the collar here (fingertips and the leaders' side
+    # buttons are separate meshes or solids handled elsewhere). The bench asset
+    # also paints internal parts yellow: the 7.5 mm caps on the finger hinge
+    # axes inside the shell, and stray faces on the shell itself.
+    stray = (labels == "taccap_yellow") & ~collar
+    if model != "slave":
+        # The leader body labels come from our own rules (yellow side buttons),
+        # not from the bench asset, so there is nothing stray to clear.
+        stray[:] = False
+    for solid in np.unique(components[stray]):
+        faces = stray & (components == solid)
+        labels[faces] = "taccap_black" if sizes[solid] == 694 else "taccap_silver"
     print(
-        f"  camera ({model}): {int(bezel.sum())} bezel, {int(ring.sum())} yellow ring, "
-        f"{int(outside.sum())} shell"
+        f"  camera ({model}): lens module {int(lens_module.sum())} faces "
+        f"({int(glass.sum())} glass, rest black), collar {int(collar.sum())} yellow"
     )
     return labels
 
@@ -406,7 +441,6 @@ def main():
             order.append("taccap_light")
             labels = fix_camera_ring(triangles, labels, "slave")
             labels = fix_light_window(triangles, labels, "slave", BODY_ORIGIN["slave"])
-            extra["radial_cut"] = camera_window_cut("slave")
         if key in ("left_finger", "right_finger"):
             extra["parting_plane"] = FINGERTIP_SEAM
         partition[relative] = entry(labels, count, order, **extra)
@@ -453,7 +487,6 @@ def main():
             labels,
             count,
             order,
-            radial_cut=camera_window_cut("master"),
             note="Leader body: side buttons yellow, their plates white, camera window "
             "glass/bezel/ring, rest silver.",
         )

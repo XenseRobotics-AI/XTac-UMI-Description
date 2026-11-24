@@ -15,8 +15,8 @@
     <material name="${prefix}taccap_yellow"><color rgba="0.95 0.72 0.07 1"/></material>
     <material name="${prefix}taccap_gel"><color rgba="0.055 0.055 0.055 1"/></material>
     <material name="${prefix}taccap_lens"><color rgba="0.05 0.055 0.06 0.62"/></material>
-    <!-- Translucent indicator window over the status LED. -->
-    <material name="${prefix}taccap_light"><color rgba="0.85 0.9 0.95 0.35"/></material>
+    <!-- Frosted diffuser over the status LED. -->
+    <material name="${prefix}taccap_light"><color rgba="0.92 0.94 0.96 0.85"/></material>
     <!-- taccap_base_link: gripper mounting face (body/Asm_link mating face). +Z along the tool
          axis, +Y toward the left finger, +X toward the off-axis fingers. Meshes keep their native
          CAD frame (+X tool axis); their placement is the origin below. -->

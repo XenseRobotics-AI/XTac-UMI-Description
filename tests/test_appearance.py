@@ -32,7 +32,7 @@ EXPECTED = {
     "taccap_yellow": ((0.95, 0.72, 0.07), 0.00, 0.48),
     "taccap_gel": ((0.055, 0.055, 0.055), 0.00, 0.85),
     "taccap_lens": ((0.05, 0.055, 0.06), 0.85, 0.06),
-    "taccap_light": ((0.85, 0.90, 0.95), 0.00, 0.15),
+    "taccap_light": ((0.92, 0.94, 0.96), 0.00, 0.55),
 }
 
 
@@ -289,3 +289,26 @@ def test_shipped_slave_fingers_match_each_other():
         for m in _solid_materials(ASSET_ROOT / "meshes", "grip_right", faces)
     )
     assert {r[1] for r in right} <= {l[1] for l in left}, (left, right)
+
+
+@pytest.mark.parametrize(
+    "root, side",
+    [("slave", ""), ("master", "left"), ("master", "right")],
+)
+def test_shipped_camera_window_matches_the_photo(root, side):
+    """Lens module: glass + black barrel/second step. Collar: yellow only."""
+    base = ASSET_ROOT if root == "slave" else MASTER_ROOT
+    directory = base / "meshes" / side if side else base / "meshes"
+    modules = _solid_materials(directory, "base_link", 1102)
+    collars = _solid_materials(directory, "base_link", 296)
+    module = next(m for m in modules if "lens" in m)
+    assert set(module) == {"lens", "black"}, module
+    assert any(set(c) == {"yellow"} for c in collars), collars
+
+
+def test_shipped_slave_body_has_no_stray_yellow():
+    """On the slave body, yellow is the camera collar and nothing else."""
+    directory = ASSET_ROOT / "meshes"
+    yellow = _read(directory / "base_link__yellow.STL")
+    collar_faces = sum(c.get("yellow", 0) for c in _solid_materials(directory, "base_link", 296))
+    assert len(yellow) == collar_faces
