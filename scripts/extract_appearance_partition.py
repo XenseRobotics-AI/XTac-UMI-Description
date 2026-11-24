@@ -33,7 +33,7 @@ from pxr import Usd, UsdGeom, UsdShade
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCH = Path("/home/ubuntu/xensim-bench/assets/robots/rebot/rebot_taccap.usd")
-SLAVE = ROOT / "ros/taccap_description/meshes"
+SLAVE = ROOT / "ros/taccap_slave_description/meshes"
 MASTER = ROOT / "ros/taccap_master_description/meshes"
 
 # key -> (shipped path relative to the package meshes dir, file)
@@ -491,7 +491,7 @@ def main():
             "glass/bezel/ring, rest silver.",
         )
 
-    destination = ROOT / "ros/taccap_description/config/appearance.json"
+    destination = ROOT / "ros/taccap_slave_description/config/appearance.json"
     destination.write_text(
         json.dumps(
             {

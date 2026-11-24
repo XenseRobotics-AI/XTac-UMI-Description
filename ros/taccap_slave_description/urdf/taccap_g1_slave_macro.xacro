@@ -4,7 +4,7 @@
   <!-- Maximum output torque (N m) of the finger motor, RobStride EL05; the hardware limits it to
        1.1 N m for continuous stall. MJCF and USD take their force limits from this effort. -->
   <xacro:property name="taccap_finger_effort" value="1.1"/>
-  <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_description/meshes'">
+  <xacro:macro name="taccap_g1_slave" params="prefix:='' with_mount:=false mesh_root:='package://taccap_slave_description/meshes'">
     <!-- Appearance follows the physical gripper (xensim-bench `Looks/TacCap/*`): silver
          structure, light-grey finger covers, black frame and motor, a dark gel pad, a dark mirror
          cover glass and yellow only on the fingertips and around the lens. One material per visual, so the

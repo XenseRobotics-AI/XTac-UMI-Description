@@ -21,4 +21,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Third-party notices for imported source files are kept in
-ros/taccap_description/LICENSES/ and ros/taccap_master_description/LICENSES/.
+ros/taccap_slave_description/LICENSES/ and ros/taccap_master_description/LICENSES/.

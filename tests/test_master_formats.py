@@ -12,14 +12,13 @@ import xacro
 from pxr import Usd, UsdGeom, UsdUtils
 from scipy.spatial.transform import Rotation
 
-from taccap_master_description.mujoco_preview import set_opening
-from taccap_master_description import (
-    ASSET_ROOT as MASTER_ASSET_ROOT,
-    get_master_mjcf_path,
-    get_master_urdf_path,
-    get_master_usd_path,
-    get_master_xacro_path,
-)
+from taccap_description.mujoco_preview import set_opening
+from taccap_description import master
+MASTER_ASSET_ROOT = master.ASSET_ROOT
+get_master_mjcf_path = master.get_mjcf_path
+get_master_urdf_path = master.get_urdf_path
+get_master_usd_path = master.get_usd_path
+get_master_xacro_path = master.get_xacro_path
 
 
 def origin_matrix(origin):

@@ -7,8 +7,8 @@ import time
 import mujoco
 import mujoco.viewer
 
-from taccap_master_description.mujoco_preview import set_opening
-from taccap_master_description import get_master_mjcf_path
+from taccap_description.mujoco_preview import set_opening
+from taccap_description import master
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         help="Hold a normalized opening [0, 1]; otherwise animate",
     )
     args = parser.parse_args()
-    model = mujoco.MjModel.from_xml_path(str(get_master_mjcf_path(side=args.side)))
+    model = mujoco.MjModel.from_xml_path(str(master.get_mjcf_path(side=args.side)))
     data = mujoco.MjData(model)
     set_opening(model, data, args.opening if args.opening is not None else 0)
     with mujoco.viewer.launch_passive(model, data) as viewer:

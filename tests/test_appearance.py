@@ -15,13 +15,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 from pxr import Usd, UsdGeom, UsdShade
+from taccap_description import master, slave
+MASTER_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
+get_master_usd_path = master.get_usd_path
+ASSET_ROOT = slave.ASSET_ROOT
+get_urdf_path = slave.get_urdf_path
+get_usd_path = slave.get_usd_path
 
-from taccap_description import ASSET_ROOT, get_urdf_path, get_usd_path
-from taccap_master_description import (
-    ASSET_ROOT as MASTER_ROOT,
-    get_master_urdf_path,
-    get_master_usd_path,
-)
 
 # Shell and yellow follow the hardware photo of 2026-11-24; the bench values
 # stay for the materials the photo does not contradict. (diffuse, metal, rough)

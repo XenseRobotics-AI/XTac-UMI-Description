@@ -19,7 +19,7 @@ from _metadata import hash_tree, mesh_hashes, update_config
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 from scipy.spatial.transform import Rotation
 
-ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_description"
+ASSETS = Path(__file__).resolve().parents[1] / "ros" / "taccap_slave_description"
 ROOT = "/TacCap"
 MODEL = "taccap_g1_slave"
 # Rigid body that carries the massless adapter and EEF frames.

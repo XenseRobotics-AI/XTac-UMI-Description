@@ -1,7 +1,7 @@
 """Show the TacCap G1 slave in RViz with an interactive joint slider.
 
 The checked-in plain URDFs keep relative mesh paths, so this launch expands the
-Xacro entry point instead: its mesh_root defaults to package://taccap_description.
+Xacro entry point instead: its mesh_root defaults to package://taccap_slave_description.
 """
 
 import os
@@ -15,7 +15,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def launch_setup(context):
-    share = get_package_share_directory("taccap_description")
+    share = get_package_share_directory("taccap_slave_description")
     xacro_file = os.path.join(share, "urdf", "taccap_g1_slave.urdf.xacro")
 
     with_mount = LaunchConfiguration("with_mount").perform(context)

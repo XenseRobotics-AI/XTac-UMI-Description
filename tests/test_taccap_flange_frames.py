@@ -6,9 +6,12 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
+from taccap_description import master, slave
+MASTER_ASSET_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
+SLAVE_ASSET_ROOT = slave.ASSET_ROOT
+get_urdf_path = slave.get_urdf_path
 
-from taccap_description import ASSET_ROOT as SLAVE_ASSET_ROOT, get_urdf_path
-from taccap_master_description import ASSET_ROOT as MASTER_ASSET_ROOT, get_master_urdf_path
 
 # Original imported URDFs, kept only as regression references.
 DATA = Path(__file__).resolve().parent / "data"

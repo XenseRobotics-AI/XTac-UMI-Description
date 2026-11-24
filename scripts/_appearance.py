@@ -8,7 +8,7 @@ URDF ``<color>`` carries one flat colour per visual and no PBR parameters, so th
 materials are defined once here and both generators author them as
 ``UsdPreviewSurface`` shaders. The finer per-face split (yellow fingertips, lens
 cap and gel on meshes that are mostly silver or black) comes from
-``ros/taccap_description/config/appearance.json``, produced by
+``ros/taccap_slave_description/config/appearance.json``, produced by
 ``scripts/extract_appearance_partition.py``.
 """
 
@@ -36,7 +36,7 @@ MATERIALS = {
     "taccap_light": dict(rgba=(0.92, 0.94, 0.96, 0.85), metallic=0.00, roughness=0.55),
 }
 
-PARTITION = Path(__file__).resolve().parents[1] / "ros/taccap_description/config/appearance.json"
+PARTITION = Path(__file__).resolve().parents[1] / "ros/taccap_slave_description/config/appearance.json"
 
 # URDF material name -> appearance material. The gripper URDFs use the appearance
 # names directly; the aliases are kept so older firmware-facing names still map.

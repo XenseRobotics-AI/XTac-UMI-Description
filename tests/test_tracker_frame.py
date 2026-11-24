@@ -15,8 +15,9 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
+from taccap_description import master
+get_master_urdf_path = master.get_urdf_path
 
-from taccap_master_description import get_master_urdf_path
 
 # taccap-core/crates/taccap-mcap/src/lib.rs `BUILT_IN_TRACKER_TO_EE_*`
 CODE_POSITION_M = {

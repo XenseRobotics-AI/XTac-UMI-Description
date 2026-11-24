@@ -7,8 +7,10 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
+from taccap_description import master
+ASSET_ROOT = master.ASSET_ROOT
+get_master_urdf_path = master.get_urdf_path
 
-from taccap_master_description import ASSET_ROOT, get_master_urdf_path
 
 
 @pytest.mark.parametrize("side", ["left", "right"])

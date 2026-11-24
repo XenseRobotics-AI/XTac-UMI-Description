@@ -8,8 +8,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 from scipy.spatial import cKDTree
+from taccap_description import slave
+ASSET_ROOT = slave.ASSET_ROOT
+get_mjcf_path = slave.get_mjcf_path
+get_urdf_path = slave.get_urdf_path
 
-from taccap_description import ASSET_ROOT, get_mjcf_path, get_urdf_path
 
 
 # The original body mesh with the adapter embedded, kept only as a regression reference.

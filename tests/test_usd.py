@@ -11,8 +11,12 @@ import mujoco
 import numpy as np
 import pytest
 from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdUtils
+from taccap_description import slave
+ASSET_ROOT = slave.ASSET_ROOT
+get_mjcf_path = slave.get_mjcf_path
+get_urdf_path = slave.get_urdf_path
+get_usd_path = slave.get_usd_path
 
-from taccap_description import ASSET_ROOT, get_mjcf_path, get_urdf_path, get_usd_path
 
 
 def frame(position, rotation):

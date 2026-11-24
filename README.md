@@ -5,49 +5,40 @@
 Robot descriptions of the **XTac-UMI G1** tactile data-collection gripper, in
 URDF, Xacro, MJCF and USD:
 
-- **Master** (handheld, the leader), left and right.
-- **Slave** (arm-mounted, the follower): bare, or with the Asm_link adapter for the arm flange.
+- **Master** (handheld, the leader): left and right.
+- **Slave** (arm-mounted, the follower): bare, or with the Asm_link flange adapter.
 
-Packaged for ROS 2 (Humble/Jazzy) and as a Python wheel that needs no ROS.
+![Slave without/with mount](ros/taccap_slave_description/preview.png)
 
-![Slave without/with mount](ros/taccap_description/preview.png)
+## Layout
 
-## Key parameters
+```
+ros/taccap_slave_description/    ROS 2 package: slave assets (URDF, Xacro, MJCF, USD, meshes, launch)
+ros/taccap_master_description/   ROS 2 package: master assets, left and right
+python/taccap_description/       Python package: path helpers over the two ROS packages
+scripts/                         Generators; all derived files are produced from these
+docs/                            Frame specification and appearance notes
+```
 
-| Item | Value |
-| --- | --- |
-| Slave finger motor | RobStride EL05, maximum output torque 1.1 N·m (hardware-limited for continuous stall) |
-| Finger opening | 0 to 28.92° (0.5047 rad); the right finger drives, the left mirrors it |
-| Adapter interface | 4 × Ø6.5 mm through holes on Ø50 mm PCD, Ø26 mm centre bore, 12 mm thick |
-| Mounting | +Z along the tool axis; attach to a Z-out arm frame (e.g. `tool0`) with `rpy="0 0 θ"` |
-| EEF (closed fingertip centre) | `[0.036575, 0, 0.2009217]` m from the slave mounting face (+12 mm with the adapter) |
-| Master ↔ slave | `<side>_follower_link` matches the slave `taccap_base_link`; EEF, fingertips and camera agree within 0.1 mm |
-
-Full frame and naming specification:
-[docs/TACCAP_FLANGE_FRAMES.md](docs/TACCAP_FLANGE_FRAMES.md).
-
-## Packages
-
-| Package | Content |
-| --- | --- |
-| [`taccap_description`](ros/taccap_description/README.md) | Slave: URDF (bare / with adapter), Xacro macro, MJCF, USD, RViz launch |
-| [`taccap_master_description`](ros/taccap_master_description/README.md) | Master (left/right): URDF, Xacro macro, MuJoCo preview, USD with open/close animation, RViz launch |
+The assets live only under `ros/`. The Python package holds no data of its own:
+its wheel installs the two ROS package directories as `taccap_description.share`,
+so a pip install and a ROS install read the very same files.
 
 ## Quick start
 
-ROS 2:
+ROS 2 (Humble/Jazzy):
 
 ```bash
 cd ~/ws/src && git clone https://github.com/XenseRobotics-AI/XTac-UMI-Description.git
 cd ~/ws && colcon build && source install/setup.bash
-ros2 launch taccap_description display.launch.py with_mount:=true
+ros2 launch taccap_slave_description display.launch.py with_mount:=true
 ros2 launch taccap_master_description display.launch.py side:=left
 ```
 
 Attach the slave to your arm:
 
 ```xml
-<xacro:include filename="$(find taccap_description)/urdf/taccap_g1_slave_macro.xacro"/>
+<xacro:include filename="$(find taccap_slave_description)/urdf/taccap_g1_slave_macro.xacro"/>
 <xacro:taccap_g1_slave prefix="right_" with_mount="false"/>
 <joint name="arm_to_gripper" type="fixed">
   <parent link="tool0"/><child link="right_taccap_base_link"/>
@@ -55,21 +46,55 @@ Attach the slave to your arm:
 </joint>
 ```
 
-Python (no ROS needed):
+Python, no ROS needed:
 
 ```bash
 pip install git+https://github.com/XenseRobotics-AI/XTac-UMI-Description.git
 ```
 
 ```python
-from taccap_description import get_urdf_path, get_mjcf_path, get_usd_path
-from taccap_master_description import get_master_urdf_path
+from taccap_description import slave, master
 
-get_urdf_path(with_mount=True)
-get_master_urdf_path(side="left")
+slave.get_urdf_path(with_mount=True)
+slave.get_usd_path()
+master.get_urdf_path(side="left")
+master.get_usd_path(side="right", animated=True)
 ```
 
+Both modules offer `get_urdf_path`, `get_xacro_path`, `get_mjcf_path` and
+`get_usd_path`; the slave ones take `with_mount=`, the master ones `side=`.
 Plain `.urdf` files use relative mesh paths and open directly in URDF viewers.
+
+## Key parameters
+
+| Item | Value |
+| --- | --- |
+| Axes (all links) | +Z along the tool axis toward the fingertips, +Y toward the left finger |
+| Finger opening | 0 to 0.5047 rad (28.92°); the right finger drives, the left mirrors it |
+| Slave finger motor | RobStride EL05, 1.1 N·m maximum output torque |
+| Slave EEF (closed fingertip centre) | `[0.036575, 0, 0.2009217]` m from `taccap_base_link` (+12 mm with the adapter) |
+| Master ↔ slave | `<side>_follower_link` equals the slave `taccap_base_link`; EEF, fingertips and camera agree within 0.1 mm |
+| Tracker | `<side>_tracker_link` reproduces TacCap-Gripper's built-in tracker → EE extrinsic exactly |
+
+Specification: [frames, flanges and naming](docs/TACCAP_FLANGE_FRAMES.md) ·
+[appearance](docs/APPEARANCE.md).
+
+## Development
+
+```bash
+pip install -e '.[dev]'
+python scripts/generate_models.py           # slave URDF + MJCF from the Xacro
+python scripts/generate_usd.py              # slave USD
+python scripts/generate_master_models.py    # master Xacro, MJCF, USD from the URDFs
+python scripts/generate_appearance_parts.py # per-material mesh parts
+python -m pytest -q
+```
+
+Hand-edited sources are the slave Xacro
+(`ros/taccap_slave_description/urdf/taccap_g1_slave_macro.xacro`), the master
+URDFs (`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`)
+and the appearance partition; everything else is generated. Every generator
+accepts `--check`, which CI runs to reject stale files.
 
 ## Related
 
@@ -77,24 +102,10 @@ Plain `.urdf` files use relative mesh paths and open directly in URDF viewers.
 - [TacCap-Gripper SDK](https://github.com/XenseRobotics-AI/TacCap-Gripper): motor
   control, IMU/encoder readout and per-device camera intrinsics
 
-## Development
-
-```bash
-pip install -e '.[dev]'
-python scripts/generate_models.py          # slave URDF + MJCF from the Xacro
-python scripts/generate_usd.py             # slave USD
-python scripts/generate_master_models.py   # master Xacro/MJCF/USD from the URDFs
-python -m pytest -q
-```
-
-Edit `ros/taccap_description/urdf/taccap_g1_slave_macro.xacro` (slave) or
-`ros/taccap_master_description/urdf/taccap_g1_master_{left,right}.urdf`
-(master); everything else is generated. `--check` verifies generated files.
-
 ## License and contact
 
 MIT, see [LICENSE](LICENSE). Source and third-party notices:
-[slave](ros/taccap_description/NOTICE.md),
+[slave](ros/taccap_slave_description/NOTICE.md),
 [master](ros/taccap_master_description/NOTICE.md).
 
 Questions: open a GitHub issue or contact dylan@xenserobotics.com.

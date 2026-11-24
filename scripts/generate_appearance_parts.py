@@ -3,7 +3,7 @@
 URDF, MJCF and USD all carry a single material per visual, so "only the
 fingertips are yellow" can only be expressed by shipping the yellow faces as
 their own mesh. This writes ``<stem>__<material>.STL`` next to each source, using
-the face partition in ``ros/taccap_description/config/appearance.json``.
+the face partition in ``ros/taccap_slave_description/config/appearance.json``.
 
 Triangles are copied verbatim (normals and vertex order included), so the parts
 render exactly like the original budget-free mesh; only the grouping changes.
@@ -21,9 +21,9 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-PARTITION = ROOT / "ros/taccap_description/config/appearance.json"
+PARTITION = ROOT / "ros/taccap_slave_description/config/appearance.json"
 DIRECTORIES = {
-    "slave/": ROOT / "ros/taccap_description/meshes",
+    "slave/": ROOT / "ros/taccap_slave_description/meshes",
     "master/left/": ROOT / "ros/taccap_master_description/meshes/left",
     "master/right/": ROOT / "ros/taccap_master_description/meshes/right",
 }

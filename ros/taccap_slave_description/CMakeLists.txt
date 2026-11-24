@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(taccap_description)
+project(taccap_slave_description)
 find_package(ament_cmake REQUIRED)
 install(DIRECTORY urdf mjcf usd meshes config launch rviz LICENSES DESTINATION share/${PROJECT_NAME})
 install(FILES README.md README-zh.md NOTICE.md DESTINATION share/${PROJECT_NAME})
